@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <ScrollView
+        android:id="@+id/ScrollView01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/rlActivityLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp">
+
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:hint="username"
+                android:textSize="18dp"
+                android:id="@+id/etUserName"
+                android:inputType="text"
+                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content"
+                android:text="sachu-985"/>
+
+            <android.support.v7.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_below="@id/etUserName"
+                android:layout_marginTop="20dp"
+                android:id="@+id/etPassword"
+                android:hint="password"
+                android:textSize="18dp"
+                android:text="XVQuexlHYvphcWYgtyLZLtf"
+                android:inputType="textPassword"
+                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content" />
+
+
+            <android.support.v7.widget.AppCompatButton
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/etPassword"
+                android:layout_width="match_parent"
+                android:text="login"
+                android:id="@+id/btnLogin"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>
+

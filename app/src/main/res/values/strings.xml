@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CareCluesChat</string>
+
+    <string name="disconnected_from_server">Disconnected from Chat Server!</string>
+    <string name="connection_error">Connection error!</string>
+    <string name="connected">Connected to Chat Server!</string>
+
+
+</resources>
