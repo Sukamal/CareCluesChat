@@ -16,6 +16,6 @@ public interface ChatContract {
 
     interface presenter {
 
-        public void loadData(ServiceCallBack<PostsModel> callback);
+//        public void loadData(ServiceCallBack<PostsModel> callback);
     }
 }

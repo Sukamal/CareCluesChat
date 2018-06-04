@@ -1,7 +1,6 @@
 package careclues.careclueschat.feature.login;
 
 import careclues.careclueschat.feature.common.CommonViewInterface;
-import careclues.careclueschat.model.PostsModel;
 
 public interface LoginContract {
 
@@ -13,7 +12,7 @@ public interface LoginContract {
 
     interface presenter {
 
-        public void doLogin(String userId,String password);
+        public void doLogin(String userId, String password);
         public void reconnectToServer();
         public void disconnectToServer();
     }

@@ -51,23 +51,23 @@ public class ChatActivity extends BaseActivity implements ChatContract.view{
 
     private void executeServerTask(){
 
-        presenter.loadData(new ServiceCallBack<PostsModel>(PostsModel.class) {
-            @Override
-            public void onSuccess(PostsModel response) {
-                if(response != null){
-                    System.out.println("------------onSuccess-----------");
-                    System.out.println("Body : "+ response.getBody());
-                    System.out.println("Title : "+ response.getTitle());
-                    System.out.println("UserId : "+ response.getUserId());
-                    System.out.println("Id : "+ response.getId());
-                }
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
+//        presenter.loadData(new ServiceCallBack<PostsModel>(PostsModel.class) {
+//            @Override
+//            public void onSuccess(PostsModel response) {
+//                if(response != null){
+//                    System.out.println("------------onSuccess-----------");
+//                    System.out.println("Body : "+ response.getBody());
+//                    System.out.println("Title : "+ response.getTitle());
+//                    System.out.println("UserId : "+ response.getUserId());
+//                    System.out.println("Id : "+ response.getId());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(List<NetworkError> errorList) {
+//
+//            }
+//        });
 
     }
 }

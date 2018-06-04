@@ -1,9 +1,12 @@
 package careclues.careclueschat.network;
 
+import careclues.careclueschat.feature.login.model.LoginRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 //import rx.Observable;
 
 /**
@@ -12,11 +15,26 @@ import retrofit2.http.Path;
 
 public interface ApiInterface {
 
-    @GET("posts")
-    Call<ResponseBody> getRawPostsData();
+//    @GET("posts")
+//    Call<ResponseBody> getRawPostsData();
+//
+//    @GET("posts/{user}")
+//    Call<ResponseBody> getUserPosts(@Path("user") int user);
 
-    @GET("posts/{user}")
-    Call<ResponseBody> getUserPosts(@Path("user") int user);
+    @POST("login")
+    Call<ResponseBody> doLogin(@Body LoginRequest request);
+
+    @GET("rooms.get")
+    Call<ResponseBody> getRooms();
+
+    @GET("subscriptions.get")
+    Call<ResponseBody> getSubscription();
+
+    @GET("groups.members")
+    Call<ResponseBody> getRoomMembers(@Query("roomId") String roomId);
+
+    @GET("groups.history")
+    Call<ResponseBody> getChatHistory(@Query("roomId") String roomId,@Query("count") int count);
 
 
 

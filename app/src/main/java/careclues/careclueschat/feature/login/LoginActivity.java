@@ -2,24 +2,16 @@ package careclues.careclueschat.feature.login;
 
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
-
-import com.rocketchat.core.RocketChatClient;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import careclues.careclueschat.R;
-import careclues.careclueschat.application.CareCluesChatApplication;
-import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.common.BaseActivity;
-import careclues.careclueschat.feature.common.RocketChatBaseActivity;
 import careclues.careclueschat.feature.room.RoomActivity;
 import careclues.careclueschat.util.AppUtil;
 
@@ -64,7 +56,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
     @OnClick(R.id.btnLogin)
     void onloinButtonClick(){
         Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
-        presenter.doLogin(etUserName.getText().toString().trim(),etPassword.getText().toString().trim());
+        presenter.doLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
     }
 
     @Override

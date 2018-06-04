@@ -5,6 +5,10 @@ public class NetworkError {
     protected String errorCode;
     protected String errorMessage;
 
+    public NetworkError(String errorCode,String errorMessage){
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
     public String getErrorCode() {
         return this.errorCode;
     }

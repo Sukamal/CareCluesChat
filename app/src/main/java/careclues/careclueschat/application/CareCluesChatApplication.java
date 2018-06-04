@@ -1,16 +1,22 @@
 package careclues.careclueschat.application;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
 
 import com.rocketchat.common.network.ReconnectionStrategy;
 import com.rocketchat.common.utils.Logger;
 import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.RocketChatClient;
 
+import careclues.careclueschat.storage.database.ChatDatabase;
+import careclues.careclueschat.util.AppConstant;
+
 public class CareCluesChatApplication extends Application {
 
     private static String serverurl = "wss://ticklechat.careclues.com/websocket";
     private static String baseUrl = "https://ticklechat.careclues.com/api/v1/";
+
+    private ChatDatabase chatDatabase;
 
     private RocketChatClient client;
     public String token;
@@ -20,6 +26,7 @@ public class CareCluesChatApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        chatDatabase = Room.databaseBuilder(this,ChatDatabase.class, AppConstant.DATABASE_NAME).build();
 
         logger = new Logger() {
             @Override
@@ -58,5 +65,9 @@ public class CareCluesChatApplication extends Application {
 
     public String getToken() {
         return token;
+    }
+
+    public ChatDatabase getChatDatabase() {
+        return chatDatabase;
     }
 }

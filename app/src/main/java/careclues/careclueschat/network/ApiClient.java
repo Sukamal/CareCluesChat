@@ -12,15 +12,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ApiClient {
-    public static final String BASE_URL = "https://jsonplaceholder.typicode.com/";
+//    public static final String BASE_URL = "https://jsonplaceholder.typicode.com/";
+    public static final String BASE_URL = "https://ticklechat.careclues.com/api/v1/";
 
     public static Retrofit retrofit;
     private static Gson gson;
     private static OkHttpClient client;
 
-    public static Retrofit getClient(){
+    public static Retrofit getRetrofit(){
+
         client = new OkHttpClient.Builder()
                 .addInterceptor(new LoggingInterceptor())
+                .addInterceptor(new HeaderInterceptor())
                 .build();
 
         gson = new GsonBuilder()
