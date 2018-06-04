@@ -24,6 +24,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
     @BindView(R.id.btnLogin)
     AppCompatButton btnLogin;
 
+
     private LoginPresenter presenter;
 
     @Override
