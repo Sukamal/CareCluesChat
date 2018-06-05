@@ -1,6 +1,7 @@
 package careclues.careclueschat.feature.login;
 
 import android.app.Application;
+import android.os.Handler;
 import android.util.Log;
 
 import com.rocketchat.common.RocketChatApiException;
@@ -101,7 +102,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 //                System.out.println("Api Response : "+response.toString());
 //                System.out.println("LOGIN-START--------------------------------------- : ");
                 getRoom();
-//                getSubscription();
+                getSubscription();
             }
 
             @Override
@@ -232,7 +233,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
             }
         }
 
-//        insertRoomRecordIntoDb(roomEntities);
+        insertRoomRecordIntoDb(roomEntities);
         getRoomMemberMessageHistory();
     }
 
@@ -267,14 +268,14 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
     private void getRoomMemberMessageHistory(){
 
-        for(int i = 0; i < 5; i++){
-            getMessageHistory(roomEntities.get(i).roomId);
-        }
-
-//        for(RoomEntity roomEntity:roomEntities){
-////            getRoomMembers(roomEntity.roomId);
-//            getMessageHistory(roomEntity.roomId);
+//        for(int i = 0; i < 5; i++){
+//            getMessageHistory(roomEntities.get(i).roomId);
 //        }
+
+        for(RoomEntity roomEntity:roomEntities){
+            getRoomMembers(roomEntity.roomId);
+            getMessageHistory(roomEntity.roomId);
+        }
     }
 
     private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities){
@@ -359,6 +360,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
     private void filterMessageRecord(List<MessageModel> messageModels){
         List<MessageEntity> messageEntities = new ArrayList<>();
         for(MessageModel messageModel : messageModels){
+            System.out.println("filterMessageRecord : " +messageModel.rId);
             MessageEntity messageEntity = new MessageEntity();
 
             messageEntity.Id = messageModel.id;
@@ -382,15 +384,23 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
 
     private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities){
-
+        System.out.println("insertMessageRecordIntoDb : " +messageEntities.size());
         if(messageEntities != null ){
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try{
                         ((CareCluesChatApplication)application).getChatDatabase().messageDao().insertAll(messageEntities);
-                    }catch(Exception e){
 
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.displyNextScreen();
+                            }
+                        });
+
+                    }catch(Exception e){
+                        System.out.println("Errorrr !!!!!!! "+ e.toString());
                     }
 
                 }

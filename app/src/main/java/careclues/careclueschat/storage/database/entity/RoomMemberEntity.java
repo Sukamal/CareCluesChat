@@ -11,14 +11,14 @@ import com.google.gson.annotations.SerializedName;
  * Created by SukamalD on 6/3/2018.
  */
 
-@Entity(tableName = "roomMember")
+@Entity(tableName = "roomMember",primaryKeys={"id","rId"})
 public class RoomMemberEntity {
 
-    @PrimaryKey
     @ColumnInfo(name = "id")
     @NonNull
     public String Id;
 
+    @NonNull
     @ColumnInfo(name = "rId")
     public String rId;
 

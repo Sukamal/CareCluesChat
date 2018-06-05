@@ -58,19 +58,21 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
 
     @Override
     public void getRoom() {
-        chatClient.getSubscriptions(new SimpleListCallback<Subscription>() {
-            @Override
-            public void onSuccess(List<Subscription> list) {
-                chatClient.getChatRoomFactory().createChatRooms(list);
-                view.displyRoomList(list);
+//        chatClient.getSubscriptions(new SimpleListCallback<Subscription>() {
+//            @Override
+//            public void onSuccess(List<Subscription> list) {
+//                chatClient.getChatRoomFactory().createChatRooms(list);
+//                view.displyRoomList(list);
+//
+//            }
+//
+//            @Override
+//            public void onError(RocketChatException error) {
+//
+//            }
+//        });
 
-            }
 
-            @Override
-            public void onError(RocketChatException error) {
-
-            }
-        });
     }
 
     @Override

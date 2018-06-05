@@ -29,6 +29,9 @@ public interface SubscriptionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<SubscriptionEntity> entityList);
 
+    @Query("SELECT * FROM subscription LIMIT :startCount,:endCount")
+    List<SubscriptionEntity> getSubscripttion(int startCount, int endCount);
+
     @Update
     void update(SubscriptionEntity entity);
 

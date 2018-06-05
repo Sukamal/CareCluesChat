@@ -22,6 +22,9 @@ public class MessageModel extends BaseMessageModel{
 //    @SerializedName("attachments")
 //    public List<Object> attachments = null;
 
+    //    @SerializedName("channels")
+//    public List<Object> channels = null;
+
     @SerializedName("parseUrls")
     public Boolean parseUrls;
 

@@ -14,10 +14,10 @@ import java.util.List;
 
 public class BaseMessageModel {
 
-    @SerializedName("id")
+    @SerializedName("_id")
     public String id;
 
-    @SerializedName("rId")
+    @SerializedName("rid")
     public String rId;
 
     @SerializedName("msg")
@@ -29,7 +29,7 @@ public class BaseMessageModel {
     @SerializedName("u")
     public RoomUserModel user;
 
-    @SerializedName("updatedAt")
+    @SerializedName("_updatedAt")
     public String updatedAt;
 
     @SerializedName("t")
