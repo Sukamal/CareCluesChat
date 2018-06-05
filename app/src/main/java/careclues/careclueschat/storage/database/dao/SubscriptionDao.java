@@ -16,6 +16,7 @@ import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
  * Created by SukamalD on 6/3/2018.
  */
 
+//testcommit
 @Dao
 public interface SubscriptionDao {
 
