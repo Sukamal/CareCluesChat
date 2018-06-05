@@ -36,9 +36,9 @@ public class MessageEntity {
     @ColumnInfo(name = "ts")
     public String timeStamp;
 
-    @ColumnInfo(name = "user")
-    @TypeConverters(RoomUserTypeConverter.class)
-    public RoomUserModel user;
+//    @ColumnInfo(name = "user")
+//    @TypeConverters(RoomUserTypeConverter.class)
+//    public RoomUserModel user;
 
     @ColumnInfo(name = "updatedAt")
     public String updatedAt;
@@ -67,4 +67,25 @@ public class MessageEntity {
 
     @ColumnInfo(name = "meta")
     public String meta;
+
+    @Override
+    public String toString() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("\n\n---------------Message Start-------------------\n\n");
+        stringBuffer.append("\nid : "+Id);
+        stringBuffer.append("\nroomId : "+rId);
+        stringBuffer.append("\nmsg : "+msg);
+        stringBuffer.append("\ntimeStamp : "+timeStamp);
+//        stringBuffer.append("\nuser : "+user.toString());
+        stringBuffer.append("\nupdatedAt : "+updatedAt);
+        stringBuffer.append("\ntype : "+type);
+        stringBuffer.append("\nalias : "+alias);
+        stringBuffer.append("\ngroupable : "+groupable);
+//        stringBuffer.append("\nurls : "+urls);
+//        stringBuffer.append("\nmentions : "+mentions);
+        stringBuffer.append("\nparseUrls : "+parseUrls);
+        stringBuffer.append("\nmeta : "+meta);
+        stringBuffer.append("\n\n---------------Message End-------------------\n\n");
+        return stringBuffer.toString();
+    }
 }

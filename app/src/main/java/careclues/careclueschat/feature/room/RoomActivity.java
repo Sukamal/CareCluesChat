@@ -87,7 +87,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                roomAdapter = new RoomAdapter(list,RoomActivity.this);
+                roomAdapter = new RoomAdapter(list,RoomActivity.this,rvRoom);
                 rvRoom.setAdapter(roomAdapter);
             }
         });

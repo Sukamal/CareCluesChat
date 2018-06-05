@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.ChatActivity;
+import careclues.careclueschat.feature.common.OnLoadMoreListener;
 
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> {
@@ -30,12 +32,54 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
     private List<Subscription> roomObjects;
     private Context context;
+    private RecyclerView recyclerView;
+    private int visibleThreshold = 5;
+    private int lastVisibleItem, totalItemCount;
+    private boolean loading;
+    private OnLoadMoreListener loadMoreListener;
 
-    public RoomAdapter(List<Subscription> roomObjects, Context context) {
+    public RoomAdapter(List<Subscription> roomObjects, Context context,RecyclerView recyclerView) {
         this.roomObjects = roomObjects;
         this.context = context;
+        this.recyclerView = recyclerView;
+
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
+                .getLayoutManager();
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                totalItemCount = linearLayoutManager.getItemCount();
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!loading
+                        && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    // End has been reached Do something
+                    if (loadMoreListener != null) {
+                        loadMoreListener.onLoadMore();
+                    }
+                    loading = true;
+                }
+            }
+        });
     }
 
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        this.loadMoreListener = onLoadMoreListener;
+    }
+
+    public void setLoaded() {
+        loading = false;
+    }
+
+    public void addLoadData(List<Subscription> dataList){
+        if(roomObjects != null){
+            roomObjects.addAll(dataList);
+            this.notifyDataSetChanged();
+        }
+        setLoaded();
+    }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

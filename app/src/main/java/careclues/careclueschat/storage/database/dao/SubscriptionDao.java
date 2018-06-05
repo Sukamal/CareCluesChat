@@ -21,10 +21,10 @@ import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 public interface SubscriptionDao {
 
     @Query("SELECT * FROM subscription")
-    List<RoomEntity> getAll();
+    List<SubscriptionEntity> getAll();
 
     @Query("SELECT * FROM subscription WHERE id = :Id")
-    RoomEntity findById(String Id);
+    SubscriptionEntity findById(String Id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<SubscriptionEntity> entityList);

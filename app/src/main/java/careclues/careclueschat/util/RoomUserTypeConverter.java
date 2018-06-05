@@ -17,6 +17,7 @@ public class RoomUserTypeConverter {
 
     @TypeConverter
     public static List<RoomUserModel> stringToRoomUserModelList(String data) {
+        gson = new Gson();
         if (data == null) {
             return Collections.emptyList();
         }
@@ -28,11 +29,17 @@ public class RoomUserTypeConverter {
 
     @TypeConverter
     public static String roomUserModelListToString(List<RoomUserModel> someObjects) {
-        return gson.toJson(someObjects);
+        if(someObjects != null){
+            gson = new Gson();
+            return gson.toJson(someObjects);
+        }else{
+            return null;
+        }
     }
 
     @TypeConverter
     public static RoomUserModel stringToRoomUserModel(String data) {
+        gson = new Gson();
         if (data == null) {
             return null;
         }
@@ -44,6 +51,12 @@ public class RoomUserTypeConverter {
 
     @TypeConverter
     public static String roomUserModelToString(RoomUserModel someObjects) {
-        return gson.toJson(someObjects);
+        if(someObjects != null){
+            gson = new Gson();
+            return gson.toJson(someObjects);
+        }else{
+            return null;
+        }
+
     }
 }

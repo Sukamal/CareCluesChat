@@ -20,10 +20,10 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 public interface RoomMemberDao {
 
     @Query("SELECT * FROM roomMember")
-    List<RoomEntity> getAll();
+    List<RoomMemberEntity> getAll();
 
     @Query("SELECT * FROM roomMember WHERE id = :Id")
-    RoomEntity findById(String Id);
+    RoomMemberEntity findById(String Id);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<RoomMemberEntity> entityList);

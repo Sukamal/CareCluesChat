@@ -21,7 +21,12 @@ import careclues.careclueschat.util.RoomUserTypeConverter;
 
 @TypeConverters({RoomUserTypeConverter.class})
 @Database(version = AppConstant.DATABASE_VERSION,exportSchema = false,
-        entities = {RoomEntity.class, SubscriptionEntity.class, RoomMemberEntity.class, MessageEntity.class})
+        entities = {
+                RoomEntity.class,
+                SubscriptionEntity.class,
+                RoomMemberEntity.class,
+                MessageEntity.class
+        })
 public abstract class ChatDatabase extends RoomDatabase{
 
     public abstract RoomDao roomDao();

@@ -75,33 +75,33 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
     @Override
     public void doLogin(String userId,String password) {
-        if (chatClient.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
-            chatClient.login(userId, password, new LoginCallback() {
-                @Override
-                public void onLoginSuccess(Token token) {
-                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
-//                    view.displyNextScreen();
+//        if (chatClient.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
+//            chatClient.login(userId, password, new LoginCallback() {
+//                @Override
+//                public void onLoginSuccess(Token token) {
+//                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
+////                    view.displyNextScreen();
+//
+//                }
+//
+//                @Override
+//                public void onError(RocketChatException error) {
+//
+//                }
+//            });
+//        }else{
+////            view.onConnectionFaild(2);
+//        }
 
-                }
-
-                @Override
-                public void onError(RocketChatException error) {
-
-                }
-            });
-        }else{
-//            view.onConnectionFaild(2);
-        }
-
-
+        testGetMessageRecord();
         apiExecuter.doLogin(userId, password, new ServiceCallBack<LoginResponse>(LoginResponse.class) {
             @Override
             public void onSuccess(LoginResponse response) {
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(),response.getData().getAuthToken());
-                System.out.println("Api Response : "+response.toString());
-                System.out.println("LOGIN-START--------------------------------------- : ");
+//                System.out.println("Api Response : "+response.toString());
+//                System.out.println("LOGIN-START--------------------------------------- : ");
                 getRoom();
-                getSubscription();
+//                getSubscription();
             }
 
             @Override
@@ -179,7 +179,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         apiExecuter.getRooms(new ServiceCallBack<RoomResponse>(RoomResponse.class) {
             @Override
             public void onSuccess(RoomResponse response) {
-                System.out.println("Room Response: "+ response);
+//                System.out.println("Room Response: "+ response);
                 filterRoomRecords(response.getUpdate());
             }
 
@@ -194,7 +194,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         apiExecuter.getSubscription(new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
             @Override
             public void onSuccess(SubscriptionResponse response) {
-                System.out.println("Subscription Response: "+ response);
+//                System.out.println("Subscription Response: "+ response);
                 filterSubscriptionRecord(response.update);
             }
 
@@ -232,7 +232,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
             }
         }
 
-        insertRoomRecordIntoDb(roomEntities);
+//        insertRoomRecordIntoDb(roomEntities);
         getRoomMemberMessageHistory();
     }
 
@@ -266,10 +266,15 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
 
     private void getRoomMemberMessageHistory(){
-        for(RoomEntity roomEntity:roomEntities){
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
+
+        for(int i = 0; i < 5; i++){
+            getMessageHistory(roomEntities.get(i).roomId);
         }
+
+//        for(RoomEntity roomEntity:roomEntities){
+////            getRoomMembers(roomEntity.roomId);
+//            getMessageHistory(roomEntity.roomId);
+//        }
     }
 
     private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities){
@@ -297,7 +302,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
             @Override
             public void onSuccess(RoomMemberResponse response) {
-                System.out.println("RoomMember Response: "+ response.members.toString());
+//                System.out.println("RoomMember Response: "+ response.members.toString());
                 filterRoomMembersRecord(roomId,response.members);
             }
 
@@ -340,7 +345,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
-                System.out.println("RoomMember Response: "+ response.messages.toString());
+//                System.out.println("RoomMember Response: "+ response.messages.toString());
                 filterMessageRecord(response.messages);
             }
 
@@ -360,7 +365,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
             messageEntity.rId = messageModel.rId;
             messageEntity.msg = messageModel.msg;
             messageEntity.timeStamp = messageModel.timeStamp;
-            messageEntity.user = messageModel.user;
+//            messageEntity.user = messageModel.user;
             messageEntity.updatedAt = messageModel.updatedAt;
             messageEntity.type = messageModel.type;
             messageEntity.alias = messageModel.alias;
@@ -378,10 +383,30 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
     private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities){
 
+        if(messageEntities != null ){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        ((CareCluesChatApplication)application).getChatDatabase().messageDao().insertAll(messageEntities);
+                    }catch(Exception e){
+
+                    }
+
+                }
+            }).start();
+        }
+    }
+
+    private void testGetMessageRecord(){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().messageDao().insertAll(messageEntities);
+                List<MessageEntity> messageEntityList = ((CareCluesChatApplication)application).getChatDatabase().messageDao().getAll();
+
+                for(MessageEntity messageEntity : messageEntityList){
+                    System.out.println(" Message : " + messageEntity.toString());
+                }
             }
         }).start();
     }
