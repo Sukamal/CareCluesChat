@@ -27,6 +27,8 @@ import java.util.List;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.login.LoginContract;
+import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 
 public class RoomPresenter implements RoomContract.presenter,ConnectListener,
         AccountListener.getPermissionsListener,
@@ -40,6 +42,7 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
     private RoomContract.view view;
     private Application application;
     private RocketChatClient chatClient;
+    private List<SubscriptionEntity> list;
 
     public RoomPresenter(RoomContract.view view, Application application){
         this.view = view;
@@ -72,7 +75,32 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
 //            }
 //        });
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                list = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(0,10);
 
+                for(SubscriptionEntity entity : list){
+                    view.displyRoomList(list);
+                }
+            }
+        }).start();
+
+
+    }
+
+    @Override
+    public void getMoreRoom(final int startCount, final int threshold) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                list = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(startCount,threshold);
+
+                for(SubscriptionEntity entity : list){
+                    view.displyMoreRoomList(list);
+                }
+            }
+        }).start();
     }
 
     @Override

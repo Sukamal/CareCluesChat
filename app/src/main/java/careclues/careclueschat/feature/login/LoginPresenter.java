@@ -1,20 +1,15 @@
 package careclues.careclueschat.feature.login;
 
 import android.app.Application;
-import android.os.Handler;
-import android.util.Log;
 
 import com.rocketchat.common.RocketChatApiException;
-import com.rocketchat.common.RocketChatException;
 import com.rocketchat.common.data.model.User;
 import com.rocketchat.common.listener.ConnectListener;
 import com.rocketchat.common.listener.TypingListener;
-import com.rocketchat.common.network.Socket;
 import com.rocketchat.core.RocketChatClient;
 import com.rocketchat.core.callback.AccountListener;
 import com.rocketchat.core.callback.EmojiListener;
 import com.rocketchat.core.callback.GetSubscriptionListener;
-import com.rocketchat.core.callback.LoginCallback;
 import com.rocketchat.core.callback.MessageCallback;
 import com.rocketchat.core.callback.UserListener;
 import com.rocketchat.core.model.Emoji;
@@ -22,15 +17,14 @@ import com.rocketchat.core.model.Message;
 import com.rocketchat.core.model.Permission;
 import com.rocketchat.core.model.PublicSetting;
 import com.rocketchat.core.model.Subscription;
-import com.rocketchat.core.model.Token;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.login.model.LoginResponse;
-import careclues.careclueschat.feature.login.model.LoginRequest;
 import careclues.careclueschat.feature.room.RoomResponse;
 import careclues.careclueschat.model.BaseRoomModel;
 import careclues.careclueschat.model.MessageModel;
@@ -47,6 +41,7 @@ import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
+import careclues.careclueschat.util.ModelEntityTypeConverter;
 
 public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         AccountListener.getPermissionsListener,
@@ -175,6 +170,16 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
     }
 
+//-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
+
+    private List<String> roomIdList;
+    private List<String> roomIdMember;
+    private List<String> roomIdMessage;
+    private List<RoomEntity> roomEntities;
+    private List<SubscriptionEntity> subscriptionEntities;
+    private List<RoomMemberEntity> roomMemberEntities;
+    private List<MessageEntity> messageEntities;
+
 
     private void getRoom(){
         apiExecuter.getRooms(new ServiceCallBack<RoomResponse>(RoomResponse.class) {
@@ -206,9 +211,48 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         });
     }
 
-    private List<String> roomIdList;
-    private List<RoomEntity> roomEntities;
-    private List<SubscriptionEntity> subscriptionEntities;
+    private void getRoomMembers(final String roomId){
+        apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
+            @Override
+            public void onSuccess(RoomMemberResponse response) {
+//                System.out.println("RoomMember Response: "+ response.members.toString());
+                filterRoomMembersRecord(roomId,response.members);
+                roomIdMember.remove(roomId);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                roomIdMember.remove(roomId);
+            }
+        });
+    }
+
+    private void getMessageHistory(final String roomId){
+        apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+            @Override
+            public void onSuccess(MessageResponseModel response) {
+//                System.out.println("RoomMember Response: "+ response.messages.toString());
+                filterMessageRecord(response.messages);
+                roomIdMessage.remove(roomId);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                roomIdMessage.remove(roomId);
+            }
+        });
+    }
+
+
+    private void getRoomMemberMessageHistory(){
+
+        roomMemberEntities = new ArrayList<>();
+        messageEntities = new ArrayList<>();
+        for(RoomEntity roomEntity:roomEntities){
+            getRoomMembers(roomEntity.roomId);
+            getMessageHistory(roomEntity.roomId);
+        }
+    }
 
     private void filterRoomRecords(List<RoomModel> rooms){
 
@@ -233,6 +277,8 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
             }
         }
 
+        roomIdMember = roomIdList ;
+        roomIdMessage = roomIdList ;
         insertRoomRecordIntoDb(roomEntities);
         getRoomMemberMessageHistory();
     }
@@ -266,103 +312,29 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
     }
 
 
-    private void getRoomMemberMessageHistory(){
-
-//        for(int i = 0; i < 5; i++){
-//            getMessageHistory(roomEntities.get(i).roomId);
-//        }
-
-        for(RoomEntity roomEntity:roomEntities){
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
-        }
-    }
-
-    private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().roomDao().insertAll(roomEntities);
-            }
-        }).start();
-
-
-    }
-
-    private void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
-            }
-        }).start();
-    }
-
-    private void getRoomMembers(final String roomId){
-        apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
-            @Override
-            public void onSuccess(RoomMemberResponse response) {
-//                System.out.println("RoomMember Response: "+ response.members.toString());
-                filterRoomMembersRecord(roomId,response.members);
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
-    }
-
     private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
-        List<RoomMemberEntity> roomMemberEntities = new ArrayList<>();
         for(RoomMemberModel memberModel : memberModels){
-            RoomMemberEntity memberEntity = new RoomMemberEntity();
+            RoomMemberEntity memberEntity;
+            /*memberEntity = new RoomMemberEntity();
             memberEntity.rId = roomid;
             memberEntity.Id = memberModel.id;
             memberEntity.userName = memberModel.userName;
             memberEntity.name = memberModel.name;
             memberEntity.status = memberModel.status;
-            memberEntity.utcOffset = memberModel.utcOffset;
+            memberEntity.utcOffset = memberModel.utcOffset;*/
+
+            memberEntity = ModelEntityTypeConverter.modelToEntity(memberModel);
+            memberEntity.rId = roomid;
 
             roomMemberEntities.add(memberEntity);
         }
-
-        insertRoomMemberRecordIntoDb(roomMemberEntities);
-    }
-
-    private void insertRoomMemberRecordIntoDb(final List<RoomMemberEntity> roomMemberEntities){
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
-            }
-        }).start();
-    }
-
-
-    private void getMessageHistory(final String roomId){
-        apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
-            @Override
-            public void onSuccess(MessageResponseModel response) {
-//                System.out.println("RoomMember Response: "+ response.messages.toString());
-                filterMessageRecord(response.messages);
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
+        checkTaskComplete();
     }
 
     private void filterMessageRecord(List<MessageModel> messageModels){
-        List<MessageEntity> messageEntities = new ArrayList<>();
         for(MessageModel messageModel : messageModels){
             System.out.println("filterMessageRecord : " +messageModel.rId);
             MessageEntity messageEntity = new MessageEntity();
-
             messageEntity.Id = messageModel.id;
             messageEntity.rId = messageModel.rId;
             messageEntity.msg = messageModel.msg;
@@ -379,32 +351,61 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
             messageEntities.add(messageEntity);
         }
 
-        insertMessageRecordIntoDb(messageEntities);
+        checkTaskComplete();
+//        insertMessageRecordIntoDb(messageEntities);
     }
 
+    private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities){
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                ((CareCluesChatApplication)application).getChatDatabase().roomDao().insertAll(roomEntities);
+            }
+        });
+
+    }
+
+    private void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities){
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
+            }
+        });
+    }
+
+    private void insertRoomMemberRecordIntoDb(final List<RoomMemberEntity> roomMemberEntities){
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
+            }
+        });
+    }
 
     private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities){
         System.out.println("insertMessageRecordIntoDb : " +messageEntities.size());
-        if(messageEntities != null ){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try{
-                        ((CareCluesChatApplication)application).getChatDatabase().messageDao().insertAll(messageEntities);
 
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                view.displyNextScreen();
-                            }
-                        });
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                ((CareCluesChatApplication)application).getChatDatabase().messageDao().insertAll(messageEntities);
 
-                    }catch(Exception e){
-                        System.out.println("Errorrr !!!!!!! "+ e.toString());
-                    }
+            }
+        });
 
-                }
-            }).start();
+    }
+
+    private void checkTaskComplete(){
+        if(roomIdMember == null || roomIdMember.size() == 0 ){
+            if(roomIdMessage == null || roomIdMessage.size() == 0){
+                insertRoomMemberRecordIntoDb(roomMemberEntities);
+                insertMessageRecordIntoDb(messageEntities);
+                view.displyNextScreen();
+            }
         }
     }
 

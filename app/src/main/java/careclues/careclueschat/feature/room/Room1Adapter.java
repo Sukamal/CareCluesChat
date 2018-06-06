@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rocketchat.core.model.Subscription;
 
@@ -29,12 +30,12 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
     private List<SubscriptionEntity> roomObjects;
     private Context context;
     private RecyclerView recyclerView;
-    private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
+    public int visibleThreshold = 10;
+    public int lastVisibleItem, totalItemCount;
     private boolean loading;
     private OnLoadMoreListener loadMoreListener;
 
-    public Room1Adapter(List<SubscriptionEntity> roomObjects, Context context, RecyclerView recyclerView) {
+    public Room1Adapter(List<SubscriptionEntity> roomObjects, final Context context, RecyclerView recyclerView) {
         this.roomObjects = roomObjects;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -43,18 +44,21 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
                 .getLayoutManager();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (!loading
-                        && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                     // End has been reached Do something
-                    if (loadMoreListener != null) {
-                        loadMoreListener.onLoadMore();
-                    }
+//                    if (loadMoreListener != null) {
+//                        loadMoreListener.onLoadMore();
+//                    }
+
+                    Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
                     loading = true;
                 }
             }
@@ -72,7 +76,7 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
     public void addLoadData(List<SubscriptionEntity> dataList){
         if(roomObjects != null){
             roomObjects.addAll(dataList);
-            this.notifyDataSetChanged();
+//            this.notifyDataSetChanged();
         }
         setLoaded();
     }

@@ -15,6 +15,8 @@ import java.util.List;
 import butterknife.BindView;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.common.BaseActivity;
+import careclues.careclueschat.feature.common.OnLoadMoreListener;
+import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomActivity extends BaseActivity implements RoomContract.view{
@@ -26,6 +28,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     private LinearLayoutManager layoutManager;
     private RoomPresenter presenter;
     private RoomAdapter roomAdapter;
+    private Room1Adapter room1Adapter;
 
     @Override
     public int getContentLayout() {
@@ -83,15 +86,34 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void displyRoomList(final List<Subscription> list) {
+    public void displyRoomList(final List<SubscriptionEntity> list) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                roomAdapter = new RoomAdapter(list,RoomActivity.this,rvRoom);
-                rvRoom.setAdapter(roomAdapter);
+                room1Adapter = new Room1Adapter(list,RoomActivity.this,rvRoom);
+                rvRoom.setAdapter(room1Adapter);
+                room1Adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+                    @Override
+                    public void onLoadMore() {
+                        presenter.getMoreRoom(room1Adapter.lastVisibleItem, room1Adapter.visibleThreshold);
+                    }
+                });
             }
         });
 
+    }
+
+    @Override
+    public void displyMoreRoomList(List<SubscriptionEntity> list) {
+        room1Adapter.addLoadData(list);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                room1Adapter.notifyDataSetChanged();
+
+            }
+        });
     }
 
     @Override
