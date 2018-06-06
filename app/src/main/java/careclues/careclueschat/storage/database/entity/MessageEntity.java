@@ -36,9 +36,9 @@ public class MessageEntity {
     @ColumnInfo(name = "ts")
     public String timeStamp;
 
-//    @ColumnInfo(name = "user")
-//    @TypeConverters(RoomUserTypeConverter.class)
-//    public RoomUserModel user;
+    @ColumnInfo(name = "user")
+    @TypeConverters(RoomUserTypeConverter.class)
+    public RoomUserModel user;
 
     @ColumnInfo(name = "updatedAt")
     public String updatedAt;
@@ -55,9 +55,9 @@ public class MessageEntity {
 //    @ColumnInfo(name = "urls")
 //    public List<UrlModel> urls = null;
 
-//    @ColumnInfo(name = "mentions")
-//    @TypeConverters(RoomUserTypeConverter.class)
-//    public List<BaseUserModel> mentions;
+    @ColumnInfo(name = "mentions")
+    @TypeConverters(RoomUserTypeConverter.class)
+    public List<BaseUserModel> mentions;
 
 //    @ColumnInfo(name = "attachments")
 //    public List<Object> attachments = null;

@@ -3,9 +3,14 @@ package careclues.careclueschat.storage.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
+
+import careclues.careclueschat.model.BaseUserModel;
+import careclues.careclueschat.model.RoomUserModel;
+import careclues.careclueschat.util.RoomUserTypeConverter;
 
 /**
  * Created by SukamalD on 6/3/2018.
@@ -22,11 +27,15 @@ public class RoomEntity {
     @ColumnInfo(name = "type")
     public String type;
 
-    @ColumnInfo(name = "userId")
-    public String userId;
+    @TypeConverters(RoomUserTypeConverter.class)
+    @ColumnInfo(name = "user")
+    public RoomUserModel user;
 
-    @ColumnInfo(name = "userName")
-    public String userName;
+//    @ColumnInfo(name = "userId")
+//    public String userId;
+//
+//    @ColumnInfo(name = "userName")
+//    public String userName;
 
     @ColumnInfo(name = "roomName")
     public  String roomName;

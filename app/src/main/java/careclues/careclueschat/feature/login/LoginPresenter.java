@@ -6,6 +6,7 @@ import com.rocketchat.common.RocketChatApiException;
 import com.rocketchat.common.data.model.User;
 import com.rocketchat.common.listener.ConnectListener;
 import com.rocketchat.common.listener.TypingListener;
+import com.rocketchat.common.network.Socket;
 import com.rocketchat.core.RocketChatClient;
 import com.rocketchat.core.callback.AccountListener;
 import com.rocketchat.core.callback.EmojiListener;
@@ -43,14 +44,15 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 
-public class LoginPresenter implements LoginContract.presenter,ConnectListener,
+public class LoginPresenter implements LoginContract.presenter
+        /*,ConnectListener,
         AccountListener.getPermissionsListener,
         AccountListener.getPublicSettingsListener,
         EmojiListener,
         GetSubscriptionListener,
         UserListener.getUserRoleListener,
         MessageCallback.SubscriptionCallback,
-        TypingListener {
+        TypingListener */{
 
     private LoginContract.view view;
     private Application application;
@@ -63,9 +65,9 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
         apiExecuter = RestApiExecuter.getInstance();
 
-        chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
-        chatClient.setReconnectionStrategy(null);
-        chatClient.connect(this);
+//        chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
+//        chatClient.setReconnectionStrategy(null);
+//        chatClient.connect(this);
     }
 
 
@@ -89,7 +91,6 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 ////            view.onConnectionFaild(2);
 //        }
 
-        testGetMessageRecord();
         apiExecuter.doLogin(userId, password, new ServiceCallBack<LoginResponse>(LoginResponse.class) {
             @Override
             public void onSuccess(LoginResponse response) {
@@ -112,63 +113,63 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
     @Override
     public void reconnectToServer() {
-        chatClient.getWebsocketImpl().getSocket().reconnect();
+//        chatClient.getWebsocketImpl().getSocket().reconnect();
     }
 
     @Override
     public void disconnectToServer() {
-        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
+//        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
     }
 
-    @Override
-    public void onConnect(String sessionID) {
-        view.displayMessage(application.getString(R.string.connected));
-    }
-
-    @Override
-    public void onDisconnect(boolean closedByServer) {
-        view.onConnectionFaild(2);
-    }
-
-    @Override
-    public void onConnectError(Throwable websocketException) {
-        view.onConnectionFaild(1);
-    }
-
-    @Override
-    public void onTyping(String roomId, String user, Boolean istyping) {
-
-    }
-
-    @Override
-    public void onGetPermissions(List<Permission> permissions, RocketChatApiException error) {
-
-    }
-
-    @Override
-    public void onGetPublicSettings(List<PublicSetting> settings, RocketChatApiException error) {
-
-    }
-
-    @Override
-    public void onListCustomEmoji(List<Emoji> emojis, RocketChatApiException error) {
-
-    }
-
-    @Override
-    public void onGetSubscriptions(List<Subscription> subscriptions, RocketChatApiException error) {
-
-    }
-
-    @Override
-    public void onMessage(String roomId, Message message) {
-
-    }
-
-    @Override
-    public void onUserRoles(List<User> users, RocketChatApiException error) {
-
-    }
+//    @Override
+//    public void onConnect(String sessionID) {
+//        view.displayMessage(application.getString(R.string.connected));
+//    }
+//
+//    @Override
+//    public void onDisconnect(boolean closedByServer) {
+//        view.onConnectionFaild(2);
+//    }
+//
+//    @Override
+//    public void onConnectError(Throwable websocketException) {
+//        view.onConnectionFaild(1);
+//    }
+//
+//    @Override
+//    public void onTyping(String roomId, String user, Boolean istyping) {
+//
+//    }
+//
+//    @Override
+//    public void onGetPermissions(List<Permission> permissions, RocketChatApiException error) {
+//
+//    }
+//
+//    @Override
+//    public void onGetPublicSettings(List<PublicSetting> settings, RocketChatApiException error) {
+//
+//    }
+//
+//    @Override
+//    public void onListCustomEmoji(List<Emoji> emojis, RocketChatApiException error) {
+//
+//    }
+//
+//    @Override
+//    public void onGetSubscriptions(List<Subscription> subscriptions, RocketChatApiException error) {
+//
+//    }
+//
+//    @Override
+//    public void onMessage(String roomId, Message message) {
+//
+//    }
+//
+//    @Override
+//    public void onUserRoles(List<User> users, RocketChatApiException error) {
+//
+//    }
 
 //-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
 
@@ -260,18 +261,9 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         roomIdList = new ArrayList<>();
         for(RoomModel roomModel : rooms){
             if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
-                RoomEntity roomEntity = new RoomEntity();
-                roomEntity.roomId = roomModel.Id;
-                roomEntity.type = roomModel.type.name();
-                roomEntity.userId = roomModel.user.id;
-                roomEntity.userName = roomModel.user.userName;
-                roomEntity.roomName = roomModel.name;
-                roomEntity.roomFname = roomModel.fName;
-                roomEntity.topic = roomModel.topic;
-                roomEntity.updatedAt = roomModel.updatedAt;
-                roomEntity.description = roomModel.description;
-                roomEntity.readOnly = roomModel.readOnly;
 
+                RoomEntity roomEntity;
+                roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
                 roomEntities.add(roomEntity);
                 roomIdList.add(roomModel.Id);
             }
@@ -288,22 +280,8 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
         for(SubscriptionModel subscriptionModel : update){
             if( roomIdList.contains(subscriptionModel.rId)){
 
-                SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
-                subscriptionEntity.Id  = subscriptionModel.Id;
-                subscriptionEntity.type  = subscriptionModel.type.name();
-                subscriptionEntity.userId  = subscriptionModel.user.id;
-                subscriptionEntity.userName  = subscriptionModel.user.userName;
-                subscriptionEntity.name  = subscriptionModel.user.name;
-                subscriptionEntity.rId  = subscriptionModel.rId;
-                subscriptionEntity.timeStamp  = subscriptionModel.timeStamp;
-                subscriptionEntity.lastSeen  = subscriptionModel.lastSeen;
-                subscriptionEntity.open  = subscriptionModel.open;
-                subscriptionEntity.alert  = subscriptionModel.alert;
-                subscriptionEntity.updatedAt  = subscriptionModel.updatedAt;
-                subscriptionEntity.unread  = subscriptionModel.unread;
-                subscriptionEntity.userMentions  = subscriptionModel.userMentions;
-                subscriptionEntity.groupMentions  = subscriptionModel.groupMentions;
-
+                SubscriptionEntity subscriptionEntity ;
+                subscriptionEntity = ModelEntityTypeConverter.subscriptionModelToEntity(subscriptionModel);
                 subscriptionEntities.add(subscriptionEntity);
             }
         }
@@ -315,15 +293,7 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
     private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
         for(RoomMemberModel memberModel : memberModels){
             RoomMemberEntity memberEntity;
-            /*memberEntity = new RoomMemberEntity();
-            memberEntity.rId = roomid;
-            memberEntity.Id = memberModel.id;
-            memberEntity.userName = memberModel.userName;
-            memberEntity.name = memberModel.name;
-            memberEntity.status = memberModel.status;
-            memberEntity.utcOffset = memberModel.utcOffset;*/
-
-            memberEntity = ModelEntityTypeConverter.modelToEntity(memberModel);
+            memberEntity = ModelEntityTypeConverter.roomMemberToEntity(memberModel);
             memberEntity.rId = roomid;
 
             roomMemberEntities.add(memberEntity);
@@ -333,21 +303,8 @@ public class LoginPresenter implements LoginContract.presenter,ConnectListener,
 
     private void filterMessageRecord(List<MessageModel> messageModels){
         for(MessageModel messageModel : messageModels){
-            System.out.println("filterMessageRecord : " +messageModel.rId);
-            MessageEntity messageEntity = new MessageEntity();
-            messageEntity.Id = messageModel.id;
-            messageEntity.rId = messageModel.rId;
-            messageEntity.msg = messageModel.msg;
-            messageEntity.timeStamp = messageModel.timeStamp;
-//            messageEntity.user = messageModel.user;
-            messageEntity.updatedAt = messageModel.updatedAt;
-            messageEntity.type = messageModel.type;
-            messageEntity.alias = messageModel.alias;
-            messageEntity.groupable = messageModel.groupable;
-//            messageEntity.mentions = messageModel.mentions;
-            messageEntity.parseUrls = messageModel.parseUrls;
-            messageEntity.meta = messageModel.meta;
-
+            MessageEntity messageEntity;
+            messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
             messageEntities.add(messageEntity);
         }
 
