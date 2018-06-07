@@ -27,8 +27,14 @@ public interface ApiInterface {
     @GET("rooms.get")
     Call<ResponseBody> getRooms();
 
+    @GET("rooms.get")
+    Call<ResponseBody> getRooms(@Query("updatedSince") String updatedSince);
+
     @GET("subscriptions.get")
     Call<ResponseBody> getSubscription();
+
+    @GET("subscriptions.get")
+    Call<ResponseBody> getSubscription(@Query("updatedSince") String updatedSince);
 
     @GET("groups.members")
     Call<ResponseBody> getRoomMembers(@Query("roomId") String roomId);

@@ -91,13 +91,14 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.tvUserName.setText(roomObjects.get(position).userName);
-        holder.tvRoomId.setText(roomObjects.get(position).name);
+        holder.tvUserName.setText(roomObjects.get(position).user.userName);
+        holder.tvRoomId.setText(roomObjects.get(position).user.name);
         holder.tvStatus.setText(roomObjects.get(position).open?"Open":"Closed");
 //        holder.tvDate.setText(new Date(roomObjects.get(position).updatedAt()).toString());
 //        holder.tvTime.setText(new Date(roomObjects.get(position).updatedAt()).toString());
 
-//        holder.tvDate.setText(getTime(roomObjects.get(position).updatedAt));
+
+        holder.tvDate.setText((roomObjects.get(position).updatedAt != null)? roomObjects.get(position).updatedAt.toString():"");
 //        holder.tvTime.setText(getTime(roomObjects.get(position).updatedAt()));
 
 

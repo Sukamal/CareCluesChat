@@ -6,6 +6,7 @@ import com.rocketchat.common.data.model.User;
 import com.rocketchat.core.model.Url;
 import com.squareup.moshi.Json;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,13 +25,15 @@ public class BaseMessageModel {
     public String msg;
 
     @SerializedName("ts")
-    public String timeStamp;
+//    public String timeStamp;
+    public Date timeStamp;
 
     @SerializedName("u")
     public RoomUserModel user;
 
     @SerializedName("_updatedAt")
-    public String updatedAt;
+//    public String updatedAt;
+    public Date updatedAt;
 
     @SerializedName("t")
     public String type;

@@ -90,8 +90,18 @@ public class RestApiExecuter {
         execute(call,serviceCallBack);
     }
 
+    public <T> void getRooms(String updatedSince, final ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getRooms(updatedSince);
+        execute(call,serviceCallBack);
+    }
+
     public <T> void getSubscription(final ServiceCallBack<T> serviceCallBack) {
         Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getSubscription();
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void getSubscription(String updatedSince,final ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getSubscription(updatedSince);
         execute(call,serviceCallBack);
     }
 

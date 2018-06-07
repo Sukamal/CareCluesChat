@@ -1,28 +1,13 @@
 package careclues.careclueschat.feature.login;
 
 import android.app.Application;
+import android.util.Log;
 
-import com.rocketchat.common.RocketChatApiException;
-import com.rocketchat.common.data.model.User;
-import com.rocketchat.common.listener.ConnectListener;
-import com.rocketchat.common.listener.TypingListener;
-import com.rocketchat.common.network.Socket;
 import com.rocketchat.core.RocketChatClient;
-import com.rocketchat.core.callback.AccountListener;
-import com.rocketchat.core.callback.EmojiListener;
-import com.rocketchat.core.callback.GetSubscriptionListener;
-import com.rocketchat.core.callback.MessageCallback;
-import com.rocketchat.core.callback.UserListener;
-import com.rocketchat.core.model.Emoji;
-import com.rocketchat.core.model.Message;
-import com.rocketchat.core.model.Permission;
-import com.rocketchat.core.model.PublicSetting;
-import com.rocketchat.core.model.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.login.model.LoginResponse;
@@ -42,6 +27,9 @@ import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
+import careclues.careclueschat.storage.preference.AppPreference;
+import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 
 public class LoginPresenter implements LoginContract.presenter
@@ -58,10 +46,12 @@ public class LoginPresenter implements LoginContract.presenter
     private Application application;
     private RocketChatClient chatClient;
     private RestApiExecuter apiExecuter;
+    private AppPreference appPreference;
 
     public LoginPresenter(LoginContract.view view, Application application){
         this.view = view;
         this.application = application;
+        appPreference = ((CareCluesChatApplication) application).getAppPreference();
 
         apiExecuter = RestApiExecuter.getInstance();
 
@@ -183,33 +173,69 @@ public class LoginPresenter implements LoginContract.presenter
 
 
     private void getRoom(){
-        apiExecuter.getRooms(new ServiceCallBack<RoomResponse>(RoomResponse.class) {
-            @Override
-            public void onSuccess(RoomResponse response) {
+
+        if(appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()) == null){
+            apiExecuter.getRooms(new ServiceCallBack<RoomResponse>(RoomResponse.class) {
+                @Override
+                public void onSuccess(RoomResponse response) {
 //                System.out.println("Room Response: "+ response);
-                filterRoomRecords(response.getUpdate());
-            }
+                    filterRoomRecords(response.getUpdate());
+                }
 
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
 
-            }
-        });
+                }
+            });
+        }else{
+            apiExecuter.getRooms(appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()),
+                    new ServiceCallBack<RoomResponse>(RoomResponse.class) {
+                @Override
+                public void onSuccess(RoomResponse response) {
+//                System.out.println("Room Response: "+ response);
+                    filterRoomRecords(response.getUpdate());
+                }
+
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
+
+                }
+            });
+        }
+
+
     }
 
     private void getSubscription(){
-        apiExecuter.getSubscription(new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
-            @Override
-            public void onSuccess(SubscriptionResponse response) {
+        if(appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()) == null){
+            apiExecuter.getSubscription(new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
+                @Override
+                public void onSuccess(SubscriptionResponse response) {
 //                System.out.println("Subscription Response: "+ response);
-                filterSubscriptionRecord(response.update);
-            }
+                    filterSubscriptionRecord(response.update);
+                }
 
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
 
-            }
-        });
+                }
+            });
+        }else{
+            apiExecuter.getSubscription(appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()),
+                    new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
+                @Override
+                public void onSuccess(SubscriptionResponse response) {
+//                System.out.println("Subscription Response: "+ response);
+                    filterSubscriptionRecord(response.update);
+                }
+
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
+
+                }
+            });
+        }
+
     }
 
     private void getRoomMembers(final String roomId){
@@ -257,22 +283,27 @@ public class LoginPresenter implements LoginContract.presenter
 
     private void filterRoomRecords(List<RoomModel> rooms){
 
-        roomEntities = new ArrayList<>();
-        roomIdList = new ArrayList<>();
-        for(RoomModel roomModel : rooms){
-            if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
+        if(rooms != null && rooms.size() > 0){
+            roomEntities = new ArrayList<>();
+            roomIdList = new ArrayList<>();
+            for(RoomModel roomModel : rooms){
+                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
 
-                RoomEntity roomEntity;
-                roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
-                roomEntities.add(roomEntity);
-                roomIdList.add(roomModel.Id);
+                    RoomEntity roomEntity;
+                    roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
+                    roomEntities.add(roomEntity);
+                    roomIdList.add(roomModel.Id);
+                }
             }
+
+            roomIdMember = roomIdList ;
+            roomIdMessage = roomIdList ;
+            insertRoomRecordIntoDb(roomEntities);
+            getRoomMemberMessageHistory();
+        }else{
+            view.displyNextScreen();
         }
 
-        roomIdMember = roomIdList ;
-        roomIdMessage = roomIdList ;
-        insertRoomRecordIntoDb(roomEntities);
-        getRoomMemberMessageHistory();
     }
 
     private void filterSubscriptionRecord(List<SubscriptionModel> update){
@@ -312,23 +343,31 @@ public class LoginPresenter implements LoginContract.presenter
 //        insertMessageRecordIntoDb(messageEntities);
     }
 
-    private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities){
+    private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities) {
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().roomDao().insertAll(roomEntities);
+                try {
+                    ((CareCluesChatApplication) application).getChatDatabase().roomDao().insertAll(roomEntities);
+                } catch (Throwable e) {
+                    Log.e("DBERROR", e.getMessage());
+                }
             }
         });
 
     }
 
-    private void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities){
+    private void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities) {
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
+                try {
+                    ((CareCluesChatApplication) application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
+                } catch (Throwable e) {
+                    Log.e("DBERROR", e.getMessage());
+                }
             }
         });
     }
@@ -338,18 +377,27 @@ public class LoginPresenter implements LoginContract.presenter
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
+                try{
+                    ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
+
+                }catch (Throwable e){
+                    Log.e("DBERROR",e.getMessage());
+                }
             }
         });
     }
 
-    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities){
-        System.out.println("insertMessageRecordIntoDb : " +messageEntities.size());
+    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities) {
+        System.out.println("insertMessageRecordIntoDb : " + messageEntities.size());
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().messageDao().insertAll(messageEntities);
+                try {
+                    ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
+                } catch (Throwable e) {
+                    Log.e("DBERROR", e.toString());
+                }
 
             }
         });
@@ -359,6 +407,8 @@ public class LoginPresenter implements LoginContract.presenter
     private void checkTaskComplete(){
         if(roomIdMember == null || roomIdMember.size() == 0 ){
             if(roomIdMessage == null || roomIdMessage.size() == 0){
+                AppPreference appPreference = ((CareCluesChatApplication)application).getAppPreference();
+                appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), AppUtil.getCurrentUtcTime());
                 insertRoomMemberRecordIntoDb(roomMemberEntities);
                 insertMessageRecordIntoDb(messageEntities);
                 view.displyNextScreen();
@@ -378,6 +428,9 @@ public class LoginPresenter implements LoginContract.presenter
             }
         }).start();
     }
+
+
+
 
 
 }

@@ -72,9 +72,10 @@ public class ModelEntityTypeConverter {
 
         subscriptionEntity.Id  = data.Id;
         subscriptionEntity.type  = data.type.name();
-        subscriptionEntity.userId  = data.user.id;
+        subscriptionEntity.user  = data.user;
+        /*subscriptionEntity.userId  = data.user.id;
         subscriptionEntity.userName  = data.user.userName;
-        subscriptionEntity.name  = data.user.name;
+        subscriptionEntity.name  = data.user.name;*/
         subscriptionEntity.rId  = data.rId;
         subscriptionEntity.timeStamp  = data.timeStamp;
         subscriptionEntity.lastSeen  = data.lastSeen;
@@ -94,9 +95,10 @@ public class ModelEntityTypeConverter {
 
             model.Id  = data.Id;
             model.type  = BaseRoomModel.RoomType.valueOf(data.type);
-            model.user.id  = data.userId;
-            model.user.userName = data.userName;
-            model.user.name  = data.name;
+            model.user  = data.user;
+//            model.user.id  = data.userId;
+//            model.user.userName = data.userName;
+//            model.user.name  = data.name;
             model.rId  = data.rId;
             model.timeStamp  = data.timeStamp;
             model.lastSeen  = data.lastSeen;
@@ -189,5 +191,7 @@ public class ModelEntityTypeConverter {
         }
 
     }
+
+
 
 }

@@ -9,6 +9,7 @@ import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.RocketChatClient;
 
 import careclues.careclueschat.storage.database.ChatDatabase;
+import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
 
 public class CareCluesChatApplication extends Application {
@@ -17,14 +18,17 @@ public class CareCluesChatApplication extends Application {
     private static String baseUrl = "https://ticklechat.careclues.com/api/v1/";
 
     private ChatDatabase chatDatabase;
-
+    private AppPreference appPreference;
     private RocketChatClient client;
+
     public String token;
     private Logger logger;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        appPreference = new AppPreference(this);
 
         chatDatabase = Room.databaseBuilder(this,ChatDatabase.class, AppConstant.DATABASE_NAME).build();
 
@@ -53,6 +57,10 @@ public class CareCluesChatApplication extends Application {
         Utils.DOMAIN_NAME = "https://ticklechat.careclues.com";
         client.setReconnectionStrategy(new ReconnectionStrategy(20, 3000));
 
+    }
+
+    public AppPreference getAppPreference() {
+        return appPreference;
     }
 
     public RocketChatClient getRocketChatAPI() {

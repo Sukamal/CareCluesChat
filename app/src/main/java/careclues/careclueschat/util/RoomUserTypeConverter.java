@@ -6,7 +6,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.model.BaseUserModel;
@@ -80,6 +84,16 @@ public class RoomUserTypeConverter {
         }else{
             return null;
         }
-
     }
+
+    @TypeConverter
+    public static Date toDate(Long value) {
+        return value == null ? null : new Date(value);
+    }
+
+    @TypeConverter
+    public static Long toLong(Date value) {
+        return value == null ? null : value.getTime();
+    }
+
 }

@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+
+import java.util.Date;
+
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.util.RoomUserTypeConverter;
@@ -47,7 +50,8 @@ public class RoomEntity {
     public String topic;
 
     @ColumnInfo(name = "updatedAt")
-    public String updatedAt;
+//    public String updatedAt;
+    public Date updatedAt;
 
     @ColumnInfo(name = "description")
     public String description;

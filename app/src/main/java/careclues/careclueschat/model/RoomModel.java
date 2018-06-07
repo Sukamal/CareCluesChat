@@ -2,6 +2,7 @@ package careclues.careclueschat.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,7 +18,8 @@ public class RoomModel extends BaseRoomModel {
     public  List<String> mutedUsers;
 
     @SerializedName("_updatedAt")
-    public String updatedAt;
+//    public String updatedAt;
+    public Date updatedAt;
 
     @SerializedName("description")
     public String description;

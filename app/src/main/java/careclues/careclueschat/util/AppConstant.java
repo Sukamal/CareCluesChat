@@ -14,7 +14,8 @@ public class AppConstant {
 
     public enum Preferences {
         IS_LOADED,
-        LOOGED_IN_USER_ID
+        LOOGED_IN_USER_ID,
+        LAST_ROOM_UPDATED_ON
     }
 
     public enum ExtraTag {

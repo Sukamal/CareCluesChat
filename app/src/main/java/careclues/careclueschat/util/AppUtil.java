@@ -8,6 +8,13 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class AppUtil {
 
     public static void showToast(Context context, @StringRes int text, boolean isLong) {
@@ -26,6 +33,14 @@ public class AppUtil {
         TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.YELLOW);
         return snackbar;
+    }
+
+    public static String getCurrentUtcTime(){
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String dateTime = dateFormat.format(date);
+        return dateTime.replace("+0000","Z");
     }
 
 
