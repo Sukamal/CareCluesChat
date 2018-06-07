@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import careclues.careclueschat.feature.login.model.LoginRequest;
 import careclues.careclueschat.model.AuthToken;
+import careclues.careclueschat.model.CreateRoomRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -112,6 +113,12 @@ public class RestApiExecuter {
 
     public <T> void getChatMessage(String roomId,int count,final ServiceCallBack<T> serviceCallBack) {
         Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getChatHistory(roomId,count);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void createPrivateRoom(String name,String[] members,final ServiceCallBack<T> serviceCallBack) {
+        CreateRoomRequest roomRequest = new CreateRoomRequest(name,members);
+        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).createRoom(roomRequest);
         execute(call,serviceCallBack);
     }
 

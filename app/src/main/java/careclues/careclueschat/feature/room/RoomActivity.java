@@ -13,6 +13,7 @@ import com.rocketchat.core.model.Subscription;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
@@ -48,6 +49,11 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rvRoom.setLayoutManager(layoutManager);
 //        rvRoom.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    @OnClick(R.id.fab)
+    void createNewRoom(){
+        presenter.createNewRoom();
     }
 
     @Override

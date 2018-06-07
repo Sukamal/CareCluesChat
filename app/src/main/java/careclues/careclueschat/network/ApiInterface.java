@@ -1,6 +1,7 @@
 package careclues.careclueschat.network;
 
 import careclues.careclueschat.feature.login.model.LoginRequest;
+import careclues.careclueschat.model.CreateRoomRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -41,6 +42,9 @@ public interface ApiInterface {
 
     @GET("groups.history")
     Call<ResponseBody> getChatHistory(@Query("roomId") String roomId,@Query("count") int count);
+
+    @POST("groups.create")
+    Call<ResponseBody> createRoom(@Body CreateRoomRequest request);
 
 
 

@@ -23,10 +23,15 @@ import com.rocketchat.core.model.Subscription;
 import com.rocketchat.core.model.Token;
 
 import java.util.List;
+import java.util.Random;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.login.LoginContract;
+import careclues.careclueschat.model.GroupResponseModel;
+import careclues.careclueschat.network.NetworkError;
+import careclues.careclueschat.network.RestApiExecuter;
+import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 
@@ -43,10 +48,12 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
     private Application application;
     private RocketChatClient chatClient;
     private List<SubscriptionEntity> list;
+    private RestApiExecuter apiExecuter;
 
     public RoomPresenter(RoomContract.view view, Application application){
         this.view = view;
         this.application = application;
+        apiExecuter = RestApiExecuter.getInstance();
         registerConnectivity();
     }
 
@@ -111,6 +118,23 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
     @Override
     public void disconnectToServer() {
         chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
+    }
+
+    @Override
+    public void createNewRoom() {
+        String roomName = "SUKU-TEST-"+(System.currentTimeMillis()/1000);
+        String[] members = {"api_admin","bot-la2zewmltd"};
+        apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
+            @Override
+            public void onSuccess(GroupResponseModel response) {
+                System.out.println("New Room : "+ response.toString());
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
     }
 
     @Override

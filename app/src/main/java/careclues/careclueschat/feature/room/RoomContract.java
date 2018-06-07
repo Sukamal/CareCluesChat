@@ -23,5 +23,6 @@ public interface RoomContract {
         public void getMoreRoom(int startCount, int threshold);
         public void reconnectToServer();
         public void disconnectToServer();
+        public void createNewRoom();
     }
 }

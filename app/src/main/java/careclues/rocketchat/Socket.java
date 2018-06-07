@@ -55,7 +55,7 @@ public class Socket extends WebSocketListener {
         this(new OkHttpClient(), url,listener);
     }
 
-    protected void createSocket() {
+    public void createSocket() {
         // Create a WebSocket with a socket connection timeout value.
         request = new Request.Builder()
                 .url(url)
