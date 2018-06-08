@@ -37,8 +37,8 @@ public class SubscriptionEntity {
 //    @ColumnInfo(name = "userName")
 //    public String userName;
 //
-//    @ColumnInfo(name = "name")
-//    public  String name;
+    @ColumnInfo(name = "name")
+    public  String name;
 
     @ColumnInfo(name = "fName")
     public  String fName;

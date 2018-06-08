@@ -19,6 +19,7 @@ import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.ChatActivity;
+import careclues.careclueschat.feature.chat.TestChatACtivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 
@@ -52,7 +53,20 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
 
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+
+                System.out.println("totalItemCount : " + String.valueOf(totalItemCount)+"lastVisibleItem : "+ String.valueOf(lastVisibleItem));
+
+                /*if (!loading && totalItemCount == lastVisibleItem +1) {
+                    // End has been reached Do something
+                    if (loadMoreListener != null) {
+                        loadMoreListener.onLoadMore();
+                    }
+
+                    Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
+                    loading = true;
+                }*/
+
+                /*if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                     // End has been reached Do something
 //                    if (loadMoreListener != null) {
 //                        loadMoreListener.onLoadMore();
@@ -60,7 +74,7 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
 
                     Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
                     loading = true;
-                }
+                }*/
             }
         });
     }
@@ -92,7 +106,7 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.tvUserName.setText(roomObjects.get(position).user.userName);
-        holder.tvRoomId.setText(roomObjects.get(position).user.name);
+        holder.tvRoomId.setText(roomObjects.get(position).name);
         holder.tvStatus.setText(roomObjects.get(position).open?"Open":"Closed");
 //        holder.tvDate.setText(new Date(roomObjects.get(position).updatedAt()).toString());
 //        holder.tvTime.setText(new Date(roomObjects.get(position).updatedAt()).toString());
@@ -105,7 +119,7 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
         holder.roomItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ChatActivity.class);
+                Intent intent = new Intent(context, TestChatACtivity.class);
                 intent.putExtra("roomId",roomObjects.get(position).rId);
                 context.startActivity(intent);
             }

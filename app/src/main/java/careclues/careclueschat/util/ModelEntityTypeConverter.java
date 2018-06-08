@@ -74,8 +74,8 @@ public class ModelEntityTypeConverter {
         subscriptionEntity.type  = data.type.name();
         subscriptionEntity.user  = data.user;
         /*subscriptionEntity.userId  = data.user.id;
-        subscriptionEntity.userName  = data.user.userName;
-        subscriptionEntity.name  = data.user.name;*/
+        subscriptionEntity.userName  = data.user.userName;*/
+        subscriptionEntity.name  = data.name;
         subscriptionEntity.rId  = data.rId;
         subscriptionEntity.timeStamp  = data.timeStamp;
         subscriptionEntity.lastSeen  = data.lastSeen;
@@ -98,7 +98,7 @@ public class ModelEntityTypeConverter {
             model.user  = data.user;
 //            model.user.id  = data.userId;
 //            model.user.userName = data.userName;
-//            model.user.name  = data.name;
+            model.name  = data.name;
             model.rId  = data.rId;
             model.timeStamp  = data.timeStamp;
             model.lastSeen  = data.lastSeen;

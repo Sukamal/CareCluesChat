@@ -22,6 +22,7 @@ import com.rocketchat.core.model.PublicSetting;
 import com.rocketchat.core.model.Subscription;
 import com.rocketchat.core.model.Token;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -68,28 +69,32 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
 
     @Override
     public void getRoom() {
-//        chatClient.getSubscriptions(new SimpleListCallback<Subscription>() {
-//            @Override
-//            public void onSuccess(List<Subscription> list) {
-//                chatClient.getChatRoomFactory().createChatRooms(list);
-//                view.displyRoomList(list);
-//
-//            }
-//
-//            @Override
-//            public void onError(RocketChatException error) {
-//
-//            }
-//        });
+        /*chatClient.getSubscriptions(new SimpleListCallback<Subscription>() {
+            @Override
+            public void onSuccess(List<Subscription> list) {
+                chatClient.getChatRoomFactory().createChatRooms(list);
+                view.displyRoomList(list);
 
+            }
+
+            @Override
+            public void onError(RocketChatException error) {
+
+            }
+        });
+*/
         new Thread(new Runnable() {
             @Override
             public void run() {
-                list = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(0,10);
+                list = new ArrayList<>();
+                List<SubscriptionEntity> moreList;
+//                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(0,10);
+                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getAll();
 
-                for(SubscriptionEntity entity : list){
-                    view.displyRoomList(list);
+                if(moreList != null && moreList.size() > 0){
+                    list.addAll(moreList);
                 }
+                view.displyRoomList(list);
             }
         }).start();
 
@@ -101,11 +106,12 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
         new Thread(new Runnable() {
             @Override
             public void run() {
-                list = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(startCount,threshold);
-
-                for(SubscriptionEntity entity : list){
-                    view.displyMoreRoomList(list);
+                List<SubscriptionEntity> moreList;
+                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(startCount,threshold);
+                if(moreList != null && moreList.size() > 0){
+                    list.addAll(moreList);
                 }
+                view.displyRoomList(list);
             }
         }).start();
     }

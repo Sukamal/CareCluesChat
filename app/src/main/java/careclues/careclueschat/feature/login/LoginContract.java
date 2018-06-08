@@ -11,8 +11,8 @@ public interface LoginContract {
     }
 
     interface presenter {
-
         public void doLogin(String userId, String password);
+        public void doApiLogin(String userId, String password);
         public void reconnectToServer();
         public void disconnectToServer();
     }

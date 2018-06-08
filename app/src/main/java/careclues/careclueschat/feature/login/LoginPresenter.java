@@ -3,11 +3,30 @@ package careclues.careclueschat.feature.login;
 import android.app.Application;
 import android.util.Log;
 
+import com.rocketchat.common.RocketChatApiException;
+import com.rocketchat.common.RocketChatException;
+import com.rocketchat.common.data.model.User;
+import com.rocketchat.common.listener.ConnectListener;
+import com.rocketchat.common.listener.TypingListener;
+import com.rocketchat.common.network.Socket;
 import com.rocketchat.core.RocketChatClient;
+import com.rocketchat.core.callback.AccountListener;
+import com.rocketchat.core.callback.EmojiListener;
+import com.rocketchat.core.callback.GetSubscriptionListener;
+import com.rocketchat.core.callback.LoginCallback;
+import com.rocketchat.core.callback.MessageCallback;
+import com.rocketchat.core.callback.UserListener;
+import com.rocketchat.core.model.Emoji;
+import com.rocketchat.core.model.Message;
+import com.rocketchat.core.model.Permission;
+import com.rocketchat.core.model.PublicSetting;
+import com.rocketchat.core.model.Subscription;
+import com.rocketchat.core.model.Token;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.login.model.LoginResponse;
@@ -32,15 +51,16 @@ import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 
-public class LoginPresenter implements LoginContract.presenter
-        /*,ConnectListener,
+public class LoginPresenter implements
+        LoginContract.presenter,
+        ConnectListener,
         AccountListener.getPermissionsListener,
         AccountListener.getPublicSettingsListener,
         EmojiListener,
         GetSubscriptionListener,
         UserListener.getUserRoleListener,
         MessageCallback.SubscriptionCallback,
-        TypingListener */{
+        TypingListener {
 
     private LoginContract.view view;
     private Application application;
@@ -63,27 +83,106 @@ public class LoginPresenter implements LoginContract.presenter
 
     @Override
     public void doLogin(String userId,String password) {
-//        if (chatClient.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
-//            chatClient.login(userId, password, new LoginCallback() {
-//                @Override
-//                public void onLoginSuccess(Token token) {
-//                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
-////                    view.displyNextScreen();
-//
-//                }
-//
-//                @Override
-//                public void onError(RocketChatException error) {
-//
-//                }
-//            });
-//        }else{
-////            view.onConnectionFaild(2);
-//        }
+        if (chatClient.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
+            chatClient.login(userId, password, new LoginCallback() {
+                @Override
+                public void onLoginSuccess(Token token) {
+                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
+                    ((CareCluesChatApplication) application).setUserId(token.getUserId());
+//                    view.displyNextScreen();
 
+                }
+
+                @Override
+                public void onError(RocketChatException error) {
+
+                }
+            });
+        }else{
+//            view.onConnectionFaild(2);
+        }
+
+    }
+
+
+
+    @Override
+    public void reconnectToServer() {
+        chatClient.getWebsocketImpl().getSocket().reconnect();
+    }
+
+    @Override
+    public void disconnectToServer() {
+        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
+    }
+
+    @Override
+    public void onConnect(String sessionID) {
+        view.displayMessage(application.getString(R.string.connected));
+    }
+
+    @Override
+    public void onDisconnect(boolean closedByServer) {
+        view.onConnectionFaild(2);
+    }
+
+    @Override
+    public void onConnectError(Throwable websocketException) {
+        view.onConnectionFaild(1);
+    }
+
+    @Override
+    public void onTyping(String roomId, String user, Boolean istyping) {
+
+    }
+
+    @Override
+    public void onGetPermissions(List<Permission> permissions, RocketChatApiException error) {
+
+    }
+
+    @Override
+    public void onGetPublicSettings(List<PublicSetting> settings, RocketChatApiException error) {
+
+    }
+
+    @Override
+    public void onListCustomEmoji(List<Emoji> emojis, RocketChatApiException error) {
+
+    }
+
+    @Override
+    public void onGetSubscriptions(List<Subscription> subscriptions, RocketChatApiException error) {
+
+    }
+
+    @Override
+    public void onMessage(String roomId, Message message) {
+
+    }
+
+    @Override
+    public void onUserRoles(List<User> users, RocketChatApiException error) {
+
+    }
+
+//-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
+
+    private List<String> roomIdList;
+    private List<String> roomIdMember;
+    private List<String> roomIdMessage;
+    private List<RoomEntity> roomEntities;
+    private List<SubscriptionEntity> subscriptionEntities;
+    private List<RoomMemberEntity> roomMemberEntities;
+    private List<MessageEntity> messageEntities;
+
+
+    @Override
+    public void doApiLogin(String userId,String password){
         apiExecuter.doLogin(userId, password, new ServiceCallBack<LoginResponse>(LoginResponse.class) {
             @Override
             public void onSuccess(LoginResponse response) {
+                ((CareCluesChatApplication) application).setToken(response.getData().getAuthToken());
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(),response.getData().getAuthToken());
 //                System.out.println("Api Response : "+response.toString());
 //                System.out.println("LOGIN-START--------------------------------------- : ");
@@ -96,81 +195,7 @@ public class LoginPresenter implements LoginContract.presenter
 
             }
         });
-
     }
-
-
-
-    @Override
-    public void reconnectToServer() {
-//        chatClient.getWebsocketImpl().getSocket().reconnect();
-    }
-
-    @Override
-    public void disconnectToServer() {
-//        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
-    }
-
-//    @Override
-//    public void onConnect(String sessionID) {
-//        view.displayMessage(application.getString(R.string.connected));
-//    }
-//
-//    @Override
-//    public void onDisconnect(boolean closedByServer) {
-//        view.onConnectionFaild(2);
-//    }
-//
-//    @Override
-//    public void onConnectError(Throwable websocketException) {
-//        view.onConnectionFaild(1);
-//    }
-//
-//    @Override
-//    public void onTyping(String roomId, String user, Boolean istyping) {
-//
-//    }
-//
-//    @Override
-//    public void onGetPermissions(List<Permission> permissions, RocketChatApiException error) {
-//
-//    }
-//
-//    @Override
-//    public void onGetPublicSettings(List<PublicSetting> settings, RocketChatApiException error) {
-//
-//    }
-//
-//    @Override
-//    public void onListCustomEmoji(List<Emoji> emojis, RocketChatApiException error) {
-//
-//    }
-//
-//    @Override
-//    public void onGetSubscriptions(List<Subscription> subscriptions, RocketChatApiException error) {
-//
-//    }
-//
-//    @Override
-//    public void onMessage(String roomId, Message message) {
-//
-//    }
-//
-//    @Override
-//    public void onUserRoles(List<User> users, RocketChatApiException error) {
-//
-//    }
-
-//-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
-
-    private List<String> roomIdList;
-    private List<String> roomIdMember;
-    private List<String> roomIdMessage;
-    private List<RoomEntity> roomEntities;
-    private List<SubscriptionEntity> subscriptionEntities;
-    private List<RoomMemberEntity> roomMemberEntities;
-    private List<MessageEntity> messageEntities;
-
 
     private void getRoom(){
 
@@ -287,13 +312,13 @@ public class LoginPresenter implements LoginContract.presenter
             roomEntities = new ArrayList<>();
             roomIdList = new ArrayList<>();
             for(RoomModel roomModel : rooms){
-                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
+//                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
 
                     RoomEntity roomEntity;
                     roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
                     roomEntities.add(roomEntity);
                     roomIdList.add(roomModel.Id);
-                }
+//                }
             }
 
             roomIdMember = roomIdList ;

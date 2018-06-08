@@ -22,6 +22,7 @@ public class CareCluesChatApplication extends Application {
     private RocketChatClient client;
 
     public String token;
+    public String userId;
     private Logger logger;
 
     @Override
@@ -29,6 +30,7 @@ public class CareCluesChatApplication extends Application {
         super.onCreate();
 
         appPreference = new AppPreference(this);
+        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(),"2018-06-07T09:12:58.633Z");
 
         chatDatabase = Room.databaseBuilder(this,ChatDatabase.class, AppConstant.DATABASE_NAME).build();
 
@@ -73,6 +75,14 @@ public class CareCluesChatApplication extends Application {
 
     public String getToken() {
         return token;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public ChatDatabase getChatDatabase() {

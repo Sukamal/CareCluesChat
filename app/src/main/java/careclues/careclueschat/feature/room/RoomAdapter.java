@@ -23,6 +23,7 @@ import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.ChatActivity;
+import careclues.careclueschat.feature.chat.TestChatACtivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 
 
@@ -104,7 +105,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         holder.roomItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ChatActivity.class);
+                Intent intent = new Intent(context, TestChatACtivity.class);
                 intent.putExtra("roomId",roomObjects.get(position).roomId());
                 context.startActivity(intent);
             }
