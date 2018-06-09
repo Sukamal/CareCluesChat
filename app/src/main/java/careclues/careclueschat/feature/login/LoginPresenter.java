@@ -75,9 +75,9 @@ public class LoginPresenter implements
 
         apiExecuter = RestApiExecuter.getInstance();
 
-//        chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
-//        chatClient.setReconnectionStrategy(null);
-//        chatClient.connect(this);
+        chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
+        chatClient.setReconnectionStrategy(null);
+        chatClient.connect(this);
     }
 
 

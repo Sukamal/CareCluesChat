@@ -52,6 +52,7 @@ import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.util.AppUtil;
 
 public class TestChatACtivity extends AppCompatActivity implements
+
         ConnectListener,
         AccountListener.getPermissionsListener,
         AccountListener.getPublicSettingsListener,
@@ -93,7 +94,7 @@ public class TestChatACtivity extends AppCompatActivity implements
         roomId = getIntent().getStringExtra("roomId");
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         api = ((CareCluesChatApplication) getApplicationContext()).getRocketChatAPI();
-
+        api.getWebsocketImpl().getConnectivityManager().register(this);
         List<BaseRoom> rooms = new ArrayList<>();
         BaseRoom  baseRoom;
         baseRoom  = new BaseRoom() {
@@ -140,9 +141,9 @@ public class TestChatACtivity extends AppCompatActivity implements
         };
         rooms.add(baseRoom);
         api.getChatRoomFactory().createChatRooms(rooms);
-
-
-        api.getWebsocketImpl().getConnectivityManager().register(TestChatACtivity.this);
+        if (getCurrentUser() !=null) {
+            updateUserStatus(getCurrentUser().status().toString());
+        }
         api.getDbManager().getUserCollection().register(userId, new Collection.Observer<UserDocument>() {
             @Override
             public void onUpdate(Collection.Type type, UserDocument document) {
@@ -216,48 +217,74 @@ public class TestChatACtivity extends AppCompatActivity implements
 
     @Override
     public void onDisconnect(boolean closedByServer) {
-        if(chatRoom != null)
-            chatRoom.unSubscribeAllEvents();
-        AppUtil.getSnackbarWithAction(findViewById(R.id.chat_activity), R.string.disconnected_from_server)
-                .setAction("RETRY", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        api.getWebsocketImpl().getSocket().reconnect();
-                    }
-                })
-                .show();
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(chatRoom != null)
+                    chatRoom.unSubscribeAllEvents();
+                AppUtil.getSnackbarWithAction(findViewById(R.id.chat_activity), R.string.disconnected_from_server)
+                        .setAction("RETRY", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                api.getWebsocketImpl().getSocket().reconnect();
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
 
     @Override
     public void onConnectError(Throwable websocketException) {
-        if(chatRoom != null)
-            chatRoom.unSubscribeAllEvents();
-        AppUtil.getSnackbarWithAction(findViewById(R.id.chat_activity), R.string.connection_error)
-                .setAction("RETRY", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        api.getWebsocketImpl().getSocket().reconnect();
 
-                    }
-                })
-                .show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(chatRoom != null)
+                    chatRoom.unSubscribeAllEvents();
+                AppUtil.getSnackbarWithAction(findViewById(R.id.chat_activity), R.string.connection_error)
+                        .setAction("RETRY", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                api.getWebsocketImpl().getSocket().reconnect();
+
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
 
     @Override
-    public void onTyping(String roomId, String user, Boolean istyping) {
-        if (istyping) {
-            getSupportActionBar().setSubtitle(user + " is typing...");
-        } else {
-            if (getCurrentUser() != null) {
-                updateUserStatus(getCurrentUser().status().toString());
-            } else {
-                getSupportActionBar().setSubtitle("");
+    public void onTyping(final String roomId, final String user, final Boolean istyping) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (istyping) {
+                    getSupportActionBar().setSubtitle(user + " is typing...");
+                } else {
+                    if (getCurrentUser() != null) {
+                        updateUserStatus(getCurrentUser().status().toString());
+                    } else {
+                        getSupportActionBar().setSubtitle("");
+                    }
+                }
             }
-        }
+        });
+
     }
 
-    void updateUserStatus(String status) {
-        getSupportActionBar().setSubtitle(status.substring(0,1)+status.substring(1).toLowerCase());
+    void updateUserStatus(final String status) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getSupportActionBar().setSubtitle(status.substring(0,1)+status.substring(1).toLowerCase());
+
+            }
+        });
     }
 
     @Override
@@ -395,6 +422,7 @@ public class TestChatACtivity extends AppCompatActivity implements
     }
 
     private void initAdapter() {
+//        messagesAdapter = new MessagesListAdapter<>(RestApiExecuter.getInstance().getAuthToken().getUserId(), null);
         messagesAdapter = new MessagesListAdapter<>(api.getWebsocketImpl().getMyUserId(), null);
         messagesAdapter.enableSelectionMode(this);
         messagesAdapter.setLoadMoreListener(this);
@@ -419,37 +447,62 @@ public class TestChatACtivity extends AppCompatActivity implements
         };
     }
 
-    void updateMessage(ArrayList<Message> messages) {
-        messagesAdapter.addToEnd(messages, false);
+    void updateMessage(final ArrayList<Message> messages) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messagesAdapter.addToEnd(messages, false);
+
+            }
+        });
     }
 
-    public void onLoadHistory(List<com.rocketchat.core.model.Message> list, int unreadNotLoaded) {
-        if (list.size() > 0) {
-            lastTimestamp = new Date(list.get(list.size() - 1).timestamp());
-            final ArrayList<Message> messages = new ArrayList<>();
-            for (com.rocketchat.core.model.Message message : list) {
-                switch (message.getMsgType()) {
-                    case TEXT:
-                        messages.add(new Message(message.id(), new User(message.sender().id(), message.sender().username(), null, true), message.message(), new Date(message.timestamp())));
-                        break;
+    public void onLoadHistory(final List<com.rocketchat.core.model.Message> list, final int unreadNotLoaded) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (list.size() > 0) {
+                    lastTimestamp = new Date(list.get(list.size() - 1).timestamp());
+                    final ArrayList<Message> messages = new ArrayList<>();
+                    for (com.rocketchat.core.model.Message message : list) {
+                        switch (message.getMsgType()) {
+                            case TEXT:
+                                messages.add(new Message(message.id(), new User(message.sender().id(), message.sender().username(), null, true), message.message(), new Date(message.timestamp())));
+                                break;
+                        }
+                    }
+                    updateMessage(messages);
                 }
             }
-            updateMessage(messages);
-        }
+        });
+
     }
 
 
     @Override
-    public void onMessage(String roomId, com.rocketchat.core.model.Message message) {
-        messagesAdapter.addToStart(new Message(message.id(), new User(message.sender().id(), message.sender().username(), null, true), message.message(), new Date(message.timestamp())), true);
+    public void onMessage(final String roomId, final com.rocketchat.core.model.Message message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messagesAdapter.addToStart(new Message(message.id(), new User(message.sender().id(), message.sender().username(), null, true), message.message(), new Date(message.timestamp())), true);
+
+            }
+        });
 
     }
 
 
     void showConnectedSnackbar() {
-        Snackbar
-                .make(findViewById(R.id.chat_activity), R.string.connected, Snackbar.LENGTH_LONG)
-                .show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar
+                        .make(findViewById(R.id.chat_activity), R.string.connected, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
+
     }
 
     @Override

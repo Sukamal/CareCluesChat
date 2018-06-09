@@ -129,7 +129,7 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
     @Override
     public void createNewRoom() {
         String roomName = "SUKU-TEST-"+(System.currentTimeMillis()/1000);
-        String[] members = {"api_admin","bot-la2zewmltd"};
+        String[] members = {"api_admin","bot-la2zewmltd","sachu-985"};
         apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
             @Override
             public void onSuccess(GroupResponseModel response) {

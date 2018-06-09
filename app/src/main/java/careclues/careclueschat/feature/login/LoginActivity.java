@@ -57,33 +57,39 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
     @OnClick(R.id.btnLogin)
     void onloinButtonClick(){
         Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
-//        presenter.doLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
+        presenter.doLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
         presenter.doApiLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
 
     }
 
     @Override
-    public void onConnectionFaild(int errorType) {
+    public void onConnectionFaild(final int errorType) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(errorType == 1){
+                    AppUtil.getSnackbarWithAction(findViewById(R.id.rlActivityLogin), R.string.connection_error)
+                            .setAction("RETRY", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    presenter.reconnectToServer();
+                                }
+                            })
+                            .show();
+                }else if(errorType == 2){
+                    AppUtil.getSnackbarWithAction(findViewById(R.id.rlActivityLogin),  R.string.disconnected_from_server)
+                            .setAction("RETRY", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    presenter.reconnectToServer();
+                                }
+                            })
+                            .show();
+                }
+            }
+        });
 
-        if(errorType == 1){
-            AppUtil.getSnackbarWithAction(findViewById(R.id.rlActivityLogin), R.string.connection_error)
-                    .setAction("RETRY", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            presenter.reconnectToServer();
-                        }
-                    })
-                    .show();
-        }else if(errorType == 2){
-            AppUtil.getSnackbarWithAction(findViewById(R.id.rlActivityLogin),  R.string.disconnected_from_server)
-                    .setAction("RETRY", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            presenter.reconnectToServer();
-                        }
-                    })
-                    .show();
-        }
+
     }
 
     @Override
@@ -93,10 +99,18 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
     }
 
     @Override
-    public void displayMessage(String message) {
-        Snackbar
-                .make(findViewById(R.id.rlActivityLogin), message, Snackbar.LENGTH_LONG)
-                .show();
+    public void displayMessage(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar
+                        .make(findViewById(R.id.rlActivityLogin), message, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
+
+
+
     }
 
     @Override

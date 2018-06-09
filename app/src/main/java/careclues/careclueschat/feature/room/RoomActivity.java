@@ -69,26 +69,32 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
 
     @Override
-    public void onConnectionFaild(int errorType) {
-        if(errorType == 1){
-            AppUtil.getSnackbarWithAction(findViewById(R.id.activity_room), R.string.connection_error)
-                    .setAction("RETRY", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            presenter.reconnectToServer();
-                        }
-                    })
-                    .show();
-        }else if(errorType == 2){
-            AppUtil.getSnackbarWithAction(findViewById(R.id.activity_room),  R.string.disconnected_from_server)
-                    .setAction("RETRY", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            presenter.reconnectToServer();
-                        }
-                    })
-                    .show();
-        }
+    public void onConnectionFaild(final int errorType) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(errorType == 1){
+                    AppUtil.getSnackbarWithAction(findViewById(R.id.activity_room), R.string.connection_error)
+                            .setAction("RETRY", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    presenter.reconnectToServer();
+                                }
+                            })
+                            .show();
+                }else if(errorType == 2){
+                    AppUtil.getSnackbarWithAction(findViewById(R.id.activity_room),  R.string.disconnected_from_server)
+                            .setAction("RETRY", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    presenter.reconnectToServer();
+                                }
+                            })
+                            .show();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -128,10 +134,16 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void displayMessage(String message) {
-        Snackbar
-                .make(findViewById(R.id.activity_room), message, Snackbar.LENGTH_LONG)
-                .show();
+    public void displayMessage(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar
+                        .make(findViewById(R.id.activity_room), message, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
+
     }
 
     @Override
