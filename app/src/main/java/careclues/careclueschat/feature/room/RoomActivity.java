@@ -15,8 +15,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 import careclues.careclueschat.R;
+import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
+import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.util.AppUtil;
 
@@ -38,6 +40,15 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void initComponents() {
+
+        String apiuserId = RestApiExecuter.getInstance().getAuthToken().getUserId();
+        String apiTocken = RestApiExecuter.getInstance().getAuthToken().getToken();
+        String socuserId = ((CareCluesChatApplication)getApplicationContext()).getUserId();
+        String soctoken = ((CareCluesChatApplication)getApplicationContext()).getToken();
+
+        System.out.println("apiuserId : "+apiuserId+"  , apiTocken : " +apiTocken+"  , socuserId : "+socuserId+"  , soctoken : " +soctoken);
+
+
         presenter = new RoomPresenter(this,getApplication());
         initRecycleView();
 //        presenter.getRoom();

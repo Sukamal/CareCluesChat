@@ -16,6 +16,7 @@ import com.rocketchat.common.data.lightdb.document.UserDocument;
 import com.rocketchat.common.data.model.BaseRoom;
 import com.rocketchat.common.listener.ConnectListener;
 import com.rocketchat.common.listener.TypingListener;
+import com.rocketchat.common.network.Socket;
 import com.rocketchat.core.ChatRoom;
 import com.rocketchat.core.RocketChatClient;
 import com.rocketchat.core.callback.AccountListener;
@@ -94,7 +95,24 @@ public class TestChatACtivity extends AppCompatActivity implements
         roomId = getIntent().getStringExtra("roomId");
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         api = ((CareCluesChatApplication) getApplicationContext()).getRocketChatAPI();
-        api.getWebsocketImpl().getConnectivityManager().register(this);
+
+        //------- Connect with soccket if not done previouslu
+        // ------if connect to socket here then call init socket inside onLoginSuccess otherwise call it in onCreate
+//        api.setReconnectionStrategy(null);
+//        api.connect(this);
+
+        initSocketApis();
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_testchat);
+        ButterKnife.bind(this);
+
+        afterViewsSet();
+
+    }
+
+    private void initSocketApis(){
+        api.getWebsocketImpl().getConnectivityManager().register(TestChatACtivity.this);
         List<BaseRoom> rooms = new ArrayList<>();
         BaseRoom  baseRoom;
         baseRoom  = new BaseRoom() {
@@ -160,9 +178,6 @@ public class TestChatACtivity extends AppCompatActivity implements
                 }
             }
         });
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_testchat);
-        ButterKnife.bind(this);
 
         chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
         chatRoom.subscribeRoomMessageEvent(null, TestChatACtivity.this);
@@ -178,41 +193,63 @@ public class TestChatACtivity extends AppCompatActivity implements
 
             }
         });
-
-        afterViewsSet();
-
     }
 
     @Override
     public void onConnect(String sessionID) {
-        String token = ((CareCluesChatApplication)getApplicationContext()).getToken();
-        api.loginUsingToken(token, new LoginCallback() {
-            @Override
-            public void onLoginSuccess(Token token) {
-                chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
-                chatRoom.subscribeRoomMessageEvent(null, TestChatACtivity.this);
-                chatRoom.subscribeRoomTypingEvent(null, TestChatACtivity.this);
-                chatRoom.getChatHistory(50, lastTimestamp, null, new HistoryCallback() {
-                    @Override
-                    public void onLoadHistory(List<com.rocketchat.core.model.Message> list, int unreadNotLoaded) {
-                        TestChatACtivity.this.onLoadHistory(list, unreadNotLoaded);
-                    }
+//        String token = ((CareCluesChatApplication)getApplicationContext()).getToken();
+        String token = RestApiExecuter.getInstance().getAuthToken().getToken();
 
-                    @Override
-                    public void onError(RocketChatException error) {
+        if (api.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
+            api.loginUsingToken(token, new LoginCallback() {
+                @Override
+                public void onLoginSuccess(Token token) {
 
-                    }
-                });
 
-                afterViewsSet();
-            }
+                    chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
+                    chatRoom.subscribeRoomMessageEvent(null, TestChatACtivity.this);
+                    chatRoom.subscribeRoomTypingEvent(null, TestChatACtivity.this);
+                    chatRoom.getChatHistory(50, lastTimestamp, null, new HistoryCallback() {
+                        @Override
+                        public void onLoadHistory(List<com.rocketchat.core.model.Message> list, int unreadNotLoaded) {
+                            TestChatACtivity.this.onLoadHistory(list, unreadNotLoaded);
+                        }
 
-            @Override
-            public void onError(RocketChatException error) {
-                System.out.println("Connection Error : " + error.toString());
-            }
-        });
-        showConnectedSnackbar();
+                        @Override
+                        public void onError(RocketChatException error) {
+
+                        }
+                    });
+
+                    afterViewsSet();
+                }
+
+                @Override
+                public void onError(RocketChatException error) {
+                    System.out.println("Connection Error : " + error.toString());
+                }
+            });
+            showConnectedSnackbar();
+        }else{
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(chatRoom != null)
+                        chatRoom.unSubscribeAllEvents();
+                    AppUtil.getSnackbarWithAction(findViewById(R.id.chat_activity), R.string.connection_error)
+                            .setAction("RETRY", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    api.getWebsocketImpl().getSocket().reconnect();
+
+                                }
+                            })
+                            .show();
+                }
+            });
+        }
+
+
     }
 
     @Override
@@ -422,12 +459,19 @@ public class TestChatACtivity extends AppCompatActivity implements
     }
 
     private void initAdapter() {
-//        messagesAdapter = new MessagesListAdapter<>(RestApiExecuter.getInstance().getAuthToken().getUserId(), null);
-        messagesAdapter = new MessagesListAdapter<>(api.getWebsocketImpl().getMyUserId(), null);
-        messagesAdapter.enableSelectionMode(this);
-        messagesAdapter.setLoadMoreListener(this);
-        messagesAdapter.setDateHeadersFormatter(this);
-        messagesList.setAdapter(messagesAdapter);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //        messagesAdapter = new MessagesListAdapter<>(RestApiExecuter.getInstance().getAuthToken().getUserId(), null);
+                messagesAdapter = new MessagesListAdapter<>(api.getWebsocketImpl().getMyUserId(), null);
+                messagesAdapter.enableSelectionMode(TestChatACtivity.this);
+                messagesAdapter.setLoadMoreListener(TestChatACtivity.this);
+                messagesAdapter.setDateHeadersFormatter(TestChatACtivity.this);
+                messagesList.setAdapter(messagesAdapter);
+
+            }
+        });
+
     }
 
 

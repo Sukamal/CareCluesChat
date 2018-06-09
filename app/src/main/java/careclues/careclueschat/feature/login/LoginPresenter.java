@@ -182,7 +182,7 @@ public class LoginPresenter implements
         apiExecuter.doLogin(userId, password, new ServiceCallBack<LoginResponse>(LoginResponse.class) {
             @Override
             public void onSuccess(LoginResponse response) {
-                ((CareCluesChatApplication) application).setToken(response.getData().getAuthToken());
+//                ((CareCluesChatApplication) application).setToken(response.getData().getAuthToken());
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(),response.getData().getAuthToken());
 //                System.out.println("Api Response : "+response.toString());
 //                System.out.println("LOGIN-START--------------------------------------- : ");
