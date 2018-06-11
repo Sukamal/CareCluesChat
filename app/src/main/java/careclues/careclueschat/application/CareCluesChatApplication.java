@@ -30,7 +30,7 @@ public class CareCluesChatApplication extends Application {
         super.onCreate();
 
         appPreference = new AppPreference(this);
-        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(),"2018-06-07T09:12:58.633Z");
+        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(),"2018-01-01T09:12:58.633Z");
 
         chatDatabase = Room.databaseBuilder(this,ChatDatabase.class, AppConstant.DATABASE_NAME).build();
 
