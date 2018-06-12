@@ -1,8 +1,6 @@
 package careclues.rocketchat;
 
 import com.rocketchat.common.data.rpc.RPC;
-import com.rocketchat.common.utils.Logger;
-import com.rocketchat.common.utils.NoopLogger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +8,7 @@ import org.json.JSONObject;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import careclues.rocketchat.listner.SocketListener;
+import careclues.rocketchat.listner.CcSocketListener;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -18,8 +16,8 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-public class Socket extends WebSocketListener {
-    private SocketListener listener;
+public class CcSocket extends WebSocketListener {
+    private CcSocketListener listener;
     private Request request;
     private OkHttpClient client;
     private String url;
@@ -28,10 +26,10 @@ public class Socket extends WebSocketListener {
 
     private long pingInterval;
     private boolean pingEnable;
-    private TaskHandler pingHandler;
-    private TaskHandler timeoutHandler;
+    private CcTaskHandler pingHandler;
+    private CcTaskHandler timeoutHandler;
     private State currentState = State.DISCONNECTED;
-    private ReconnectionStrategy strategy;
+    private CcReconnectionStrategy strategy;
     private Timer timer;
     private boolean selfDisconnect;
 
@@ -44,14 +42,15 @@ public class Socket extends WebSocketListener {
         DISCONNECTED,
     }
 
-    public Socket(OkHttpClient client, String url, SocketListener socketListener) {
+    public CcSocket(OkHttpClient client, String url, CcSocketListener socketListener) {
 
         this.client = client;
         this.url = url;
         this.listener = socketListener;
+        createSocket();
     }
 
-    public Socket(String url, SocketListener listener) {
+    public CcSocket(String url, CcSocketListener listener) {
         this(new OkHttpClient(), url,listener);
     }
 
@@ -64,11 +63,11 @@ public class Socket extends WebSocketListener {
                 .addHeader("Pragma", "no-cache")
                 .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36")
                 .build();
-        setState(Socket.State.CREATED);
+        setState(CcSocket.State.CREATED);
     }
 
     public void connect() {
-        setState(Socket.State.CONNECTING);
+        setState(CcSocket.State.CONNECTING);
         ws = client.newWebSocket(request, this);
     }
 
@@ -124,17 +123,17 @@ public class Socket extends WebSocketListener {
         return pingEnable;
     }
 
-    private void setState(Socket.State state) {
+    private void setState(CcSocket.State state) {
         currentState = state;
     }
 
-    public Socket.State getState() {
+    public CcSocket.State getState() {
         return currentState;
     }
 
 
     public void sendData(String message) {
-        if (getState() == Socket.State.CONNECTED) {
+        if (getState() == CcSocket.State.CONNECTED) {
             ws.send(message);
         }
     }
@@ -188,6 +187,7 @@ public class Socket extends WebSocketListener {
         JSONObject message = null;
         try {
             message = new JSONObject(text);
+            System.out.println("------------------------------ "+message);
         } catch (JSONException e) {
             e.printStackTrace();
             return; // ignore non-json messages

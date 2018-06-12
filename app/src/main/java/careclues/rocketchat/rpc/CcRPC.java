@@ -1,10 +1,10 @@
-package careclues.rocketchat;
+package careclues.rocketchat.rpc;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RPC {
+public class CcRPC {
 
     //Currently Used
     private static final String TYPE_PING = "ping";
@@ -26,27 +26,27 @@ public class RPC {
     public static final String TYPE_SUB = "sub";
 
 
-    public static RPC.MsgType getMessageType(String s) {
+    public static CcRPC.MsgType getMessageType(String s) {
         if (s.equals(TYPE_PING)) {
-            return RPC.MsgType.PING;
+            return CcRPC.MsgType.PING;
         } else if (s.equals(TYPE_CONNECTED)) {
-            return RPC.MsgType.CONNECTED;
+            return CcRPC.MsgType.CONNECTED;
         } else if (s.equals(TYPE_ADDED)) {
-            return RPC.MsgType.ADDED;
+            return CcRPC.MsgType.ADDED;
         } else if (s.equals(TYPE_RESULT)) {
-            return RPC.MsgType.RESULT;
+            return CcRPC.MsgType.RESULT;
         } else if (s.equals(TYPE_READY)) {
-            return RPC.MsgType.READY;
+            return CcRPC.MsgType.READY;
         } else if (s.equals(TYPE_CHANGED)) {
-            return RPC.MsgType.CHANGED;
+            return CcRPC.MsgType.CHANGED;
         } else if (s.equals(TYPE_REMOVED)) {
-            return RPC.MsgType.REMOVED;
+            return CcRPC.MsgType.REMOVED;
         } else if (s.equals(TYPE_NOSUB)) {
-            return RPC.MsgType.NOSUB;
+            return CcRPC.MsgType.NOSUB;
         } else if (s.equals(TYPE_PONG)) {
-            return RPC.MsgType.PONG;
+            return CcRPC.MsgType.PONG;
         } else {
-            return RPC.MsgType.OTHER;
+            return CcRPC.MsgType.OTHER;
         }
     }
 

@@ -3,13 +3,13 @@ package careclues.rocketchat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TaskHandler {
+public class CcTaskHandler {
 
     private Timer timer;
     private TimerTask task;
     private Boolean isCancelled;
 
-    public TaskHandler() {
+    public CcTaskHandler() {
         timer = new Timer();
         isCancelled = false;
     }

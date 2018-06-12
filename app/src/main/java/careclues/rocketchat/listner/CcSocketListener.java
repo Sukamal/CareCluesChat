@@ -2,7 +2,7 @@ package careclues.rocketchat.listner;
 
 import org.json.JSONObject;
 
-public interface SocketListener {
+public interface CcSocketListener {
 
     void onConnected();
 

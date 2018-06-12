@@ -1,12 +1,12 @@
 package careclues.rocketchat;
 
-public class ReconnectionStrategy {
+public class CcReconnectionStrategy {
     private int MaxAttempts;
     private int numberOfAttempts;
     private int reconnectInterval;
     private int maxReconnectInterval = 30000;
 
-    public ReconnectionStrategy(int maxAttempts, int reconnectInterval) {
+    public CcReconnectionStrategy(int maxAttempts, int reconnectInterval) {
         MaxAttempts = maxAttempts;
         if (reconnectInterval < maxReconnectInterval) {
             this.reconnectInterval = reconnectInterval;

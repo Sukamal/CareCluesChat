@@ -1,6 +1,6 @@
 package careclues.rocketchat.listner;
 
-public interface ConnectListener {
+public interface CcConnectListener {
 
     void onConnect(String sessionID);
 
