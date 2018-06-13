@@ -21,14 +21,17 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.TestChatACtivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
+import careclues.careclueschat.model.RoomAdapterModel;
+import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
+import careclues.careclueschat.util.AppUtil;
 
 
 public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder> {
 
 
 
-    private List<SubscriptionEntity> roomObjects;
+    private List<RoomAdapterModel> roomObjects;
     private Context context;
     private RecyclerView recyclerView;
     public int visibleThreshold = 10;
@@ -36,7 +39,7 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
     private boolean loading;
     private OnLoadMoreListener loadMoreListener;
 
-    public Room1Adapter(List<SubscriptionEntity> roomObjects, final Context context, RecyclerView recyclerView) {
+    public Room1Adapter(List<RoomAdapterModel> roomObjects, final Context context, RecyclerView recyclerView) {
         this.roomObjects = roomObjects;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -87,7 +90,7 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
         loading = false;
     }
 
-    public void addLoadData(List<SubscriptionEntity> dataList){
+    public void addLoadData(List<RoomAdapterModel> dataList){
         if(roomObjects != null){
             roomObjects.addAll(dataList);
 //            this.notifyDataSetChanged();
@@ -105,22 +108,17 @@ public class Room1Adapter extends RecyclerView.Adapter<Room1Adapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.tvUserName.setText(roomObjects.get(position).user.userName);
-        holder.tvRoomId.setText(roomObjects.get(position).name);
-        holder.tvStatus.setText(roomObjects.get(position).open?"Open":"Closed");
-//        holder.tvDate.setText(new Date(roomObjects.get(position).updatedAt()).toString());
-//        holder.tvTime.setText(new Date(roomObjects.get(position).updatedAt()).toString());
+        holder.tvUserName.setText(roomObjects.get(position).name);
+        holder.tvRoomId.setText(roomObjects.get(position).description);
+        if(roomObjects.get(position).updatedAt != null){
+            holder.tvDate.setText(AppUtil.convertDateFromTs(roomObjects.get(position).updatedAt.getTime(),"yyyy-MM-dd"));
 
-
-        holder.tvDate.setText((roomObjects.get(position).updatedAt != null)? roomObjects.get(position).updatedAt.toString():"");
-//        holder.tvTime.setText(getTime(roomObjects.get(position).updatedAt()));
-
-
+        }
         holder.roomItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, TestChatACtivity.class);
-                intent.putExtra("roomId",roomObjects.get(position).rId);
+                intent.putExtra("roomId",roomObjects.get(position).Id);
                 context.startActivity(intent);
             }
         });

@@ -2,11 +2,13 @@ package careclues.rocketchat.listner;
 
 import org.json.JSONObject;
 
+import careclues.rocketchat.CcMessageType;
+
 public interface CcSocketListener {
 
     void onConnected();
 
-    void onMessageReceived(JSONObject message);
+    void onMessageReceived(CcMessageType type, String id, String message);
 
     void onClosing();
 

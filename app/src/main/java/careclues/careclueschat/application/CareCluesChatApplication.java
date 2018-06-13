@@ -11,6 +11,7 @@ import com.rocketchat.core.RocketChatClient;
 import careclues.careclueschat.storage.database.ChatDatabase;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
+import careclues.rocketchat.CcRocketChatClient;
 
 public class CareCluesChatApplication extends Application {
 
@@ -20,6 +21,9 @@ public class CareCluesChatApplication extends Application {
     private ChatDatabase chatDatabase;
     private AppPreference appPreference;
     private RocketChatClient client;
+
+//    private CcRocketChatClient chatClient;
+
 
     public String token;
     public String userId;
@@ -59,6 +63,10 @@ public class CareCluesChatApplication extends Application {
         Utils.DOMAIN_NAME = "https://ticklechat.careclues.com";
         client.setReconnectionStrategy(new ReconnectionStrategy(20, 3000));
 
+//        chatClient = new CcRocketChatClient.Builder()
+//                .websocketUrl(serverurl)
+//                .build();
+
     }
 
     public AppPreference getAppPreference() {
@@ -88,4 +96,8 @@ public class CareCluesChatApplication extends Application {
     public ChatDatabase getChatDatabase() {
         return chatDatabase;
     }
+
+//    public CcRocketChatClient getRocketChatClient() {
+//        return chatClient;
+//    }
 }

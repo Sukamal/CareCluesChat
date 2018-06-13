@@ -1,8 +1,6 @@
 package careclues.careclueschat.feature.login;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.rocketchat.common.RocketChatApiException;
@@ -35,7 +33,6 @@ import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.feature.room.RoomResponse;
-import careclues.careclueschat.model.BaseRoomModel;
 import careclues.careclueschat.model.MessageModel;
 import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomMemberModel;
@@ -54,9 +51,10 @@ import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
+import careclues.rocketchat.CcRocketChatClient;
 
 public class LoginPresenter implements
-        LoginContract.presenter,
+        LoginContract.presenter,/*CcConnectListener*/
         ConnectListener,
         AccountListener.getPermissionsListener,
         AccountListener.getPublicSettingsListener,
@@ -69,6 +67,7 @@ public class LoginPresenter implements
     private LoginContract.view view;
     private Application application;
     private RocketChatClient chatClient;
+//    private CcRocketChatClient chatClient;
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
 
@@ -78,7 +77,8 @@ public class LoginPresenter implements
         appPreference = ((CareCluesChatApplication) application).getAppPreference();
 
         apiExecuter = RestApiExecuter.getInstance();
-
+//        chatClient = ((CareCluesChatApplication) application).getRocketChatClient();
+//        chatClient.connect(this);
         chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
         chatClient.setReconnectionStrategy(null);
         chatClient.connect(this);
@@ -118,7 +118,7 @@ public class LoginPresenter implements
         chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
     }
 
-    @Override
+   @Override
     public void onConnect(String sessionID) {
         view.displayMessage(application.getString(R.string.connected));
     }
@@ -167,6 +167,21 @@ public class LoginPresenter implements
     public void onUserRoles(List<User> users, RocketChatApiException error) {
 
     }
+
+//    @Override
+//    public void onConnect(String sessionID) {
+//        view.displayMessage(application.getString(R.string.connected));
+//    }
+//
+//    @Override
+//    public void onDisconnect(boolean closedByServer) {
+//        view.onConnectionFaild(2);
+//    }
+//
+//    @Override
+//    public void onConnectError(Throwable websocketException) {
+//        view.onConnectionFaild(1);
+//    }
 
 //-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
 

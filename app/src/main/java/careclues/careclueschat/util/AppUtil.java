@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -42,6 +44,20 @@ public class AppUtil {
         String dateTime = dateFormat.format(date);
         return dateTime.replace("+0000","Z");
     }
+
+    public static String convertDateFromTs(long timestamp,String pattern){
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        Calendar calendar = Calendar.getInstance(tz);
+        calendar.setTimeInMillis(timestamp);
+
+        // Quoted "Z" to indicate UTC, no timezone offset
+//        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        DateFormat df = new SimpleDateFormat(pattern);
+        df.setTimeZone(tz);
+
+        return df.format(calendar.getTime());
+    }
+
 
 
 }

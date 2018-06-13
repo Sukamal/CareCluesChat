@@ -1,6 +1,8 @@
 package careclues.rocketchat;
 
 
+import com.google.gson.Gson;
+
 import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,7 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
+import careclues.rocketchat.models.CcConnectedMessage;
 import careclues.rocketchat.rpc.CcBasicRpc;
+import careclues.rocketchat.rpc.CcRPC;
 import okhttp3.OkHttpClient;
 
 public class CcWebsocketImpl implements CcSocketListener {
@@ -18,18 +22,21 @@ public class CcWebsocketImpl implements CcSocketListener {
     private CcSocketFactory factory;
     private String baseUrl;
     private AtomicInteger integer;
+    private CcConnectivityManager connectivityManager;
 
 
-    CcWebsocketImpl(OkHttpClient client, CcSocketFactory factory, String baseUrl) {
+    CcWebsocketImpl(OkHttpClient client, CcSocketFactory factory, String baseUrl,CcConnectivityManager connectivityManager) {
         this.client = client;
         this.factory = factory;
         this.baseUrl = baseUrl;
         this.socket = factory.create(client, baseUrl, this);
+        this.connectivityManager = connectivityManager;
         integer = new AtomicInteger(1);
 
     }
 
-    void connect() {
+    void connect(CcConnectListener listener) {
+        connectivityManager.register(listener);
         socket.connect();
     }
 
@@ -49,10 +56,43 @@ public class CcWebsocketImpl implements CcSocketListener {
     }
 
     @Override
-    public void onMessageReceived(JSONObject message) {
-        System.out.println("RocketChatAPI onMessageReceived");
-
+    public void onMessageReceived(CcMessageType type, String id, String message) {
+        switch (type) {
+            case CONNECTED:
+                processOnConnected(message);
+                break;
+            case PING:
+                socket.sendData(CcRPC.PONG_MESSAGE);
+                break;
+            case RESULT:
+                break;
+            case READY:
+                break;
+            case ADDED:
+                break;
+            case CHANGED:
+                break;
+            case REMOVED:
+                break;
+            case UNSUBSCRIBED:
+                break;
+        }
     }
+
+    private String sessionId;
+    private void processOnConnected(String message) {
+
+        Gson gson = new Gson();
+        sessionId = gson.fromJson(message,CcConnectedMessage.class).session;
+        connectivityManager.publishConnect(sessionId);
+    }
+
+
+//    @Override
+//    public void onMessageReceived(JSONObject message) {
+//        System.out.println("RocketChatAPI onMessageReceived");
+//
+//    }
 
     @Override
     public void onClosing() {

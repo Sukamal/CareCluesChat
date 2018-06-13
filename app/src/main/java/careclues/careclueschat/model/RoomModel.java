@@ -27,6 +27,7 @@ public class RoomModel extends BaseRoomModel {
     @SerializedName("ro")
     public Boolean readOnly;
 
+
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();

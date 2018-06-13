@@ -1,6 +1,8 @@
 package careclues.rocketchat;
 
+import com.google.gson.Gson;
 import com.rocketchat.common.data.rpc.RPC;
+import com.rocketchat.common.network.TaskHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import careclues.rocketchat.listner.CcSocketListener;
+import careclues.rocketchat.models.CcSocketMessage;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -47,6 +50,8 @@ public class CcSocket extends WebSocketListener {
         this.client = client;
         this.url = url;
         this.listener = socketListener;
+        pingHandler = new CcTaskHandler();
+        timeoutHandler = new CcTaskHandler();
         createSocket();
     }
 
@@ -69,6 +74,7 @@ public class CcSocket extends WebSocketListener {
     public void connect() {
         setState(CcSocket.State.CONNECTING);
         ws = client.newWebSocket(request, this);
+        listener.onConnected();
     }
 
     protected void connectAsync() {
@@ -193,6 +199,10 @@ public class CcSocket extends WebSocketListener {
             return; // ignore non-json messages
         }
 
+        CcSocketMessage socketMessage;
+        Gson gson = new Gson();
+        socketMessage = gson.fromJson(text,CcSocketMessage.class);
+
         // Valid message - reschedule next ping
         reschedulePing();
 
@@ -201,7 +211,7 @@ public class CcSocket extends WebSocketListener {
         if (messageType == RPC.MsgType.PING) {
             sendData(RPC.PONG_MESSAGE);
         } else {
-            listener.onMessageReceived(message);
+            listener.onMessageReceived(socketMessage.messageType,socketMessage.id,text);
         }
     }
 

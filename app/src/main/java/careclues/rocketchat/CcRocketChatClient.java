@@ -1,6 +1,7 @@
 package careclues.rocketchat;
 
 
+import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
 import okhttp3.OkHttpClient;
@@ -13,6 +14,7 @@ public class CcRocketChatClient {
     public CcSocketFactory factory;
     public String socketUrl = "wss://ticklechat.careclues.com/websocket";
     public CcWebsocketImpl websocketImpl;
+    public CcConnectivityManager connectivityManager;
 
 
     private CcRocketChatClient(final Builder builder){
@@ -37,8 +39,8 @@ public class CcRocketChatClient {
         }else{
             factory = builder.factory;
         }
-        websocketImpl = new CcWebsocketImpl(client,factory,socketUrl);
-        websocketImpl.connect();
+        connectivityManager = new CcConnectivityManager();
+        websocketImpl = new CcWebsocketImpl(client,factory,socketUrl,connectivityManager);
     }
 
     public static final class Builder {
@@ -69,6 +71,14 @@ public class CcRocketChatClient {
 
     public CcWebsocketImpl getWebsocketImpl() {
         return websocketImpl;
+    }
+
+    public void connect(CcConnectListener listener) {
+        websocketImpl.connect(listener);
+    }
+
+    public void disconnect() {
+        websocketImpl.disconnect();
     }
 
     public void login(String username, String password){

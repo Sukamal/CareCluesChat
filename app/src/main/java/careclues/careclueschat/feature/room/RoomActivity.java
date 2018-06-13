@@ -18,6 +18,8 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
+import careclues.careclueschat.model.RoomAdapterModel;
+import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.util.AppUtil;
@@ -109,7 +111,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void displyRoomList(final List<SubscriptionEntity> list) {
+    public void displyRoomList(final List<RoomAdapterModel> list) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -127,7 +129,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void displyMoreRoomList(List<SubscriptionEntity> list) {
+    public void displyMoreRoomList(List<RoomAdapterModel> list) {
         room1Adapter.addLoadData(list);
 
         runOnUiThread(new Runnable() {

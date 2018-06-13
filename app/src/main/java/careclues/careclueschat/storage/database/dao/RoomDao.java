@@ -10,6 +10,7 @@ import android.arch.persistence.room.Update;
 import java.util.List;
 
 import careclues.careclueschat.storage.database.entity.RoomEntity;
+import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 
 /**
  * Created by SukamalD on 6/3/2018.
@@ -23,6 +24,9 @@ public interface RoomDao {
 
     @Query("SELECT * FROM room WHERE id = :Id")
     RoomEntity findById(String Id);
+
+    @Query("SELECT * FROM room LIMIT :startCount,:endCount")
+    List<RoomEntity> getRoom(int startCount, int endCount);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<RoomEntity> entityList);

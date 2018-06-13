@@ -7,7 +7,6 @@ import com.rocketchat.common.RocketChatApiException;
 import com.rocketchat.common.RocketChatException;
 import com.rocketchat.common.data.model.User;
 import com.rocketchat.common.listener.ConnectListener;
-import com.rocketchat.common.listener.SimpleListCallback;
 import com.rocketchat.common.listener.TypingListener;
 import com.rocketchat.core.RocketChatClient;
 import com.rocketchat.core.callback.AccountListener;
@@ -25,14 +24,13 @@ import com.rocketchat.core.model.Token;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.logging.Handler;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
-import careclues.careclueschat.feature.login.LoginContract;
 import careclues.careclueschat.model.GroupResponseModel;
+import careclues.careclueschat.model.RoomAdapterModel;
+import careclues.careclueschat.model.RoomMemberModel;
 import careclues.careclueschat.model.RoomModel;
 import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.model.SubscriptionResponse;
@@ -59,7 +57,8 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
     private RoomContract.view view;
     private Application application;
     private RocketChatClient chatClient;
-    private List<SubscriptionEntity> list;
+    private List<RoomEntity> list;
+    private List<RoomAdapterModel> modelList;
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
 
@@ -97,37 +96,79 @@ public class RoomPresenter implements RoomContract.presenter,ConnectListener,
             }
         });
 */
+        modelList = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 list = new ArrayList<>();
-                List<SubscriptionEntity> moreList;
+                List<RoomEntity> moreList;
 //                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(0,10);
-                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getAll();
+                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getAll();
 
                 if(moreList != null && moreList.size() > 0){
                     list.addAll(moreList);
                 }
-                view.displyRoomList(list);
+                populateAdapterData(moreList);
+                view.displyRoomList(modelList);
             }
         }).start();
 
+    }
+
+    RoomAdapterModel adapterModel = new RoomAdapterModel();
+    private void populateAdapterData(List<RoomEntity> subscriptions){
+
+        if(subscriptions != null){
+            for(final RoomEntity entity : subscriptions){
+
+                ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            adapterModel.Id = entity.roomId;
+                            adapterModel.description = entity.description;
+                            List<RoomMemberEntity> memberEntities = ((CareCluesChatApplication) application).getChatDatabase().roomMemberDao().findByRoomId(entity.roomId);
+                            List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getUpdatedMessage(entity.roomId,1);
+
+                            if(messageEntities != null ){
+                                adapterModel.updatedAt = messageEntities.get(0).updatedAt;
+                            }
+
+                            for(RoomMemberEntity memberEntity : memberEntities ){
+                                RoomMemberModel memberModel = ModelEntityTypeConverter.roomMemberEntityToModel(memberEntity);
+                                if(memberEntity.userName.equalsIgnoreCase("api_admin")||memberEntity.userName.equalsIgnoreCase("bot-la2zewmltd")||memberEntity.userName.equalsIgnoreCase("sachu-985")){
+                                    adapterModel.name = "New-Consultant";
+                                }else{
+                                    adapterModel.name = memberEntity.name;
+                                    break;
+                                }
+                                modelList.add(adapterModel);
+                            }
+                        } catch (Throwable e) {
+
+                        }
+                    }
+                });
+
+            }
+        }
 
     }
 
     @Override
     public void getMoreRoom(final int startCount, final int threshold) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<SubscriptionEntity> moreList;
-                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(startCount,threshold);
-                if(moreList != null && moreList.size() > 0){
-                    list.addAll(moreList);
-                }
-                view.displyRoomList(list);
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                List<RoomEntity> moreList;
+//                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getRoom(startCount,threshold);
+//                if(moreList != null && moreList.size() > 0){
+//                    list.addAll(moreList);
+//                }
+//                populateAdapterData(moreList);
+//                view.displyRoomList(modelList);
+//            }
+//        }).start();
     }
 
     @Override
