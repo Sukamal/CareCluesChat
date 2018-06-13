@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="250dp">
+
+
+    <TextView
+        android:id="@+id/TV_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Error"
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/margin_10"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_size_heading"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:drawablePadding="@dimen/margin_10"/>
+
+    <LinearLayout
+        android:id="@+id/LL_bottom_sec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:id="@+id/TV_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textSize="@dimen/text_size_normal"
+            android:text="Cancel"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="@dimen/margin_10"
+            android:layout_marginRight="2dp"
+            android:background="@color/colorAccent"
+            android:visibility="visible"/>
+        <TextView
+            android:id="@+id/TV_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:textSize="@dimen/text_size_normal"
+            android:text="Ok"
+            android:textColor="@color/colorPrimary"
+            android:background="@color/colorAccent"
+            android:padding="@dimen/margin_10"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/margin_10"
+        android:layout_below="@id/TV_title"
+        android:layout_above="@id/LL_bottom_sec"
+        android:background="#99000000">
+
+        <TextView
+            android:id="@+id/TV_errors"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size_normal"
+            android:text="Some Error Message"/>
+    </ScrollView>
+
+
+
+
+
+</RelativeLayout>

@@ -1,14 +1,9 @@
 package careclues.careclueschat.feature.room;
 
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-
-import com.rocketchat.core.model.Subscription;
 
 import java.util.List;
 
@@ -19,9 +14,7 @@ import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
-import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.network.RestApiExecuter;
-import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomActivity extends BaseActivity implements RoomContract.view{
@@ -32,8 +25,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 //    private RecyclerView.LayoutManager layoutManager;
     private LinearLayoutManager layoutManager;
     private RoomPresenter presenter;
-    private RoomAdapter roomAdapter;
-    private Room1Adapter room1Adapter;
+    private RoomAdapter room1Adapter;
 
     @Override
     public int getContentLayout() {
@@ -115,7 +107,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                room1Adapter = new Room1Adapter(list,RoomActivity.this,rvRoom);
+                room1Adapter = new RoomAdapter(list,RoomActivity.this,rvRoom);
                 rvRoom.setAdapter(room1Adapter);
                 room1Adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
                     @Override

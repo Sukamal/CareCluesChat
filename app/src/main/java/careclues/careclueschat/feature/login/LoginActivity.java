@@ -13,6 +13,7 @@ import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.room.RoomActivity;
+import careclues.careclueschat.util.AppDialog;
 import careclues.careclueschat.util.AppUtil;
 
 public class LoginActivity extends BaseActivity implements LoginContract.view {
@@ -23,6 +24,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
     AppCompatEditText etPassword;
     @BindView(R.id.btnLogin)
     AppCompatButton btnLogin;
+    AppDialog appDialog = new AppDialog();
 
 
     private LoginPresenter presenter;
@@ -56,6 +58,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
 
     @OnClick(R.id.btnLogin)
     void onloinButtonClick(){
+        displayProgressBar();
         Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
         presenter.doLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
         presenter.doApiLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
@@ -94,12 +97,13 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
 
     @Override
     public void displyNextScreen() {
-
+        hideProgressBar();
         startActivity(new Intent(LoginActivity.this, RoomActivity.class));
     }
 
     @Override
     public void displayMessage(final String message) {
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -115,11 +119,11 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
 
     @Override
     public void displayProgressBar() {
-
+        appDialog.showProgress(this);
     }
 
     @Override
     public void hideProgressBar() {
-
+        appDialog.dismissProgress();
     }
 }

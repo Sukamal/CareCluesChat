@@ -20,7 +20,6 @@ public interface RoomContract {
     }
 
     interface presenter {
-        public void registerConnectivity();
         public void getRoom();
         public void getMoreRoom(int startCount, int threshold);
         public void reconnectToServer();

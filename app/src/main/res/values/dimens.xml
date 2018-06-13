@@ -1,0 +1,17 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_heading">26sp</dimen>
+    <dimen name="text_size_sub_heading">21sp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="button_height">46dp</dimen>
+    <dimen name="button_height_slik">40dp</dimen>
+
+    <dimen name="card_height">200dp</dimen>
+
+
+    <dimen name="margin_10">10dp</dimen>
+    <dimen name="margin_20">20dp</dimen>
+</resources>

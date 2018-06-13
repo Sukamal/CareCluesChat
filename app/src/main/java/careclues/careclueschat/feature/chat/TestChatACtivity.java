@@ -96,7 +96,7 @@ public class TestChatACtivity extends AppCompatActivity implements
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         api = ((CareCluesChatApplication) getApplicationContext()).getRocketChatAPI();
 
-        //------- Connect with soccket if not done previouslu
+        //------- Connect with soccket if not done previously
         // ------if connect to socket here then call init socket inside onLoginSuccess otherwise call it in onCreate
 //        api.setReconnectionStrategy(null);
 //        api.connect(this);

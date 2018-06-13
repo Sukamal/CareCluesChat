@@ -2,7 +2,6 @@ package careclues.careclueschat.feature.room;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,35 +11,33 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.rocketchat.common.utils.Utils;
-import com.rocketchat.core.model.Subscription;
-
-import java.security.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.R;
-import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.TestChatACtivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
+import careclues.careclueschat.model.RoomAdapterModel;
+import careclues.careclueschat.util.AppUtil;
+import careclues.careclueschat.util.DateFormatter;
 
 
-public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> {
+public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> implements DateFormatter.Formatter{
 
 
 
-    private List<Subscription> roomObjects;
+    private List<RoomAdapterModel> roomObjects;
     private Context context;
     private RecyclerView recyclerView;
-    private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
+    public int visibleThreshold = 10;
+    public int lastVisibleItem, totalItemCount;
     private boolean loading;
     private OnLoadMoreListener loadMoreListener;
 
-    public RoomAdapter(List<Subscription> roomObjects, Context context,RecyclerView recyclerView) {
+    public RoomAdapter(List<RoomAdapterModel> roomObjects, final Context context, RecyclerView recyclerView) {
         this.roomObjects = roomObjects;
+        Collections.sort(roomObjects);
         this.context = context;
         this.recyclerView = recyclerView;
 
@@ -48,20 +45,36 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
                 .getLayoutManager();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (!loading
-                        && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+
+                System.out.println("totalItemCount : " + String.valueOf(totalItemCount)+"lastVisibleItem : "+ String.valueOf(lastVisibleItem));
+
+                /*if (!loading && totalItemCount == lastVisibleItem +1) {
                     // End has been reached Do something
                     if (loadMoreListener != null) {
                         loadMoreListener.onLoadMore();
                     }
+
+                    Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
                     loading = true;
-                }
+                }*/
+
+                /*if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    // End has been reached Do something
+//                    if (loadMoreListener != null) {
+//                        loadMoreListener.onLoadMore();
+//                    }
+
+                    Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
+                    loading = true;
+                }*/
             }
         });
     }
@@ -74,10 +87,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         loading = false;
     }
 
-    public void addLoadData(List<Subscription> dataList){
+    public void addLoadData(List<RoomAdapterModel> dataList){
         if(roomObjects != null){
             roomObjects.addAll(dataList);
-            this.notifyDataSetChanged();
+//            this.notifyDataSetChanged();
         }
         setLoaded();
     }
@@ -92,21 +105,18 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.tvUserName.setText(roomObjects.get(position).user().username());
-        holder.tvRoomId.setText(roomObjects.get(position).name());
-        holder.tvStatus.setText(roomObjects.get(position).open()?"Open":"Closed");
-//        holder.tvDate.setText(new Date(roomObjects.get(position).updatedAt()).toString());
-//        holder.tvTime.setText(new Date(roomObjects.get(position).updatedAt()).toString());
+        holder.tvUserName.setText(roomObjects.get(position).name);
+        holder.tvRoomId.setText(roomObjects.get(position).description);
+        if(roomObjects.get(position).updatedAt != null){
+            holder.tvDate.setText(format(roomObjects.get(position).updatedAt));
+            holder.tvTime.setText(DateFormatter.format(roomObjects.get(position).updatedAt, DateFormatter.Template.TIME));
 
-        holder.tvDate.setText(getTime(roomObjects.get(position).updatedAt()));
-        holder.tvTime.setText(getTime(roomObjects.get(position).updatedAt()));
-
-
+        }
         holder.roomItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, TestChatACtivity.class);
-                intent.putExtra("roomId",roomObjects.get(position).roomId());
+                intent.putExtra("roomId",roomObjects.get(position).Id);
                 context.startActivity(intent);
             }
         });
@@ -115,6 +125,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
         return roomObjects.size();
+    }
+
+    @Override
+    public String format(Date date) {
+        if (DateFormatter.isToday(date)) {
+            return "Today";
+        } else if (DateFormatter.isYesterday(date)) {
+            return "Yesterday";
+        } else {
+            return DateFormatter.format(date, DateFormatter.Template.STRING_DAY_MONTH_YEAR);
+        }
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
