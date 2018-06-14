@@ -28,16 +28,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-    public void addFragment(Fragment fragment, Bundle bundle, boolean addBackStack) {
-        if (bundle != null) {
-            fragment.setArguments(bundle);
-        }
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fl_MainContainer, fragment, fragment.getClass().getName());
-        if(addBackStack)
-            fragmentTransaction.addToBackStack(fragment.getClass().getName());
-        fragmentTransaction.commit();
-    }
+//    public void addFragment(Fragment fragment, Bundle bundle, boolean addBackStack) {
+//        if (bundle != null) {
+//            fragment.setArguments(bundle);
+//        }
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.fl_MainContainer, fragment, fragment.getClass().getName());
+//        if(addBackStack)
+//            fragmentTransaction.addToBackStack(fragment.getClass().getName());
+//        fragmentTransaction.commit();
+//    }
 
     public void popFragmentBackstack(String fragmentName, boolean isInclusive) {
         FragmentManager fragmentManager = getSupportFragmentManager();

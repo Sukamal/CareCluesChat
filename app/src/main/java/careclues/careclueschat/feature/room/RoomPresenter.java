@@ -6,29 +6,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.rocketchat.common.RocketChatApiException;
-import com.rocketchat.common.RocketChatException;
-import com.rocketchat.common.data.model.User;
-import com.rocketchat.common.listener.ConnectListener;
-import com.rocketchat.common.listener.TypingListener;
 import com.rocketchat.core.RocketChatClient;
-import com.rocketchat.core.callback.AccountListener;
-import com.rocketchat.core.callback.EmojiListener;
-import com.rocketchat.core.callback.GetSubscriptionListener;
-import com.rocketchat.core.callback.LoginCallback;
-import com.rocketchat.core.callback.MessageCallback;
-import com.rocketchat.core.callback.UserListener;
-import com.rocketchat.core.model.Emoji;
-import com.rocketchat.core.model.Message;
-import com.rocketchat.core.model.Permission;
-import com.rocketchat.core.model.PublicSetting;
-import com.rocketchat.core.model.Subscription;
-import com.rocketchat.core.model.Token;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.model.GroupResponseModel;
@@ -116,7 +98,7 @@ public class RoomPresenter implements RoomContract.presenter {
                             adapterModel.Id = entity.roomId;
                             adapterModel.description = entity.description;
                             List<RoomMemberEntity> memberEntities = ((CareCluesChatApplication) application).getChatDatabase().roomMemberDao().findByRoomId(entity.roomId);
-                            List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getUpdatedMessage(entity.roomId, 1);
+                            List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(entity.roomId, 1);
 
                             if (messageEntities != null && messageEntities.size() > 0) {
                                 adapterModel.updatedAt = messageEntities.get(0).updatedAt;

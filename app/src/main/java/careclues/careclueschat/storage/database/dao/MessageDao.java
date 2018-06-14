@@ -26,7 +26,7 @@ public interface MessageDao {
     MessageEntity findById(String Id);
 
     @Query("SELECT * FROM message where rId = :Id order by updatedAt desc limit :count")
-    List<MessageEntity> getUpdatedMessage(String Id,int count);
+    List<MessageEntity> getChatMessage(String Id, int count);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<MessageEntity> entityList);
