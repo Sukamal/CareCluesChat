@@ -73,5 +73,5 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
 
-    compile 'com.github.stfalcon:chatkit:0.2.1'
+    compile 'com.github.stfalcon:chatkit:0.2.2'
 }
