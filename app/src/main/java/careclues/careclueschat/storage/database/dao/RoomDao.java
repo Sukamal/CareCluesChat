@@ -28,6 +28,9 @@ public interface RoomDao {
     @Query("SELECT * FROM room LIMIT :startCount,:endCount")
     List<RoomEntity> getRoom(int startCount, int endCount);
 
+    @Query("SELECT * FROM room order by updatedAt desc LIMIT :startCount,:endCount")
+    List<RoomEntity> getLastUpdatedRoom(int startCount, int endCount);
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<RoomEntity> entityList);
 

@@ -42,6 +42,8 @@ public class RoomPresenter implements RoomContract.presenter {
     private Handler handler;
     private RoomAdapterModel adapterModel;
 
+    private final int LOAD_ROOM_DATA = 1;
+    private final int LOAD_MORE_ROOM_DATA = 2;
 
     public RoomPresenter(RoomContract.view view, Application application) {
         this.view = view;
@@ -49,16 +51,20 @@ public class RoomPresenter implements RoomContract.presenter {
         apiExecuter = RestApiExecuter.getInstance();
         appPreference = ((CareCluesChatApplication) application).getAppPreference();
         handleMessage();
-        getRoom();
+//        getRoom();
     }
 
     private void handleMessage(){
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(android.os.Message msg) {
-                if(msg.what == 1){
-                    Toast.makeText(application, "handler", Toast.LENGTH_SHORT).show();
-                    view.displyRoomList(modelList);
+                switch (msg.what){
+                    case LOAD_ROOM_DATA:
+                        view.displyRoomList(modelList);
+                        break;
+                    case LOAD_MORE_ROOM_DATA:
+                        view.displyMoreRoomList(modelList);
+                        break;
                 }
             }
         };
@@ -73,12 +79,12 @@ public class RoomPresenter implements RoomContract.presenter {
                 list = new ArrayList<>();
                 List<RoomEntity> moreList;
 //                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(0,10);
-                moreList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getAll();
+                moreList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,10);
 
                 if (moreList != null && moreList.size() > 0) {
                     list.addAll(moreList);
                 }
-                populateAdapterData(moreList);
+                populateAdapterData(moreList,LOAD_ROOM_DATA);
             }
         }).start();
 
@@ -86,14 +92,14 @@ public class RoomPresenter implements RoomContract.presenter {
 
 
 
-    private void populateAdapterData(final List<RoomEntity> subscriptions) {
+    private void populateAdapterData(final List<RoomEntity> rooms,final int what) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-
-                    if (subscriptions != null) {
-                        for (final RoomEntity entity : subscriptions) {
+                    modelList.clear();
+                    if (rooms != null) {
+                        for (final RoomEntity entity : rooms) {
                             adapterModel = new RoomAdapterModel();
                             adapterModel.Id = entity.roomId;
                             adapterModel.description = entity.description;
@@ -119,9 +125,7 @@ public class RoomPresenter implements RoomContract.presenter {
                             modelList.add(adapterModel);
                         }
 
-                        android.os.Message msg = handler.obtainMessage();
-                        msg.what = 1;
-                        handler.sendMessage(msg);
+                        handler.sendEmptyMessage(what);
                     }
 
                 } catch (Throwable e) {
@@ -135,18 +139,16 @@ public class RoomPresenter implements RoomContract.presenter {
 
     @Override
     public void getMoreRoom(final int startCount, final int threshold) {
-        new Thread(new Runnable() {
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
                 List<RoomEntity> moreList;
-                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getRoom(startCount,threshold);
+                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getLastUpdatedRoom(startCount,threshold);
                 if(moreList != null && moreList.size() > 0){
-                    list.addAll(moreList);
+                    populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
                 }
-                populateAdapterData(moreList);
-                view.displyRoomList(modelList);
             }
-        }).start();
+        });
     }
 
     @Override

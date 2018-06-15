@@ -45,7 +45,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
         presenter = new RoomPresenter(this,getApplication());
         initRecycleView();
-//        presenter.getRoom();
+        presenter.getRoom();
     }
 
     private void initRecycleView(){
@@ -112,7 +112,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
                 room1Adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
                     @Override
                     public void onLoadMore() {
-                        presenter.getMoreRoom(room1Adapter.lastVisibleItem, room1Adapter.visibleThreshold);
+                        presenter.getMoreRoom(room1Adapter.lastVisibleItem + 1, room1Adapter.visibleThreshold);
                     }
                 });
             }
@@ -123,7 +123,6 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     @Override
     public void displyMoreRoomList(List<RoomAdapterModel> list) {
         room1Adapter.addLoadData(list);
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -24,7 +24,7 @@ public class ChatMessageModel {
     public ChatMessageModel(MessageEntity messageEntity){
         this.id = messageEntity.Id;
         this.text = messageEntity.msg;
-//        this.createdAt = messageEntity.timeStamp;
-//        this.userId = messageEntity.user.id;
+        this.createdAt = messageEntity.timeStamp;
+        this.userId = messageEntity.user.userName;
     }
 }

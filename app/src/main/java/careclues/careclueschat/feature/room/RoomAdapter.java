@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +39,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     private OnLoadMoreListener loadMoreListener;
 
     public RoomAdapter(List<RoomAdapterModel> roomObjects, final Context context, RecyclerView recyclerView) {
-        this.roomObjects = roomObjects;
+        this.roomObjects = new ArrayList<>();
+        this.roomObjects.addAll(roomObjects);
         Collections.sort(roomObjects);
         this.context = context;
         this.recyclerView = recyclerView;
@@ -57,7 +60,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
                 System.out.println("totalItemCount : " + String.valueOf(totalItemCount)+"lastVisibleItem : "+ String.valueOf(lastVisibleItem));
 
-                /*if (!loading && totalItemCount == lastVisibleItem +1) {
+                if (!loading && totalItemCount == lastVisibleItem +1) {
                     // End has been reached Do something
                     if (loadMoreListener != null) {
                         loadMoreListener.onLoadMore();
@@ -65,17 +68,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
                     Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
                     loading = true;
-                }*/
+                }
 
-                /*if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                    // End has been reached Do something
+//                if (!loading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+//                    // End has been reached Do something
 //                    if (loadMoreListener != null) {
 //                        loadMoreListener.onLoadMore();
 //                    }
-
-                    Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
-                    loading = true;
-                }*/
+//
+//                    Toast.makeText(context, "Rached End", Toast.LENGTH_SHORT).show();
+//                    loading = true;
+//                }
             }
         });
     }

@@ -80,7 +80,7 @@ public class MessageEntity {
         stringBuffer.append("\nroomId : "+rId);
         stringBuffer.append("\nmsg : "+msg);
         stringBuffer.append("\ntimeStamp : "+timeStamp);
-//        stringBuffer.append("\nuser : "+user.toString());
+        stringBuffer.append("\nuser : "+user.toString());
         stringBuffer.append("\nupdatedAt : "+updatedAt);
         stringBuffer.append("\ntype : "+type);
         stringBuffer.append("\nalias : "+alias);

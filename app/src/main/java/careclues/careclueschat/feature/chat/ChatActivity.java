@@ -18,7 +18,7 @@ import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
-public class ChatActivity extends BaseActivity implements ChatContract.view{
+public class ChatActivity extends BaseActivity implements ChatContract.view {
 
     private ChatPresenter presenter;
     private String roomId;
@@ -60,7 +60,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view{
 
     }
 
-    private void initRecycleView(){
+    private void initRecycleView() {
 //        rvRoom.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -68,37 +68,19 @@ public class ChatActivity extends BaseActivity implements ChatContract.view{
 //        rvRoom.setItemAnimator(new DefaultItemAnimator());
     }
 
-    private void executeServerTask(){
+    private void executeServerTask() {
+        initRecycleView();
+
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-
-                    initRecycleView();
-        List<MessageEntity> messageEntities = ((CareCluesChatApplication) getApplication()).getChatDatabase().messageDao().getChatMessage(roomId, 50);
-        List<ChatMessageModel> msgList = new ArrayList<>();
-        for(MessageEntity entity : messageEntities){
-            msgList.add(new ChatMessageModel(entity));
-        }
-        displyChatList(msgList);
-
-//        presenter.loadData(new ServiceCallBack<PostsModel>(PostsModel.class) {
-//            @Override
-//            public void onSuccess(PostsModel response) {
-//                if(response != null){
-//                    System.out.println("------------onSuccess-----------");
-//                    System.out.println("Body : "+ response.getBody());
-//                    System.out.println("Title : "+ response.getTitle());
-//                    System.out.println("UserId : "+ response.getUserId());
-//                    System.out.println("Id : "+ response.getId());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(List<NetworkError> errorList) {
-//
-//            }
-//        });
+                    List<MessageEntity> messageEntities = ((CareCluesChatApplication) getApplication()).getChatDatabase().messageDao().getChatMessage(roomId, 50);
+                    List<ChatMessageModel> msgList = new ArrayList<>();
+                    for (MessageEntity entity : messageEntities) {
+                        msgList.add(new ChatMessageModel(entity));
+                    }
+                    displyChatList(msgList);
 
                 } catch (Throwable e) {
                     System.out.println("Error111111111111111111111111111111111");
@@ -113,8 +95,9 @@ public class ChatActivity extends BaseActivity implements ChatContract.view{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messageAdapter = new ChatMessageAdapter(ChatActivity.this,list);
+                messageAdapter = new ChatMessageAdapter(ChatActivity.this, list);
                 rvChatHistory.setAdapter(messageAdapter);
+                rvChatHistory.scrollToPosition(list.size()-1);
             }
         });
 

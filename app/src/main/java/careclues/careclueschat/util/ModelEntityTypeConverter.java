@@ -126,12 +126,12 @@ public class ModelEntityTypeConverter {
         messageEntity.rId = data.rId;
         messageEntity.msg = data.msg;
         messageEntity.timeStamp = data.timeStamp;
-//            messageEntity.user = data.user;
+        messageEntity.user = data.user;
         messageEntity.updatedAt = data.updatedAt;
         messageEntity.type = data.type;
         messageEntity.alias = data.alias;
         messageEntity.groupable = data.groupable;
-//            messageEntity.mentions = data.mentions;
+        messageEntity.mentions = data.mentions;
         messageEntity.parseUrls = data.parseUrls;
         messageEntity.meta = data.meta;
 

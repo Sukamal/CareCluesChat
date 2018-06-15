@@ -60,7 +60,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.view {
     void onloinButtonClick(){
         displayProgressBar();
         Toast.makeText(this, "Click", Toast.LENGTH_SHORT).show();
-        presenter.doLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
+//        presenter.doLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
         presenter.doApiLogin(etUserName.getText().toString().trim(), etPassword.getText().toString().trim());
 
     }

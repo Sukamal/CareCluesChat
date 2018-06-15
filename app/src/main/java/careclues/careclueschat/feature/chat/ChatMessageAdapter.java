@@ -45,12 +45,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ChatMessageModel chatMessageModel = messageList.get(position);
-//        if(chatMessageModel.userId.equalsIgnoreCase("")){
-//
-//        }
-        holder.cvLeft.setVisibility(View.GONE);
-        holder.cvRight.setVisibility(View.VISIBLE);
-        holder.tvRight.setText(chatMessageModel.text);
+        if(chatMessageModel.userId.equalsIgnoreCase("sachu-985")){
+            holder.cvLeft.setVisibility(View.GONE);
+            holder.cvRight.setVisibility(View.VISIBLE);
+            holder.tvRight.setText(chatMessageModel.text);
+        }else{
+            holder.cvLeft.setVisibility(View.VISIBLE);
+            holder.cvRight.setVisibility(View.GONE);
+            holder.tvLeft.setText(chatMessageModel.text);
+        }
     }
 
     @Override

@@ -1,6 +1,8 @@
 package careclues.careclueschat.feature.login;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.rocketchat.common.RocketChatApiException;
@@ -33,6 +35,7 @@ import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.feature.room.RoomResponse;
+import careclues.careclueschat.model.BaseRoomModel;
 import careclues.careclueschat.model.MessageModel;
 import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomMemberModel;
@@ -71,6 +74,8 @@ public class LoginPresenter implements
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
 
+
+
     public LoginPresenter(LoginContract.view view, Application application){
         this.view = view;
         this.application = application;
@@ -82,7 +87,11 @@ public class LoginPresenter implements
         chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
         chatClient.setReconnectionStrategy(null);
         chatClient.connect(this);
+
+        initHandler();
     }
+
+
 
 
     @Override
@@ -192,7 +201,50 @@ public class LoginPresenter implements
     private List<SubscriptionEntity> subscriptionEntities;
     private List<RoomMemberEntity> roomMemberEntities;
     private List<MessageEntity> messageEntities;
+    private List<RoomEntity> lastUpdatedRoomList;
 
+
+    private Handler handler;
+    private final int LOGG_IN_SUCCESS = 1;
+    private final int FETCH_ROOM_COMPLETED = 2;
+    private final int FETCH_SUBSCRIPTION_COMPLETED = 3;
+    private final int FETCH_UPDATED_ROOM = 4;
+    private final int DISPLAY_NEXT_SCREEN = 5;
+
+
+    private void initHandler(){
+        handler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(android.os.Message msg) {
+                switch (msg.what){
+                    case LOGG_IN_SUCCESS:
+                        getRoom();
+                        getSubscription();
+                        break;
+                    case FETCH_ROOM_COMPLETED:
+                        insertRoomRecordIntoDb(roomEntities);
+                        getUpdatedRoomList(10);
+                        break;
+                    case FETCH_SUBSCRIPTION_COMPLETED:
+                        insertSubscriptionRecordIntoDb(subscriptionEntities);
+                        break;
+                    case FETCH_UPDATED_ROOM:
+                        roomIdMember = new ArrayList<>();
+                        roomIdMessage = new ArrayList<>();
+                        for(RoomEntity roomEntity:lastUpdatedRoomList){
+                            roomIdMember.add(roomEntity.roomId);
+                            roomIdMessage.add(roomEntity.roomId);
+                        }
+                        getRoomMemberMessageHistory();
+                        checkTaskComplete();
+                        break;
+                    case DISPLAY_NEXT_SCREEN:
+                        view.displyNextScreen();
+                        break;
+                }
+            }
+        };
+    }
 
     @Override
     public void doApiLogin(String userId,String password){
@@ -209,9 +261,9 @@ public class LoginPresenter implements
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(),response.getData().getAuthToken());
 //                System.out.println("Api Response : "+response.toString());
 //                System.out.println("LOGIN-START--------------------------------------- : ");
-                getRoom();
-                getSubscription();
-
+//                getRoom();
+//                getSubscription();
+                handler.sendEmptyMessage(LOGG_IN_SUCCESS);
             }
 
             @Override
@@ -288,6 +340,16 @@ public class LoginPresenter implements
 
     }
 
+    private void getRoomMemberMessageHistory(){
+        roomMemberEntities = new ArrayList<>();
+        messageEntities = new ArrayList<>();
+        for(RoomEntity roomEntity:lastUpdatedRoomList){
+            getRoomMembers(roomEntity.roomId);
+            getMessageHistory(roomEntity.roomId);
+        }
+
+    }
+
     private void getRoomMembers(final String roomId){
         apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
             @Override
@@ -321,15 +383,7 @@ public class LoginPresenter implements
     }
 
 
-    private void getRoomMemberMessageHistory(){
 
-        roomMemberEntities = new ArrayList<>();
-        messageEntities = new ArrayList<>();
-        for(RoomEntity roomEntity:roomEntities){
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
-        }
-    }
 
     private void filterRoomRecords(List<RoomModel> rooms){
 
@@ -337,22 +391,19 @@ public class LoginPresenter implements
             roomEntities = new ArrayList<>();
             roomIdList = new ArrayList<>();
             for(RoomModel roomModel : rooms){
-//                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
-
+                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
                 RoomEntity roomEntity;
                 roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
                 roomEntities.add(roomEntity);
                 roomIdList.add(roomModel.Id);
-//                }
+                }
             }
+            handler.sendEmptyMessage(FETCH_ROOM_COMPLETED);
 
-            roomIdMember = roomIdList ;
-            roomIdMessage = roomIdList ;
-            checkTaskComplete();
-            insertRoomRecordIntoDb(roomEntities);
-            getRoomMemberMessageHistory();
         }else{
-            view.displyNextScreen();
+
+            handler.sendEmptyMessage(DISPLAY_NEXT_SCREEN);
+
         }
 
     }
@@ -367,25 +418,7 @@ public class LoginPresenter implements
             }
         }
 
-        insertSubscriptionRecordIntoDb(subscriptionEntities);
-    }
-
-
-    private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
-        for(RoomMemberModel memberModel : memberModels){
-            RoomMemberEntity memberEntity;
-            memberEntity = ModelEntityTypeConverter.roomMemberToEntity(memberModel);
-            memberEntity.rId = roomid;
-            roomMemberEntities.add(memberEntity);
-        }
-    }
-
-    private void filterMessageRecord(List<MessageModel> messageModels){
-        for(MessageModel messageModel : messageModels){
-            MessageEntity messageEntity;
-            messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
-            messageEntities.add(messageEntity);
-        }
+       handler.sendEmptyMessage(FETCH_SUBSCRIPTION_COMPLETED);
     }
 
     private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities) {
@@ -417,6 +450,26 @@ public class LoginPresenter implements
         });
     }
 
+
+    private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
+        for(RoomMemberModel memberModel : memberModels){
+            RoomMemberEntity memberEntity;
+            memberEntity = ModelEntityTypeConverter.roomMemberToEntity(memberModel);
+            memberEntity.rId = roomid;
+            roomMemberEntities.add(memberEntity);
+        }
+    }
+
+    private void filterMessageRecord(List<MessageModel> messageModels){
+        for(MessageModel messageModel : messageModels){
+            MessageEntity messageEntity;
+            messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
+            messageEntities.add(messageEntity);
+        }
+    }
+
+
+
     private void insertRoomMemberRecordIntoDb(final List<RoomMemberEntity> roomMemberEntities){
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
@@ -439,6 +492,9 @@ public class LoginPresenter implements
             @Override
             public void run() {
                 try {
+                    for(MessageEntity entity: messageEntities){
+                        Log.e("MESSAGE : ", entity.toString());
+                    }
                     ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
                 } catch (Throwable e) {
                     Log.e("DBERROR", e.toString());
@@ -503,6 +559,25 @@ public class LoginPresenter implements
             }
         }
     }
+
+
+    private void getUpdatedRoomList(final int count){
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,count);
+                    handler.sendEmptyMessage(FETCH_UPDATED_ROOM);
+                } catch (Throwable e) {
+                    Log.e("DBERROR", e.toString());
+                }
+
+            }
+        });
+    }
+
+
 
 
 }
