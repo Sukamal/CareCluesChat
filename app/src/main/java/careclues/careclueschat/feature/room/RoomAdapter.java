@@ -111,6 +111,8 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.tvUserName.setText(roomObjects.get(position).name);
         holder.tvRoomId.setText(roomObjects.get(position).description);
+        holder.tvStatus.setText(roomObjects.get(position).Id);
+
         if(roomObjects.get(position).updatedAt != null){
             holder.tvDate.setText(format(roomObjects.get(position).updatedAt));
             holder.tvTime.setText(DateFormatter.format(roomObjects.get(position).updatedAt, DateFormatter.Template.TIME));
