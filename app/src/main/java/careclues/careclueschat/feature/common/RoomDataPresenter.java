@@ -40,10 +40,10 @@ public class RoomDataPresenter {
 
     private Handler handler;
     private final int FETCH_ROOM_COMPLETED = 1;
-    private final int FETCH_NO_ROOM_COMPLETED = 2;
+    private final int FETCH_NO_ROOM_FOUND = 2;
     private final int FETCH_SUBSCRIPTION_COMPLETED = 3;
     private final int FETCH_UPDATED_ROOM = 4;
-    private final int DISPLAY_NEXT_SCREEN = 5;
+    private final int FETCH_MEMBER_MESSAGE_COMPLETED = 5;
 
     private Timer timer;
 
@@ -53,7 +53,51 @@ public class RoomDataPresenter {
     private List<RoomEntity> roomEntities;
     private List<SubscriptionEntity> subscriptionEntities;
 
-    private List<String> roomIdList;
+
+    private FetchRoomListner roomListner;
+    private FetchSubscriptionListner subscriptionListner;
+    private FetchRoomMemberHistoryListner roomMemberHistoryListner;
+    private FetchLastUpdatedRoomDbListner lastUpdatedRoomDbListner;
+
+    public RoomDataPresenter(Application application){
+        this.application = application;
+        apiExecuter = RestApiExecuter.getInstance();
+        initHandler();
+
+    }
+
+    public interface FetchRoomListner{
+        public void onFetchRoom(List<RoomEntity> entities);
+    }
+
+    public interface FetchLastUpdatedRoomDbListner{
+        public void onFetchDbUpdatedRoom(List<RoomEntity> entities);
+    }
+
+    public interface FetchSubscriptionListner{
+        public void onFetchSubscription(List<SubscriptionEntity> entities);
+    }
+
+    public interface FetchRoomMemberHistoryListner{
+        public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities,List<MessageEntity> messageEntities);
+    }
+
+
+    public void registerRoomListner(FetchRoomListner roomListner){
+        this.roomListner = roomListner;
+    }
+
+    public void registerUpdatedRoomListner(FetchLastUpdatedRoomDbListner lastUpdatedRoomDbListner){
+        this.lastUpdatedRoomDbListner = lastUpdatedRoomDbListner;
+    }
+
+    public void registerSubscriptionListner(FetchSubscriptionListner subscriptionListner){
+        this.subscriptionListner = subscriptionListner;
+    }
+
+    public void registerRoomMemberHistoryListner(FetchRoomMemberHistoryListner roomMemberHistoryListner){
+        this.roomMemberHistoryListner = roomMemberHistoryListner;
+    }
 
     private void initHandler(){
         handler = new Handler(Looper.getMainLooper()){
@@ -62,11 +106,32 @@ public class RoomDataPresenter {
                 switch (msg.what){
                     case FETCH_ROOM_COMPLETED:
                         insertRoomRecordIntoDb(roomEntities);
+                        if(roomListner != null){
+                            roomListner.onFetchRoom(roomEntities);
+                        }
+                        break;
+                    case FETCH_NO_ROOM_FOUND:
+                        if(roomListner != null){
+                            roomListner.onFetchRoom(null);
+                        }
                         break;
                     case FETCH_SUBSCRIPTION_COMPLETED:
                         insertSubscriptionRecordIntoDb(subscriptionEntities);
+                        if(subscriptionListner != null){
+                            subscriptionListner.onFetchSubscription(subscriptionEntities);
+                        }
+                        break;
+                    case FETCH_MEMBER_MESSAGE_COMPLETED:
+                        insertRoomMemberRecordIntoDb(roomMemberEntities);
+                        insertMessageRecordIntoDb(messageEntities);
+                        if(roomMemberHistoryListner != null){
+                            roomMemberHistoryListner.onFetchRoomMemberMessage(roomMemberEntities,messageEntities);
+                        }
                         break;
                     case FETCH_UPDATED_ROOM:
+                        if(lastUpdatedRoomDbListner != null){
+                            lastUpdatedRoomDbListner.onFetchDbUpdatedRoom(lastUpdatedRoomList);
+                        }
                         break;
 
                 }
@@ -74,7 +139,7 @@ public class RoomDataPresenter {
         };
     }
 
-    private void getUpdatedRoomList(final int count){
+    public  void getUpdatedRoomList(final int count){
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -90,7 +155,7 @@ public class RoomDataPresenter {
         });
     }
 
-    private void getRoom(String lastUpadate) {
+    public void getRoom(String lastUpadate) {
 
         if (lastUpadate == null) {
             apiExecuter.getRooms(new ServiceCallBack<RoomResponse>(RoomResponse.class) {
@@ -126,31 +191,29 @@ public class RoomDataPresenter {
     private void filterRoomRecords(List<RoomModel> rooms){
         if(rooms != null && rooms.size() > 0){
             roomEntities = new ArrayList<>();
-            roomIdList = new ArrayList<>();
             for(RoomModel roomModel : rooms){
                 if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
                     RoomEntity roomEntity;
                     roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
                     roomEntities.add(roomEntity);
-                    roomIdList.add(roomModel.Id);
                 }
             }
             handler.sendEmptyMessage(FETCH_ROOM_COMPLETED);
 
         }else{
-            handler.sendEmptyMessage(FETCH_NO_ROOM_COMPLETED);
+            handler.sendEmptyMessage(FETCH_NO_ROOM_FOUND);
         }
 
     }
 
 
-    private void getSubscription(String lastUpadate){
+    public void getSubscription(String lastUpadate,final List<RoomEntity> moreList){
         if(lastUpadate == null){
             apiExecuter.getSubscription(new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
                 @Override
                 public void onSuccess(SubscriptionResponse response) {
 //                System.out.println("Subscription Response: "+ response);
-                    filterSubscriptionRecord(response.update);
+                    filterSubscriptionRecord(response.update,moreList);
                 }
 
                 @Override
@@ -164,7 +227,7 @@ public class RoomDataPresenter {
                         @Override
                         public void onSuccess(SubscriptionResponse response) {
 //                System.out.println("Subscription Response: "+ response);
-                            filterSubscriptionRecord(response.update);
+                            filterSubscriptionRecord(response.update,moreList);
                         }
 
                         @Override
@@ -176,8 +239,12 @@ public class RoomDataPresenter {
 
     }
 
-    private void filterSubscriptionRecord(List<SubscriptionModel> update){
+    private void filterSubscriptionRecord(List<SubscriptionModel> update, final List<RoomEntity> moreList){
         subscriptionEntities = new ArrayList<>();
+        List<String> roomIdList = new ArrayList<>();
+        for(RoomEntity roomModel : moreList){
+            roomIdList.add(roomModel.roomId);
+        }
         for(SubscriptionModel subscriptionModel : update){
             if( roomIdList.contains(subscriptionModel.rId)){
                 SubscriptionEntity subscriptionEntity ;
@@ -237,6 +304,26 @@ public class RoomDataPresenter {
     }
 
     private void getRoomMemberMessageHistory(List<RoomEntity> moreList){
+        roomMemberEntities = new ArrayList<>();
+        messageEntities = new ArrayList<>();
+        for(RoomEntity roomEntity:moreList){
+            getRoomMembers(roomEntity.roomId);
+            getMessageHistory(roomEntity.roomId);
+        }
+
+    }
+
+    private void getAllRoomMember(List<RoomEntity> moreList){
+        roomMemberEntities = new ArrayList<>();
+        messageEntities = new ArrayList<>();
+        for(RoomEntity roomEntity:moreList){
+            getRoomMembers(roomEntity.roomId);
+            getMessageHistory(roomEntity.roomId);
+        }
+
+    }
+
+    private  void getAllRoomMessage(List<RoomEntity> moreList){
         roomMemberEntities = new ArrayList<>();
         messageEntities = new ArrayList<>();
         for(RoomEntity roomEntity:moreList){
@@ -342,9 +429,8 @@ public class RoomDataPresenter {
         public void run() {
             if(roomIdMember.size() == 0 ){
                 if(roomIdMessage.size() == 0){
-                    insertRoomMemberRecordIntoDb(roomMemberEntities);
-                    insertMessageRecordIntoDb(messageEntities);
                     timer.cancel();
+                    handler.sendEmptyMessage(FETCH_MEMBER_MESSAGE_COMPLETED);
                 }else{
                     timer.schedule(new RoomDataPresenter.RemindTask(),1000);
                 }
@@ -353,6 +439,8 @@ public class RoomDataPresenter {
             }
         }
     }
+
+
 
 
 }

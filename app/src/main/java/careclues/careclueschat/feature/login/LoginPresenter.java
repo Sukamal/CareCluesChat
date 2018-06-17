@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.rocketchat.common.RocketChatApiException;
 import com.rocketchat.common.RocketChatException;
@@ -33,6 +34,7 @@ import java.util.TimerTask;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.feature.room.RoomResponse;
 import careclues.careclueschat.model.BaseRoomModel;
@@ -76,7 +78,7 @@ public class LoginPresenter implements
 
 
 
-    public LoginPresenter(LoginContract.view view, Application application){
+    public LoginPresenter(final LoginContract.view view, final Application application){
         this.view = view;
         this.application = application;
         appPreference = ((CareCluesChatApplication) application).getAppPreference();
@@ -87,6 +89,39 @@ public class LoginPresenter implements
         chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
         chatClient.setReconnectionStrategy(null);
         chatClient.connect(this);
+
+        roomDataPresenter = new RoomDataPresenter(application);
+        roomDataPresenter.registerRoomListner(new RoomDataPresenter.FetchRoomListner() {
+            @Override
+            public void onFetchRoom(List<RoomEntity> entities) {
+                Toast.makeText(application, "onFetchRoom", Toast.LENGTH_SHORT).show();
+                roomDataPresenter.getSubscription(null,entities);
+            }
+        });
+
+        roomDataPresenter.registerSubscriptionListner(new RoomDataPresenter.FetchSubscriptionListner() {
+            @Override
+            public void onFetchSubscription(List<SubscriptionEntity> entities) {
+                Toast.makeText(application, "onFetchSubscription", Toast.LENGTH_SHORT).show();
+                roomDataPresenter.getUpdatedRoomList(10);
+
+            }
+        });
+
+        roomDataPresenter.registerUpdatedRoomListner(new RoomDataPresenter.FetchLastUpdatedRoomDbListner() {
+            @Override
+            public void onFetchDbUpdatedRoom(List<RoomEntity> entities) {
+                roomDataPresenter.fetchMemberAndMessage(entities);
+            }
+        });
+
+        roomDataPresenter.registerRoomMemberHistoryListner(new RoomDataPresenter.FetchRoomMemberHistoryListner() {
+            @Override
+            public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities) {
+                Toast.makeText(application, "registerRoomMemberHistoryListner", Toast.LENGTH_SHORT).show();
+                view.displyNextScreen();
+            }
+        });
 
         initHandler();
     }
@@ -211,6 +246,10 @@ public class LoginPresenter implements
     private final int FETCH_UPDATED_ROOM = 4;
     private final int DISPLAY_NEXT_SCREEN = 5;
 
+    private RoomDataPresenter roomDataPresenter;
+
+
+
 
     private void initHandler(){
         handler = new Handler(Looper.getMainLooper()){
@@ -218,8 +257,10 @@ public class LoginPresenter implements
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what){
                     case LOGG_IN_SUCCESS:
-                        getRoom();
-                        getSubscription();
+//                        getRoom();
+//                        getSubscription();
+
+                        roomDataPresenter.getRoom(null);
                         break;
                     case FETCH_ROOM_COMPLETED:
                         insertRoomRecordIntoDb(roomEntities);
