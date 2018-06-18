@@ -36,7 +36,7 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
     private void initView(Context context){
 
         inflate(context, R.layout.message_input_view,this);
-        ivSubmit = (ImageView) findViewById(R.id.iv_submit);
+        ivSubmit = (ImageView) findViewById(R.id.ib_submit);
         etMessage = findViewById(R.id.et_message);
         ivSubmit.setEnabled(false);
         ivSubmit.setOnClickListener(this);

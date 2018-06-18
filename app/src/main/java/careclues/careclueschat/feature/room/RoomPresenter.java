@@ -4,7 +4,6 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.rocketchat.core.RocketChatClient;
 
@@ -16,7 +15,6 @@ import java.util.TimerTask;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
-import careclues.careclueschat.feature.login.LoginPresenter;
 import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.MessageModel;
 import careclues.careclueschat.model.MessageResponseModel;
@@ -35,15 +33,15 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
-import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 
-public class RoomPresenter implements RoomContract.presenter {
+public class RoomPresenter implements RoomContract.presenter,
+        RoomDataPresenter.FetchRoomMemberHistoryListner,
+        RoomDataPresenter.FetchLastUpdatedRoomDbListner{
 
     private RoomContract.view view;
     private Application application;
     private RocketChatClient chatClient;
-    private List<RoomEntity> list;
     private List<RoomAdapterModel> modelList;
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
@@ -61,16 +59,20 @@ public class RoomPresenter implements RoomContract.presenter {
         apiExecuter = RestApiExecuter.getInstance();
         appPreference = ((CareCluesChatApplication) application).getAppPreference();
         handleMessage();
+
         roomDataPresenter = new RoomDataPresenter(application);
+        roomDataPresenter.registerRoomMemberHistoryListner(this);
+        roomDataPresenter.registerUpdatedRoomListner(this);
+    }
 
-        roomDataPresenter.registerRoomMemberHistoryListner(new RoomDataPresenter.FetchRoomMemberHistoryListner() {
-            @Override
-            public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities) {
-                populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
-            }
-        });
+    @Override
+    public void onFetchDbUpdatedRoom(List<RoomEntity> entities) {
+        populateAdapterData(entities,LOAD_ROOM_DATA);
+    }
 
-//        getRoom();
+    @Override
+    public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities) {
+        populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
     }
 
     private void handleMessage(){
@@ -92,21 +94,7 @@ public class RoomPresenter implements RoomContract.presenter {
     @Override
     public void getRoom() {
         modelList = new ArrayList<>();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                list = new ArrayList<>();
-                List<RoomEntity> moreList;
-//                moreList = ((CareCluesChatApplication)application).getChatDatabase().subscriptionDao().getSubscripttion(0,10);
-                moreList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,10);
-
-                if (moreList != null && moreList.size() > 0) {
-                    list.addAll(moreList);
-                }
-                populateAdapterData(moreList,LOAD_ROOM_DATA);
-            }
-        }).start();
-
+        roomDataPresenter.getUpdatedRoomList(10);
     }
 
 
@@ -116,7 +104,7 @@ public class RoomPresenter implements RoomContract.presenter {
             @Override
             public void run() {
                 try {
-                    modelList.clear();
+                    modelList = new ArrayList<>();
                     if (rooms != null) {
                         for (final RoomEntity entity : rooms) {
                             adapterModel = new RoomAdapterModel();
@@ -164,8 +152,7 @@ public class RoomPresenter implements RoomContract.presenter {
 
                 moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getLastUpdatedRoom(startCount,threshold);
                 if(moreList != null && moreList.size() > 0){
-                    fetchMemberAndMessage(moreList);
-//                    checkTaskComplete();
+                    roomDataPresenter.fetchMemberAndMessage(moreList);
                 }
             }
         });
@@ -187,7 +174,6 @@ public class RoomPresenter implements RoomContract.presenter {
             @Override
             public void onSuccess(GroupResponseModel response) {
                 System.out.println("New Room : " + response.toString());
-                getRoomData();
             }
 
             @Override
@@ -195,288 +181,6 @@ public class RoomPresenter implements RoomContract.presenter {
 
             }
         });
-    }
-
-    private void getRoomData() {
-
-        if (appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()) == null) {
-            apiExecuter.getRooms(new ServiceCallBack<RoomResponse>(RoomResponse.class) {
-                @Override
-                public void onSuccess(RoomResponse response) {
-                    filterRoomRecords(response.getUpdate());
-                }
-
-                @Override
-                public void onFailure(List<NetworkError> errorList) {
-
-                }
-            });
-        } else {
-            apiExecuter.getRooms(appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()),
-                    new ServiceCallBack<RoomResponse>(RoomResponse.class) {
-                        @Override
-                        public void onSuccess(RoomResponse response) {
-                            filterRoomRecords(response.getUpdate());
-                        }
-
-                        @Override
-                        public void onFailure(List<NetworkError> errorList) {
-
-                        }
-                    });
-        }
-
-
-    }
-
-    private void getSubscription() {
-        if (appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()) == null) {
-            apiExecuter.getSubscription(new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
-                @Override
-                public void onSuccess(SubscriptionResponse response) {
-                    filterSubscriptionRecord(response.update);
-                }
-
-                @Override
-                public void onFailure(List<NetworkError> errorList) {
-
-                }
-            });
-        } else {
-            apiExecuter.getSubscription(appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name()),
-                    new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
-                        @Override
-                        public void onSuccess(SubscriptionResponse response) {
-                            filterSubscriptionRecord(response.update);
-                        }
-
-                        @Override
-                        public void onFailure(List<NetworkError> errorList) {
-
-                        }
-                    });
-        }
-
-    }
-
-    private List<String> roomIdList;
-    private List<RoomEntity> roomEntities;
-    private List<SubscriptionEntity> subscriptionEntities;
-
-    private void filterRoomRecords(List<RoomModel> rooms) {
-
-        if (rooms != null && rooms.size() > 0) {
-            roomEntities = new ArrayList<>();
-            roomIdList = new ArrayList<>();
-            for (RoomModel roomModel : rooms) {
-//                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
-
-                RoomEntity roomEntity;
-                roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
-                roomEntities.add(roomEntity);
-                roomIdList.add(roomModel.Id);
-//                }
-            }
-            insertRoomRecordIntoDb(roomEntities);
-            getSubscription();
-
-        } else {
-            view.displyNextScreen();
-        }
-
-    }
-
-    private void filterSubscriptionRecord(List<SubscriptionModel> update) {
-        subscriptionEntities = new ArrayList<>();
-        for (SubscriptionModel subscriptionModel : update) {
-            if (roomIdList.contains(subscriptionModel.rId)) {
-
-                SubscriptionEntity subscriptionEntity;
-                subscriptionEntity = ModelEntityTypeConverter.subscriptionModelToEntity(subscriptionModel);
-                subscriptionEntities.add(subscriptionEntity);
-            }
-        }
-        insertSubscriptionRecordIntoDb(subscriptionEntities);
-
-    }
-
-    private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities) {
-
-        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ((CareCluesChatApplication) application).getChatDatabase().roomDao().insertAll(roomEntities);
-                } catch (Throwable e) {
-                    Log.e("DBERROR", e.getMessage());
-                }
-            }
-        });
-
-    }
-
-    private void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities) {
-
-        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ((CareCluesChatApplication) application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
-                    new android.os.Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            getRoom();
-                        }
-                    }, 5000);
-                } catch (Throwable e) {
-                    Log.e("DBERROR", e.getMessage());
-                }
-            }
-        });
-    }
-
-
-
-    private List<String> roomIdMember;
-    private List<String> roomIdMessage;
-    private List<RoomMemberEntity> roomMemberEntities;
-    private List<MessageEntity> messageEntities;
-    public void fetchMemberAndMessage(List<RoomEntity> moreList){
-
-
-        roomDataPresenter.fetchMemberAndMessage(moreList);
-
-
-
-
-
-//
-//        roomIdMember = new ArrayList<>();
-//        roomIdMessage = new ArrayList<>();
-//        for(RoomEntity roomEntity:moreList){
-//            roomIdMember.add(roomEntity.roomId);
-//            roomIdMessage.add(roomEntity.roomId);
-//        }
-//        getRoomMemberMessageHistory(moreList);
-    }
-
-    private void getRoomMemberMessageHistory(List<RoomEntity> moreList){
-        roomMemberEntities = new ArrayList<>();
-        messageEntities = new ArrayList<>();
-        for(RoomEntity roomEntity:moreList){
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
-        }
-
-    }
-
-    private void getRoomMembers(final String roomId){
-        apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
-            @Override
-            public void onSuccess(RoomMemberResponse response) {
-//                System.out.println("RoomMember Response: "+ response.members.toString());
-                filterRoomMembersRecord(roomId,response.members);
-                roomIdMember.remove(roomId);
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-                roomIdMember.remove(roomId);
-            }
-        });
-    }
-
-    private void getMessageHistory(final String roomId){
-        apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
-            @Override
-            public void onSuccess(MessageResponseModel response) {
-//                System.out.println("RoomMember Response: "+ response.messages.toString());
-                filterMessageRecord(response.messages);
-                roomIdMessage.remove(roomId);
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-                roomIdMessage.remove(roomId);
-            }
-        });
-    }
-
-    private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
-        for(RoomMemberModel memberModel : memberModels){
-            RoomMemberEntity memberEntity;
-            memberEntity = ModelEntityTypeConverter.roomMemberToEntity(memberModel);
-            memberEntity.rId = roomid;
-            roomMemberEntities.add(memberEntity);
-        }
-    }
-
-    private void filterMessageRecord(List<MessageModel> messageModels){
-        for(MessageModel messageModel : messageModels){
-            MessageEntity messageEntity;
-            messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
-            messageEntities.add(messageEntity);
-        }
-    }
-
-    private void insertRoomMemberRecordIntoDb(final List<RoomMemberEntity> roomMemberEntities){
-
-        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
-
-                }catch (Throwable e){
-                    Log.e("DBERROR",e.getMessage());
-                }
-            }
-        });
-    }
-
-    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities) {
-        System.out.println("insertMessageRecordIntoDb : " + messageEntities.size());
-
-        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    for(MessageEntity entity: messageEntities){
-                        Log.e("MESSAGE : ", entity.toString());
-                    }
-                    ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
-                } catch (Throwable e) {
-                    Log.e("DBERROR", e.toString());
-                }
-
-            }
-        });
-
-    }
-
-    private Timer timer;
-
-    private void checkTaskComplete(){
-        timer = new Timer();
-        timer.schedule(new RoomPresenter.RemindTask(),1000);
-    }
-
-    class RemindTask extends TimerTask {
-        @Override
-        public void run() {
-            if(roomIdMember.size() == 0 ){
-                if(roomIdMessage.size() == 0){
-                    insertRoomMemberRecordIntoDb(roomMemberEntities);
-                    insertMessageRecordIntoDb(messageEntities);
-                    timer.cancel();
-                    populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
-                }else{
-                    timer.schedule(new RoomPresenter.RemindTask(),1000);
-                }
-            }else{
-                timer.schedule(new RoomPresenter.RemindTask(),1000);
-            }
-        }
     }
 
 }

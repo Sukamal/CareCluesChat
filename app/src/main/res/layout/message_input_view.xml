@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp">
+    android:layout_height="50dp"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/margin_10"
+    android:layout_marginRight="@dimen/margin_10">
 
-    <ImageView
-        android:id="@+id/iv_submit"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+    <ImageButton
+        android:id="@+id/ib_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:src="@drawable/selector_message_send"/>
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_send"
+        android:background="@drawable/selector_message_send"/>
 
     <EditText
         android:id="@+id/et_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@id/iv_submit"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/ib_submit"
+        android:layout_marginRight="@dimen/margin_10"
         android:background="#ffffff"/>
 
 </RelativeLayout>

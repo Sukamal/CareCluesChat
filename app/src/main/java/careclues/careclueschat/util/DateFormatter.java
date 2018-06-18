@@ -15,6 +15,10 @@ public final class DateFormatter {
         throw new AssertionError();
     }
 
+    public static String format(long date, Template template) {
+        return format(new Date(date), template.get());
+    }
+
     public static String format(Date date, Template template) {
         return format(date, template.get());
     }
@@ -24,6 +28,8 @@ public final class DateFormatter {
         return new SimpleDateFormat(format, Locale.getDefault())
                 .format(date);
     }
+
+
 
     public static boolean isSameDay(Date date1, Date date2) {
         if (date1 == null || date2 == null) {

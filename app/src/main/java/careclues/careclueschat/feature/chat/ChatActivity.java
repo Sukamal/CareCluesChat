@@ -2,12 +2,14 @@ package careclues.careclueschat.feature.chat;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
@@ -27,6 +29,8 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 
     @BindView(R.id.rvChatHistory)
     RecyclerView rvChatHistory;
+    @BindView(R.id.et_message)
+    EditText etMessage;
 
     @Override
     public int getContentLayout() {
@@ -36,13 +40,31 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     @Override
     public void initComponents() {
         roomId = getIntent().getStringExtra("roomId");
-        presenter = new ChatPresenter(this);
-        executeServerTask();
+        initRecycleView();
+        presenter = new ChatPresenter(this,roomId,getApplication());
+        presenter.loadData(50);
     }
 
     @Override
     public void displyNextScreen() {
 
+    }
+
+    @Override
+    public void displayChatList(List<ChatMessageModel> list) {
+        displyChatList(list);
+    }
+
+    @Override
+    public void displayMoreChatList(List<ChatMessageModel> list) {
+        messageAdapter.addMessage(list);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messageAdapter.notifyDataSetChanged();
+
+            }
+        });
     }
 
     @Override
@@ -68,29 +90,6 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 //        rvRoom.setItemAnimator(new DefaultItemAnimator());
     }
 
-    private void executeServerTask() {
-        initRecycleView();
-
-        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<MessageEntity> messageEntities = ((CareCluesChatApplication) getApplication()).getChatDatabase().messageDao().getChatMessage(roomId, 50);
-                    List<ChatMessageModel> msgList = new ArrayList<>();
-                    for (MessageEntity entity : messageEntities) {
-                        msgList.add(new ChatMessageModel(entity));
-                    }
-                    displyChatList(msgList);
-
-                } catch (Throwable e) {
-                    System.out.println("Error111111111111111111111111111111111");
-                }
-
-            }
-        });
-
-    }
-
     public void displyChatList(final List<ChatMessageModel> list) {
         runOnUiThread(new Runnable() {
             @Override
@@ -100,6 +99,10 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
                 rvChatHistory.scrollToPosition(list.size()-1);
             }
         });
+    }
 
+    @OnClick(R.id.ib_submit)
+    public void sendMessage(){
+        presenter.sendMessage(etMessage.getText().toString());
     }
 }

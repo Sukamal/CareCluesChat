@@ -15,11 +15,10 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvChatHistory"
-        android:padding="8dp"
+        android:padding="10dp"
         android:layout_width="match_parent"
         android:scrollbarSize="2dp"
         android:layout_height="match_parent"
-        android:layout_above="@id/mi_messageinput"
-        />
+        android:layout_above="@id/mi_messageinput"/>
 
 </RelativeLayout>
