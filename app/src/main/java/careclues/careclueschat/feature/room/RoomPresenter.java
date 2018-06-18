@@ -15,6 +15,7 @@ import java.util.TimerTask;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.feature.login.LoginPresenter;
 import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.MessageModel;
@@ -49,6 +50,7 @@ public class RoomPresenter implements RoomContract.presenter {
     private Handler handler;
     private RoomAdapterModel adapterModel;
     private List<RoomEntity> moreList;
+    private RoomDataPresenter roomDataPresenter;
 
     private final int LOAD_ROOM_DATA = 1;
     private final int LOAD_MORE_ROOM_DATA = 2;
@@ -59,6 +61,15 @@ public class RoomPresenter implements RoomContract.presenter {
         apiExecuter = RestApiExecuter.getInstance();
         appPreference = ((CareCluesChatApplication) application).getAppPreference();
         handleMessage();
+        roomDataPresenter = new RoomDataPresenter(application);
+
+        roomDataPresenter.registerRoomMemberHistoryListner(new RoomDataPresenter.FetchRoomMemberHistoryListner() {
+            @Override
+            public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities) {
+                populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
+            }
+        });
+
 //        getRoom();
     }
 
@@ -154,7 +165,7 @@ public class RoomPresenter implements RoomContract.presenter {
                 moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getLastUpdatedRoom(startCount,threshold);
                 if(moreList != null && moreList.size() > 0){
                     fetchMemberAndMessage(moreList);
-                    checkTaskComplete();
+//                    checkTaskComplete();
                 }
             }
         });
@@ -331,13 +342,22 @@ public class RoomPresenter implements RoomContract.presenter {
     private List<RoomMemberEntity> roomMemberEntities;
     private List<MessageEntity> messageEntities;
     public void fetchMemberAndMessage(List<RoomEntity> moreList){
-        roomIdMember = new ArrayList<>();
-        roomIdMessage = new ArrayList<>();
-        for(RoomEntity roomEntity:moreList){
-            roomIdMember.add(roomEntity.roomId);
-            roomIdMessage.add(roomEntity.roomId);
-        }
-        getRoomMemberMessageHistory(moreList);
+
+
+        roomDataPresenter.fetchMemberAndMessage(moreList);
+
+
+
+
+
+//
+//        roomIdMember = new ArrayList<>();
+//        roomIdMessage = new ArrayList<>();
+//        for(RoomEntity roomEntity:moreList){
+//            roomIdMember.add(roomEntity.roomId);
+//            roomIdMessage.add(roomEntity.roomId);
+//        }
+//        getRoomMemberMessageHistory(moreList);
     }
 
     private void getRoomMemberMessageHistory(List<RoomEntity> moreList){
