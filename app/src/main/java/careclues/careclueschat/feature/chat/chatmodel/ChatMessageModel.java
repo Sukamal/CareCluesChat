@@ -27,7 +27,7 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
         this.id = messageEntity.Id;
         this.text = messageEntity.msg;
         this.createdAt = messageEntity.timeStamp;
-        this.userId = messageEntity.user.userName;
+        this.userId = messageEntity.user.id;
     }
 
     @Override

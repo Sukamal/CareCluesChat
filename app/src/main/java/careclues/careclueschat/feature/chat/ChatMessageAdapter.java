@@ -30,10 +30,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
     private List<ChatMessageModel> messageList;
     private Context context;
+    private String userId;
 
-    public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList){
+    public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList,String userId){
         this.context = context;
         this.messageList = messageList ;
+        this.userId = userId;
         Collections.sort(this.messageList);
     }
 
@@ -58,7 +60,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         setTimeTextVisibility(chatMessageModel.createdAt, previousDate, holder.tvDate);
 
 
-        if(chatMessageModel.userId.equalsIgnoreCase("sachu-985")){
+        if(chatMessageModel.userId.equalsIgnoreCase(userId/*"sachu-985" "2eRbrjSZnsACYkRx4"*/)){
             holder.cvLeft.setVisibility(View.GONE);
             holder.cvRight.setVisibility(View.VISIBLE);
             holder.tvRight.setText(chatMessageModel.text);

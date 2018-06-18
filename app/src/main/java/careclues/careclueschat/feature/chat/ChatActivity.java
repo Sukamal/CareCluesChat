@@ -17,6 +17,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.model.PostsModel;
 import careclues.careclueschat.network.NetworkError;
+import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
@@ -24,8 +25,10 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 
     private ChatPresenter presenter;
     private String roomId;
+    private String userId;
     private LinearLayoutManager layoutManager;
     private ChatMessageAdapter messageAdapter;
+
 
     @BindView(R.id.rvChatHistory)
     RecyclerView rvChatHistory;
@@ -40,6 +43,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     @Override
     public void initComponents() {
         roomId = getIntent().getStringExtra("roomId");
+        userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         initRecycleView();
         presenter = new ChatPresenter(this,roomId,getApplication());
         presenter.loadData(50);
@@ -94,7 +98,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messageAdapter = new ChatMessageAdapter(ChatActivity.this, list);
+                messageAdapter = new ChatMessageAdapter(ChatActivity.this, list,userId);
                 rvChatHistory.setAdapter(messageAdapter);
                 rvChatHistory.scrollToPosition(list.size()-1);
             }

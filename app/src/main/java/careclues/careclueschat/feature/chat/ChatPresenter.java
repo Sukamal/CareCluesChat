@@ -3,29 +3,39 @@ package careclues.careclueschat.feature.chat;
 import android.app.Application;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 
 import com.rocketchat.common.RocketChatException;
 import com.rocketchat.common.data.model.BaseRoom;
 import com.rocketchat.common.listener.ConnectListener;
 import com.rocketchat.common.listener.TypingListener;
+import com.rocketchat.common.network.Socket;
 import com.rocketchat.core.ChatRoom;
 import com.rocketchat.core.RocketChatClient;
+import com.rocketchat.core.callback.HistoryCallback;
+import com.rocketchat.core.callback.LoginCallback;
 import com.rocketchat.core.callback.MessageCallback;
 import com.rocketchat.core.model.Message;
+import com.rocketchat.core.model.Token;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.User;
+import careclues.careclueschat.model.BaseUserModel;
+import careclues.careclueschat.model.RoomMemberModel;
+import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
+import careclues.careclueschat.util.AppUtil;
 
-        public class ChatPresenter implements ChatContract.presenter,
+public class ChatPresenter implements ChatContract.presenter,
         ConnectListener,
         MessageCallback.SubscriptionCallback,
         TypingListener {
@@ -161,9 +171,30 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 
     @Override
     public void onConnect(String sessionID) {
+        String token = ((CareCluesChatApplication)application).getToken();
+//        String token = RestApiExecuter.getInstance().getAuthToken().getToken();
 
-        //        String token = ((CareCluesChatApplication)getApplicationContext()).getToken();
-        String token = RestApiExecuter.getInstance().getAuthToken().getToken();
+        if (api.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
+            api.loginUsingToken(token, new LoginCallback() {
+                @Override
+                public void onLoginSuccess(Token token) {
+                    chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
+                    chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
+                    chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
+
+                }
+
+                @Override
+                public void onError(RocketChatException error) {
+                    System.out.println("Connection Error : " + error.toString());
+                }
+            });
+        }else{
+            api.getWebsocketImpl().getSocket().reconnect();
+        }
+
+
+
 
     }
 
@@ -179,7 +210,7 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 
     @Override
     public void onMessage(String roomId, Message message) {
-
+        insertIntoDB(message);
         List<ChatMessageModel> list = new ArrayList<>();
         ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
         list.add(chatMessageModel);
@@ -189,6 +220,42 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 
     @Override
     public void onTyping(String roomId, String user, Boolean istyping) {
+
+    }
+
+    private void insertIntoDB(Message message){
+        final MessageEntity messageEntity = new MessageEntity();
+        messageEntity.Id = message.id();
+        messageEntity.rId = message.roomId();
+        messageEntity.msg = message.message();
+        messageEntity.timeStamp = new Date(message.timestamp());
+        RoomUserModel userModel = new RoomUserModel();
+        userModel.id = message.sender().id();
+        userModel.userName = message.sender().username();
+        messageEntity.user = userModel;
+        messageEntity.updatedAt = new Date(message.updatedAt());
+        messageEntity.type = message.type();
+        messageEntity.alias = message.senderAlias();
+        messageEntity.groupable = message.groupable();
+        List<BaseUserModel> mentions = new ArrayList<>();
+        if(message.mentions() != null){
+            for(int i=0; i <message.mentions().size(); i++){
+                BaseUserModel baseUserModel = new BaseUserModel();
+                baseUserModel.id = message.mentions().get(i).id();
+                baseUserModel.userName = message.mentions().get(i).username();
+                mentions.add(baseUserModel);
+            }
+        }
+        messageEntity.mentions = mentions;
+        messageEntity.parseUrls = message.parseUrls();
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                ((CareCluesChatApplication)application).getChatDatabase().messageDao().addMessage(messageEntity);
+
+            }
+        });
 
     }
 }
