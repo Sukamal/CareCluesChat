@@ -112,8 +112,8 @@ public class RestApiExecuter {
         execute(call,serviceCallBack);
     }
 
-    public <T> void getChatMessage(String roomId,int count,final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getChatHistory(roomId,count);
+    public <T> void getChatMessage(String roomId,int count,String updatedSince,final ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getChatHistory(roomId,count,updatedSince);
         execute(call,serviceCallBack);
     }
 

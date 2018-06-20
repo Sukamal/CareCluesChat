@@ -42,7 +42,7 @@ public interface ApiInterface {
     Call<ResponseBody> getRoomMembers(@Query("roomId") String roomId);
 
     @GET("groups.history")
-    Call<ResponseBody> getChatHistory(@Query("roomId") String roomId,@Query("count") int count);
+    Call<ResponseBody> getChatHistory(@Query("roomId") String roomId,@Query("count") int count,@Query("latest") String updatedSince);
 
     @POST("groups.create")
     Call<ResponseBody> createRoom(@Body CreateRoomRequest request);

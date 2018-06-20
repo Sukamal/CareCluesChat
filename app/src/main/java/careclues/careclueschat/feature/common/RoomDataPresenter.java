@@ -366,7 +366,7 @@ public class RoomDataPresenter {
     }
 
     private void getMessageHistory(final String roomId){
-        apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+        apiExecuter.getChatMessage(roomId,0,null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
 //                System.out.println("RoomMember Response: "+ response.messages.toString());
@@ -383,7 +383,7 @@ public class RoomDataPresenter {
 
     public void fetchMessages(final String roomId){
         this.roomId = roomId;
-        apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+        apiExecuter.getChatMessage(roomId,0,null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
                 filterMessageRecord(response.messages);
