@@ -31,6 +31,8 @@ public class MessageModel extends BaseMessageModel{
     @SerializedName("meta")
     public String meta;
 
+    public Boolean synced;
+
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();

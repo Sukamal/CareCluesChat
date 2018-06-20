@@ -16,7 +16,7 @@ public interface RoomContract {
         public void onConnectionFaild(int errorType);
         public void displyRoomList(List<RoomAdapterModel> list);
         public void displyMoreRoomList(List<RoomAdapterModel> list);
-        public void displyNextScreen();
+        public void displyChatScreen(String roomId);
     }
 
     interface presenter {
@@ -25,5 +25,6 @@ public interface RoomContract {
         public void reconnectToServer();
         public void disconnectToServer();
         public void createNewRoom();
+        public void getMessage(String roomId);
     }
 }

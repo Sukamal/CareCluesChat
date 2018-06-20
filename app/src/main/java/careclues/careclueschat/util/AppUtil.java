@@ -23,6 +23,7 @@ import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.UUID;
 
 public class AppUtil {
 
@@ -106,6 +107,10 @@ public class AppUtil {
         return df.format(calendar.getTime());
     }
 
+    public static String generateUniquId(){
+        String uniqId = UUID.randomUUID().toString();
+        return uniqId;
+    }
 
 
 }

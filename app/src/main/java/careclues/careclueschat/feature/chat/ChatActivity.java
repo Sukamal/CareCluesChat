@@ -20,6 +20,7 @@ import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.util.AppUtil;
 
 public class ChatActivity extends BaseActivity implements ChatContract.view {
 
@@ -43,6 +44,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     @Override
     public void initComponents() {
         roomId = getIntent().getStringExtra("roomId");
+        String randomId = AppUtil.generateUniquId();
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         initRecycleView();
         presenter = new ChatPresenter(this,roomId,getApplication());
@@ -89,6 +91,8 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     private void initRecycleView() {
 //        rvRoom.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
+//        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rvChatHistory.setLayoutManager(layoutManager);
 //        rvRoom.setItemAnimator(new DefaultItemAnimator());
@@ -100,7 +104,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
             public void run() {
                 messageAdapter = new ChatMessageAdapter(ChatActivity.this, list,userId);
                 rvChatHistory.setAdapter(messageAdapter);
-                rvChatHistory.scrollToPosition(list.size()-1);
+//                layoutManager.smoothScrollToPosition(rvChatHistory,null,messageAdapter.getItemCount());
             }
         });
     }

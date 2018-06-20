@@ -37,7 +37,8 @@ import careclues.careclueschat.util.ModelEntityTypeConverter;
 
 public class RoomPresenter implements RoomContract.presenter,
         RoomDataPresenter.FetchRoomMemberHistoryListner,
-        RoomDataPresenter.FetchLastUpdatedRoomDbListner{
+        RoomDataPresenter.FetchLastUpdatedRoomDbListner,
+        RoomDataPresenter.FetchMessageListner{
 
     private RoomContract.view view;
     private Application application;
@@ -183,4 +184,14 @@ public class RoomPresenter implements RoomContract.presenter,
         });
     }
 
+    @Override
+    public void getMessage(String roomId) {
+        roomDataPresenter.registerMessageListner(this);
+        roomDataPresenter.fetchMessages(roomId);
+    }
+
+    @Override
+    public void onFetchMessage(String roomId) {
+        view.displyChatScreen(roomId);
+    }
 }

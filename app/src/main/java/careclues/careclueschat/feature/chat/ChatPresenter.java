@@ -258,4 +258,26 @@ public class ChatPresenter implements ChatContract.presenter,
         });
 
     }
+
+    private void insertMessageIntoDB(String message){
+        final MessageEntity messageEntity = new MessageEntity();
+        messageEntity.Id = AppUtil.generateUniquId();
+        messageEntity.rId = roomId;
+        messageEntity.msg = message;
+        messageEntity.timeStamp = new Date();
+        RoomUserModel userModel = new RoomUserModel();
+        userModel.id = userDetails.Id;
+        userModel.userName = userDetails.userName;
+        messageEntity.user = userModel;
+        messageEntity.updatedAt = new Date();
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                ((CareCluesChatApplication)application).getChatDatabase().messageDao().addMessage(messageEntity);
+            }
+        });
+
+    }
+
+
 }

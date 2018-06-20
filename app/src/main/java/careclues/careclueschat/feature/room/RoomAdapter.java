@@ -112,6 +112,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         holder.tvUserName.setText(roomObjects.get(position).name);
         holder.tvRoomId.setText(roomObjects.get(position).description);
         holder.tvStatus.setText(roomObjects.get(position).Id);
+        holder.position = position;
 
         if(roomObjects.get(position).updatedAt != null){
             holder.tvDate.setText(format(roomObjects.get(position).updatedAt));
@@ -121,10 +122,16 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         holder.roomItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, ChatActivity.class);
-//                Intent intent = new Intent(context, TestChatACtivity.class);
-                intent.putExtra("roomId",roomObjects.get(position).Id);
-                context.startActivity(intent);
+
+            if(itemClickListner != null){
+                itemClickListner.onListItemClick(position,roomObjects.get(position).Id);
+            }
+
+
+//                Intent intent = new Intent(context, ChatActivity.class);
+////                Intent intent = new Intent(context, TestChatACtivity.class);
+//                intent.putExtra("roomId",roomObjects.get(position).Id);
+//                context.startActivity(intent);
             }
         });
     }
@@ -154,6 +161,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         TextView tvDate;
         TextView tvTime;
         ImageView imageView;
+        int position;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -172,5 +180,14 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         Date date = new Date(timestamp);
         String ss = date.toString();
         return ss.substring(0,20);
+    }
+
+    private onAdapterItemClickListner itemClickListner;
+    public interface onAdapterItemClickListner{
+        public void onListItemClick(int position, String roomId);
+    }
+
+    public void setAdapterItemClickListner(onAdapterItemClickListner itemClickListner){
+        this.itemClickListner = itemClickListner;
     }
 }

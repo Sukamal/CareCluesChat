@@ -134,6 +134,7 @@ public class ModelEntityTypeConverter {
         messageEntity.mentions = data.mentions;
         messageEntity.parseUrls = data.parseUrls;
         messageEntity.meta = data.meta;
+        messageEntity.synced = data.synced;
 
         return messageEntity;
     }
@@ -154,6 +155,7 @@ public class ModelEntityTypeConverter {
 //            model.mentions = data.mentions;
             model.parseUrls = data.parseUrls;
             model.meta = data.meta;
+            model.synced = data.synced;
             return model;
         }else{
             return null;

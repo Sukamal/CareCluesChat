@@ -11,6 +11,7 @@ import java.util.Arrays;
 import careclues.careclueschat.feature.login.model.LoginRequest;
 import careclues.careclueschat.model.AuthToken;
 import careclues.careclueschat.model.CreateRoomRequest;
+import careclues.careclueschat.model.SendMassageRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -119,6 +120,12 @@ public class RestApiExecuter {
     public <T> void createPrivateRoom(String name,String[] members,final ServiceCallBack<T> serviceCallBack) {
         CreateRoomRequest roomRequest = new CreateRoomRequest(name,members);
         Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).createRoom(roomRequest);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void sendNewMessage(String id, String rId,String msg,final ServiceCallBack<T> serviceCallBack) {
+        SendMassageRequest massageRequest = new SendMassageRequest(id,rId,msg);
+        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).sendNewMessage(massageRequest);
         execute(call,serviceCallBack);
     }
 

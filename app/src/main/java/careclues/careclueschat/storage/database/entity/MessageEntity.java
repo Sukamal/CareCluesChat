@@ -72,6 +72,9 @@ public class MessageEntity {
     @ColumnInfo(name = "meta")
     public String meta;
 
+    @ColumnInfo(name = "synced")
+    public Boolean synced;
+
     @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();

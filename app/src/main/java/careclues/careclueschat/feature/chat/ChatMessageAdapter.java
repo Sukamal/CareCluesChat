@@ -31,12 +31,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     private List<ChatMessageModel> messageList;
     private Context context;
     private String userId;
+    private DateFormatter.Formatter dateFormatter;
 
     public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList,String userId){
         this.context = context;
+//        Collections.sort(messageList);
         this.messageList = messageList ;
         this.userId = userId;
-        Collections.sort(this.messageList);
+        dateFormatter = this;
+
     }
 
     @NonNull
@@ -53,9 +56,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         ChatMessageModel chatMessageModel = messageList.get(position);
 
         Date previousDate = null;
-        if(position>1){
-            ChatMessageModel previousModel = messageList.get(position-1);
-            previousDate = previousModel.createdAt;
+        if(position > 0){
+            previousDate = messageList.get(position -1).createdAt;
         }
         setTimeTextVisibility(chatMessageModel.createdAt, previousDate, holder.tvDate);
 
@@ -118,7 +120,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
         if(date2 == null){
             timeText.setVisibility(View.VISIBLE);
-            timeText.setText(DateFormatter.format(date1, DateFormatter.Template.STRING_DAY_MONTH));
+            if(dateFormatter != null ){
+                timeText.setText(dateFormatter.format(date1));
+            }else{
+                timeText.setText(DateFormatter.format(date1, DateFormatter.Template.STRING_DAY_MONTH));
+
+            }
+
         }else {
             boolean isSameDay = DateFormatter.isSameDay(date1,date2);
 
@@ -128,9 +136,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 //                timeText.setText("-------- " + DateFormatter.format(date2, DateFormatter.Template.STRING_DAY_MONTH));
             }else {
                 timeText.setVisibility(View.VISIBLE);
-                timeText.setText(DateFormatter.format(date2, DateFormatter.Template.STRING_DAY_MONTH));
+                if(dateFormatter != null ){
+                    timeText.setText(dateFormatter.format(date1));
+                }else{
+                    timeText.setText(DateFormatter.format(date1, DateFormatter.Template.STRING_DAY_MONTH));
+                }
+
             }
 
         }
+    }
+
+    private boolean isPreviousSameDate(int position, Date dateToCompare) {
+        if (messageList.size() <= position) return false;
+        Date previousPositionDate = ((ChatMessageModel) messageList.get(position)).createdAt;
+        return DateFormatter.isSameDay(dateToCompare, previousPositionDate);
     }
 }

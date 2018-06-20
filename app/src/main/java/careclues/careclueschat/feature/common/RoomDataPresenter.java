@@ -44,6 +44,7 @@ public class RoomDataPresenter {
     private final int FETCH_SUBSCRIPTION_COMPLETED = 3;
     private final int FETCH_UPDATED_ROOM = 4;
     private final int FETCH_MEMBER_MESSAGE_COMPLETED = 5;
+    private final int FETCH_MESSAGE_COMPLETED = 6;
 
     private Timer timer;
 
@@ -52,12 +53,14 @@ public class RoomDataPresenter {
     private List<RoomEntity> lastUpdatedRoomList;
     private List<RoomEntity> roomEntities;
     private List<SubscriptionEntity> subscriptionEntities;
+    private String roomId;
 
 
     private FetchRoomListner roomListner;
     private FetchSubscriptionListner subscriptionListner;
     private FetchRoomMemberHistoryListner roomMemberHistoryListner;
     private FetchLastUpdatedRoomDbListner lastUpdatedRoomDbListner;
+    private FetchMessageListner fetchMessageListner;
 
     public RoomDataPresenter(Application application){
         this.application = application;
@@ -76,6 +79,10 @@ public class RoomDataPresenter {
 
     public interface FetchSubscriptionListner{
         public void onFetchSubscription(List<SubscriptionEntity> entities);
+    }
+
+    public interface FetchMessageListner{
+        public void onFetchMessage(String roomId);
     }
 
     public interface FetchRoomMemberHistoryListner{
@@ -97,6 +104,10 @@ public class RoomDataPresenter {
 
     public void registerRoomMemberHistoryListner(FetchRoomMemberHistoryListner roomMemberHistoryListner){
         this.roomMemberHistoryListner = roomMemberHistoryListner;
+    }
+
+    public void registerMessageListner(FetchMessageListner fetchMessageListner){
+        this.fetchMessageListner = fetchMessageListner;
     }
 
     private void initHandler(){
@@ -131,6 +142,11 @@ public class RoomDataPresenter {
                     case FETCH_UPDATED_ROOM:
                         if(lastUpdatedRoomDbListner != null){
                             lastUpdatedRoomDbListner.onFetchDbUpdatedRoom(lastUpdatedRoomList);
+                        }
+                        break;
+                    case FETCH_MESSAGE_COMPLETED:
+                        if(fetchMessageListner != null){
+                            fetchMessageListner.onFetchMessage(roomId);
                         }
                         break;
 
@@ -365,6 +381,22 @@ public class RoomDataPresenter {
         });
     }
 
+    public void fetchMessages(final String roomId){
+        this.roomId = roomId;
+        apiExecuter.getChatMessage(roomId,0, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+            @Override
+            public void onSuccess(MessageResponseModel response) {
+                filterMessageRecord(response.messages);
+                insertMessageRecordIntoDb(messageEntities);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+    }
+
     private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
         for(RoomMemberModel memberModel : memberModels){
             RoomMemberEntity memberEntity;
@@ -375,9 +407,14 @@ public class RoomDataPresenter {
     }
 
     private void filterMessageRecord(List<MessageModel> messageModels){
+
+        if(messageEntities == null ){
+            messageEntities = new ArrayList<>();
+        }
         for(MessageModel messageModel : messageModels){
             MessageEntity messageEntity;
             messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
+            messageEntity.synced = true;
             messageEntities.add(messageEntity);
         }
     }
@@ -408,6 +445,7 @@ public class RoomDataPresenter {
                         Log.e("MESSAGE : ", entity.toString());
                     }
                     ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
+                    handler.sendEmptyMessage(FETCH_MESSAGE_COMPLETED);
                 } catch (Throwable e) {
                     Log.e("DBERROR", e.toString());
                 }
