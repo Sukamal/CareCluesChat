@@ -139,12 +139,12 @@ public class ChatPresenter implements ChatContract.presenter,
         chatRoom.sendMessage(msg.toString(), new MessageCallback.MessageAckCallback() {
             @Override
             public void onMessageAck(com.rocketchat.core.model.Message message) {
-
+                Log.e("Message","Message Send");
             }
 
             @Override
             public void onError(RocketChatException error) {
-                Log.e("ERROR : ",error.getMessage());
+                Log.e("ERROR Sending Message: ",error.getMessage());
             }
         });
     }

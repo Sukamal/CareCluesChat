@@ -171,6 +171,8 @@ public class RoomDataPresenter {
         });
     }
 
+
+
     public void getRoom(String lastUpadate) {
 
         if (lastUpadate == null) {

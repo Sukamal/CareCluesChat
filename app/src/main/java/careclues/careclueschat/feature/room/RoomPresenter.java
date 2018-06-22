@@ -95,10 +95,26 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void getRoom() {
         modelList = new ArrayList<>();
-        roomDataPresenter.getUpdatedRoomList(10);
+//        roomDataPresenter.getUpdatedRoomList(10);
+        getOpenRoom();
     }
 
+    List<RoomEntity> lastUpdatedRoomList;
+    public  void getOpenRoom(){
 
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getOpenRoomList();
+                    populateAdapterData(lastUpdatedRoomList,LOAD_ROOM_DATA);
+                } catch (Throwable e) {
+                    Log.e("DBERROR", e.toString());
+                }
+
+            }
+        });
+    }
 
     private void populateAdapterData(final List<RoomEntity> rooms,final int what) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
