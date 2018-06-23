@@ -68,6 +68,18 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
             @Override
             public void run() {
                 messageAdapter.notifyDataSetChanged();
+                layoutManager.smoothScrollToPosition(rvChatHistory,null,messageAdapter.getItemCount());
+
+            }
+        });
+    }
+
+    @Override
+    public void displyTypingStatus(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getSupportActionBar().setSubtitle(message);
 
             }
         });
@@ -88,6 +100,12 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.deregisterSocket();
+    }
+
     private void initRecycleView() {
 //        rvRoom.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -98,7 +116,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 //        rvRoom.setItemAnimator(new DefaultItemAnimator());
     }
 
-    public void displyChatList(final List<ChatMessageModel> list) {
+    private void displyChatList(final List<ChatMessageModel> list) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

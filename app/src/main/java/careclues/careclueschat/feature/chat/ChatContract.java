@@ -15,6 +15,7 @@ public interface ChatContract {
         public void displyNextScreen();
         public void displayChatList(List<ChatMessageModel> list);
         public void displayMoreChatList(List<ChatMessageModel> list);
+        public void displyTypingStatus(String message);
     }
 
     interface presenter {

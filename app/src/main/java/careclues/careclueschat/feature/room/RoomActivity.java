@@ -143,8 +143,8 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void displyChatScreen(String roomId) {
-//        Intent intent = new Intent(RoomActivity.this, ChatActivity.class);
-      Intent intent = new Intent(RoomActivity.this, TestChatACtivity.class);
+        Intent intent = new Intent(RoomActivity.this, ChatActivity.class);
+//      Intent intent = new Intent(RoomActivity.this, TestChatACtivity.class);
         intent.putExtra("roomId",roomId);
         startActivity(intent);
     }

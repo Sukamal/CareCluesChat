@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.rocketchat.common.RocketChatException;
+import com.rocketchat.common.data.lightdb.collection.Collection;
+import com.rocketchat.common.data.lightdb.document.UserDocument;
 import com.rocketchat.common.data.model.BaseRoom;
 import com.rocketchat.common.listener.ConnectListener;
 import com.rocketchat.common.listener.TypingListener;
@@ -72,7 +74,7 @@ public class ChatPresenter implements ChatContract.presenter,
 
     private void initWebSoket(){
 
-        api.getWebsocketImpl().getConnectivityManager().register(this);
+        api.getWebsocketImpl().getConnectivityManager().register(ChatPresenter.this);
         List<BaseRoom> rooms = new ArrayList<>();
         BaseRoom  baseRoom;
         baseRoom  = new BaseRoom() {
@@ -121,11 +123,27 @@ public class ChatPresenter implements ChatContract.presenter,
         };
         rooms.add(baseRoom);
         api.getChatRoomFactory().createChatRooms(rooms);
-
+        api.getDbManager().getUserCollection().register(userId, new Collection.Observer<UserDocument>() {
+            @Override
+            public void onUpdate(Collection.Type type, UserDocument document) {
+                switch (type) {
+                    case ADDED:
+                        break;
+                    case CHANGED:
+                        break;
+                    case REMOVED:
+                        break;
+                }
+            }
+        });
         chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
-        chatRoom.subscribeRoomMessageEvent(null, this);
-        chatRoom.subscribeRoomTypingEvent(null, this);
+        chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
+        chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
 
+    }
+
+    public void deregisterSocket(){
+        chatRoom.unSubscribeAllEvents();
     }
 
 
@@ -139,7 +157,7 @@ public class ChatPresenter implements ChatContract.presenter,
         chatRoom.sendMessage(msg.toString(), new MessageCallback.MessageAckCallback() {
             @Override
             public void onMessageAck(com.rocketchat.core.model.Message message) {
-                Log.e("Message","Message Send");
+                Log.e("Message","Message Send : "+ message.id() + " " +message.toString());
             }
 
             @Override
@@ -210,6 +228,9 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void onMessage(String roomId, Message message) {
+
+        Log.e("Message"," On Message : "+ message.id() + " " +message.toString());
+
         insertIntoDB(message);
         List<ChatMessageModel> list = new ArrayList<>();
         ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
@@ -221,6 +242,12 @@ public class ChatPresenter implements ChatContract.presenter,
     @Override
     public void onTyping(String roomId, String user, Boolean istyping) {
 
+        if(istyping){
+            view.displyTypingStatus(user + " is typing...");
+        }else{
+            view.displyTypingStatus("");
+
+        }
     }
 
     private void insertIntoDB(Message message){

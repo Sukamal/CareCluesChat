@@ -50,6 +50,8 @@ public class RoomPresenter implements RoomContract.presenter,
     private RoomAdapterModel adapterModel;
     private List<RoomEntity> moreList;
     private RoomDataPresenter roomDataPresenter;
+    private List<RoomEntity> lastUpdatedRoomList;
+
 
     private final int LOAD_ROOM_DATA = 1;
     private final int LOAD_MORE_ROOM_DATA = 2;
@@ -99,7 +101,6 @@ public class RoomPresenter implements RoomContract.presenter,
         getOpenRoom();
     }
 
-    List<RoomEntity> lastUpdatedRoomList;
     public  void getOpenRoom(){
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
@@ -167,7 +168,7 @@ public class RoomPresenter implements RoomContract.presenter,
             @Override
             public void run() {
 
-                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getLastUpdatedRoom(startCount,threshold);
+                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getClosedRoomList(startCount,threshold);
                 if(moreList != null && moreList.size() > 0){
                     roomDataPresenter.fetchMemberAndMessage(moreList);
                 }
