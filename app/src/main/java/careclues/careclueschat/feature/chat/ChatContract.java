@@ -16,10 +16,13 @@ public interface ChatContract {
         public void displayChatList(List<ChatMessageModel> list);
         public void displayMoreChatList(List<ChatMessageModel> list);
         public void displyTypingStatus(String message);
+        public void onConnectionFaild(int errorType);
     }
 
     interface presenter {
         public void loadData(int count);
         public void sendMessage(String msg);
+        public void reconnectToServer();
+        public void disconnectToServer();
     }
 }

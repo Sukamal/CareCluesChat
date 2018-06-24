@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -13,9 +14,10 @@ import careclues.careclueschat.R;
 
 public class MessageInputView extends RelativeLayout implements View.OnClickListener,TextWatcher{
 
-    private ImageView ivSubmit;
+    private ImageButton ivSubmit;
     private EditText etMessage;
     private CharSequence input;
+    private ImageButton ibAttachement;
 
     public MessageInputView(Context context) {
         super(context);
@@ -36,7 +38,10 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
     private void initView(Context context){
 
         inflate(context, R.layout.message_input_view,this);
-        ivSubmit = (ImageView) findViewById(R.id.ib_submit);
+        ivSubmit = (ImageButton) findViewById(R.id.ib_submit);
+        ibAttachement = (ImageButton) findViewById(R.id.ib_attachement);
+
+
         etMessage = findViewById(R.id.et_message);
         ivSubmit.setEnabled(false);
         ivSubmit.setOnClickListener(this);

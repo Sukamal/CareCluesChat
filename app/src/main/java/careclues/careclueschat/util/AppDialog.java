@@ -3,6 +3,8 @@ package careclues.careclueschat.util;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -42,7 +44,7 @@ public class AppDialog {
     }
 
 
-    public void dismissDialog(Activity activity) {
+    public void dismissDialog(Context activity) {
         if (!((Activity) activity).isFinishing() && dialog.isShowing()) {
             dialog.dismiss();
         }
@@ -119,6 +121,66 @@ public class AppDialog {
         }
 
     }
+
+    public interface PickImageListener {
+
+        /**
+         * On Camera .
+         */
+        void OnCameraPress();
+
+        /**
+         * On no Gallery.
+         */
+        void OnGalleryPress();
+
+    }
+
+    public void showAlertPickImageDialog(final Context context, final PickImageListener dialogListener) {
+        if (!((Activity) context).isFinishing()) {
+            dialog = new Dialog(context);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_chose_image_option);
+            int diveWidth = AppUtil.getDeviceWidth(context);
+            dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
+            dialog.show();
+
+
+            TextView TV_camera = (TextView) dialog.findViewById(R.id.TV_camera);
+            TV_camera.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if (dialogListener != null) {
+                        dialogListener.OnCameraPress();
+                    }
+
+                }
+            });
+
+            TextView TV_gallary = (TextView) dialog.findViewById(R.id.TV_gallary);
+            TV_gallary.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if (dialogListener != null) {
+                        dialogListener.OnGalleryPress();
+                    }
+                }
+            });
+
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+
+                }
+            });
+        }
+
+    }
+
 
 
 

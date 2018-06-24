@@ -2,11 +2,17 @@ package careclues.careclueschat.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -15,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -39,6 +46,10 @@ public class AppUtil {
             size.y = display.getHeight(); // Deprecated
         }
         return size;
+    }
+
+    public static int getDeviceWidth(Context mContext) {
+        return getDeviceWidthHeight(mContext).x;
     }
 
     public static int dpToPx(Context context, int dp) {
@@ -112,5 +123,72 @@ public class AppUtil {
         return uniqId;
     }
 
+    public static Uri createLocalPath(String folderPath) {
+
+        Uri imgUri = null;
+        String imgPath = null;
+        try {
+
+            File imagesFolder = new File(Environment.getExternalStorageDirectory()+"/CCCHAT/Media");
+//			File imagesFolder = new File(Environment.getExternalStorageDirectory()+"/LaCity/Media", "LaCityImages");
+            if (!imagesFolder.exists()) {
+                imagesFolder.mkdirs();
+            }
+            File file = new File(imagesFolder, "image" + String.valueOf(System.currentTimeMillis()) + ".jpg");
+
+            imgUri = Uri.fromFile(file);
+            imgPath = file.getAbsolutePath();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return imgUri;
+    }
+
+    public static boolean checkPermission(Context context, String permission) {
+        int result = ContextCompat.checkSelfPermission(context, permission);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+
+            return true;
+
+        } else {
+
+            return false;
+
+        }
+    }
+
+    public static boolean isSDCardAvailable(){
+        Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+        return isSDPresent;
+    }
+
+    public static String getAbsolutePathFromContentURI(Context context,Uri uri)
+    {
+        String fileName="unknown";//default fileName
+        Uri filePathUri = uri;
+        String filePath;
+        if (uri.getScheme().toString().compareTo("content")==0)
+        {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            if (cursor.moveToFirst())
+            {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);//Instead of "MediaStore.Images.Media.DATA" can be used "_data"
+                filePathUri = Uri.parse(cursor.getString(column_index));
+                fileName = filePathUri.getLastPathSegment().toString();
+            }
+        }
+        else if (uri.getScheme().compareTo("file")==0)
+        {
+            fileName = filePathUri.getLastPathSegment().toString();
+        }
+        else
+        {
+            fileName = fileName+"_"+filePathUri.getLastPathSegment().toString();
+        }
+
+        filePath = filePathUri.getPath();
+
+        return filePath;
+    }
 
 }

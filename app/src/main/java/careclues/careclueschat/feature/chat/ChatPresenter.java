@@ -12,17 +12,20 @@ import com.rocketchat.common.data.model.BaseRoom;
 import com.rocketchat.common.listener.ConnectListener;
 import com.rocketchat.common.listener.TypingListener;
 import com.rocketchat.common.network.Socket;
+import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.ChatRoom;
 import com.rocketchat.core.RocketChatClient;
 import com.rocketchat.core.callback.HistoryCallback;
 import com.rocketchat.core.callback.LoginCallback;
 import com.rocketchat.core.callback.MessageCallback;
+import com.rocketchat.core.internal.rpc.MessageRPC;
 import com.rocketchat.core.model.Message;
 import com.rocketchat.core.model.Token;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
@@ -49,6 +52,7 @@ public class ChatPresenter implements ChatContract.presenter,
     private String roomId;
     private RocketChatClient api;
     private ChatRoom chatRoom;
+    private AtomicInteger integer;
 
 
 
@@ -56,11 +60,14 @@ public class ChatPresenter implements ChatContract.presenter,
         this.view = view;
         this.application = application;
         this.roomId = roomId;
+        integer = new AtomicInteger(1);
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         api = ((CareCluesChatApplication) application).getRocketChatAPI();
         getLoginUserDetails(userId);
         initWebSoket();
+
+
     }
 
     private void getLoginUserDetails(final String userId){
@@ -154,6 +161,16 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void sendMessage(String msg) {
+
+//       MessageEntity messageEntity =  insertMessageIntoDB(msg);
+//        List<ChatMessageModel> list = new ArrayList<>();
+//        ChatMessageModel chatMessageModel = new ChatMessageModel(messageEntity.Id,messageEntity.msg,messageEntity.updatedAt,messageEntity.user.id);
+//        list.add(chatMessageModel);
+//        view.displayMoreChatList(list);
+//
+//        api.getWebsocketImpl().getSocket().sendData(MessageRPC.sendMessage(integer.getAndIncrement(), messageEntity.Id, messageEntity.rId,messageEntity.msg));
+
+
         chatRoom.sendMessage(msg.toString(), new MessageCallback.MessageAckCallback() {
             @Override
             public void onMessageAck(com.rocketchat.core.model.Message message) {
@@ -165,6 +182,16 @@ public class ChatPresenter implements ChatContract.presenter,
                 Log.e("ERROR Sending Message: ",error.getMessage());
             }
         });
+    }
+
+    @Override
+    public void reconnectToServer() {
+        api.getWebsocketImpl().getSocket().reconnect();
+    }
+
+    @Override
+    public void disconnectToServer() {
+        deregisterSocket();
     }
 
     private void getChatHistory(final String roomId, final int count){
@@ -189,6 +216,7 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void onConnect(String sessionID) {
+        view.displayMessage(application.getString(R.string.connected));
         String token = ((CareCluesChatApplication)application).getToken();
 //        String token = RestApiExecuter.getInstance().getAuthToken().getToken();
 
@@ -210,15 +238,11 @@ public class ChatPresenter implements ChatContract.presenter,
         }else{
             api.getWebsocketImpl().getSocket().reconnect();
         }
-
-
-
-
     }
 
     @Override
     public void onDisconnect(boolean closedByServer) {
-
+        view.onConnectionFaild(2);
     }
 
     @Override
@@ -231,11 +255,11 @@ public class ChatPresenter implements ChatContract.presenter,
 
         Log.e("Message"," On Message : "+ message.id() + " " +message.toString());
 
-        insertIntoDB(message);
-        List<ChatMessageModel> list = new ArrayList<>();
-        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
-        list.add(chatMessageModel);
-        view.displayMoreChatList(list);
+//        insertIntoDB(message);
+//        List<ChatMessageModel> list = new ArrayList<>();
+//        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
+//        list.add(chatMessageModel);
+//        view.displayMoreChatList(list);
 
     }
 
@@ -286,9 +310,10 @@ public class ChatPresenter implements ChatContract.presenter,
 
     }
 
-    private void insertMessageIntoDB(String message){
+    private MessageEntity insertMessageIntoDB(String message){
         final MessageEntity messageEntity = new MessageEntity();
-        messageEntity.Id = AppUtil.generateUniquId();
+//        messageEntity.Id = AppUtil.generateUniquId();
+        messageEntity.Id = Utils.shortUUID();
         messageEntity.rId = roomId;
         messageEntity.msg = message;
         messageEntity.timeStamp = new Date();
@@ -303,6 +328,7 @@ public class ChatPresenter implements ChatContract.presenter,
                 ((CareCluesChatApplication)application).getChatDatabase().messageDao().addMessage(messageEntity);
             }
         });
+        return  messageEntity;
 
     }
 

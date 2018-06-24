@@ -34,7 +34,7 @@ public interface MessageDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<MessageEntity> entityList);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void addMessage(MessageEntity entityList);
 
     @Update

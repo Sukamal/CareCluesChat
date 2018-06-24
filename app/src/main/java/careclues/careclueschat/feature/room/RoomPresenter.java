@@ -3,17 +3,29 @@ package careclues.careclueschat.feature.room;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.rocketchat.common.RocketChatException;
+import com.rocketchat.common.data.lightdb.collection.Collection;
+import com.rocketchat.common.data.lightdb.document.UserDocument;
+import com.rocketchat.common.data.model.BaseRoom;
+import com.rocketchat.common.listener.ConnectListener;
+import com.rocketchat.core.ChatRoom;
 import com.rocketchat.core.RocketChatClient;
+import com.rocketchat.core.callback.MessageCallback;
+import com.rocketchat.core.callback.RoomCallback;
+import com.rocketchat.core.model.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.feature.chat.ChatPresenter;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.MessageModel;
@@ -38,7 +50,13 @@ import careclues.careclueschat.util.ModelEntityTypeConverter;
 public class RoomPresenter implements RoomContract.presenter,
         RoomDataPresenter.FetchRoomMemberHistoryListner,
         RoomDataPresenter.FetchLastUpdatedRoomDbListner,
-        RoomDataPresenter.FetchMessageListner{
+        RoomDataPresenter.FetchMessageListner,
+
+        ConnectListener,MessageCallback.SubscriptionCallback,
+        RoomCallback.GroupCreateCallback
+
+
+{
 
     private RoomContract.view view;
     private Application application;
@@ -52,6 +70,7 @@ public class RoomPresenter implements RoomContract.presenter,
     private RoomDataPresenter roomDataPresenter;
     private List<RoomEntity> lastUpdatedRoomList;
 
+    private RocketChatClient api;
 
     private final int LOAD_ROOM_DATA = 1;
     private final int LOAD_MORE_ROOM_DATA = 2;
@@ -66,7 +85,9 @@ public class RoomPresenter implements RoomContract.presenter,
         roomDataPresenter = new RoomDataPresenter(application);
         roomDataPresenter.registerRoomMemberHistoryListner(this);
         roomDataPresenter.registerUpdatedRoomListner(this);
+//        api.getWebsocketImpl().getConnectivityManager().register(RoomPresenter.this);
     }
+
 
     @Override
     public void onFetchDbUpdatedRoom(List<RoomEntity> entities) {
@@ -210,5 +231,35 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onFetchMessage(String roomId) {
         view.displyChatScreen(roomId);
+    }
+
+    @Override
+    public void onConnect(String sessionID) {
+        view.displayMessage(application.getString(R.string.connected));
+    }
+
+    @Override
+    public void onDisconnect(boolean closedByServer) {
+        view.onConnectionFaild(2);
+    }
+
+    @Override
+    public void onConnectError(Throwable websocketException) {
+        view.onConnectionFaild(1);
+    }
+
+    @Override
+    public void onCreateGroup(String roomId) {
+
+    }
+
+    @Override
+    public void onError(RocketChatException error) {
+
+    }
+
+    @Override
+    public void onMessage(String roomId, Message message) {
+
     }
 }

@@ -5,5 +5,10 @@
     <string name="connection_error">Connection error!</string>
     <string name="connected">Connected to Chat Server!</string>
 
+    <string name="txt_Chose_image_from">Chose image from:</string>
+    <string name="txt_Take_a_photo">Camera</string>
+    <string name="txt_Upload_photo">Gallery</string>
+    <string name="txt_Upload_file">Upload file</string>
+
 
 </resources>

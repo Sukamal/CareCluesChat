@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_10">
+
+    <TextView
+        android:id="@+id/TV_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_Chose_image_from"
+        android:layout_marginBottom="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_10"
+        style="@style/Text_Normal"
+        android:textColor="@color/color_text"/>
+
+    <TextView
+        android:id="@+id/TV_camera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_Take_a_photo"
+        android:drawableLeft="@drawable/camera"
+        android:drawablePadding="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
+        android:gravity="center_vertical"
+        style="@style/Text_Normal"
+        android:textColor="@color/color_hint_text"/>
+    <TextView
+        android:id="@+id/TV_gallary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_Upload_photo"
+        android:drawableLeft="@drawable/photo"
+        android:drawablePadding="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
+        android:gravity="center_vertical"
+        style="@style/Text_Normal"
+        android:textColor="@color/color_hint_text"/>
+    <TextView
+        android:id="@+id/TV_pdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_Upload_file"
+        android:drawableLeft="@drawable/pdf"
+        android:drawablePadding="@dimen/margin_10"
+        android:gravity="center_vertical"
+        style="@style/Text_Normal"
+        android:textColor="@color/color_hint_text"
+        android:visibility="gone"/>
+
+
+
+</LinearLayout>
+

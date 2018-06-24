@@ -24,6 +24,11 @@
     <color name="brown">#4e342e</color>
 
     <color name="white">#ffffff</color>
+
+    <color name="color_hint_text">#848484</color>
+    <color name="color_text">#545454</color>
+    <color name="color_header_text">#333333</color>
+
     <!-- TEST CHAT END-->
 
 </resources>

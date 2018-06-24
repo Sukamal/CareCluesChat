@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Text_Normal">
+        <item name="android:textSize">@dimen/text_size_normal</item>
+        <item name="android:textColor">@color/color_header_text</item>
+        <item name="android:textColorHint">@color/color_hint_text</item>
+        <item name="android:inputType">textCapWords</item>
+
+    </style>
+
 </resources>

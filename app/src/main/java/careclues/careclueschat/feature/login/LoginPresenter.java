@@ -78,6 +78,7 @@ public class LoginPresenter implements
         chatClient.setReconnectionStrategy(null);
         chatClient.connect(this);
 
+
         roomDataPresenter = new RoomDataPresenter(application);
         roomDataPresenter.registerRoomListner(this);
         roomDataPresenter.registerSubscriptionListner(this);

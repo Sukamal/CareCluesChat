@@ -22,4 +22,15 @@ public class AppConstant {
         TAG_VALUE_1
     }
 
+    public interface RequestTag {
+
+        int PERMISSION_REQUEST_CODE_CAMERA_REQUEST = 101;
+        int PERMISSION_REQUEST_CODE_STORAGE_REQUEST = 102;
+
+        int PICK_GALARRY_REQUEST = 103;
+        int PICK_CAMERA_REQUEST = 104;
+
+
+    }
+
 }
