@@ -2,15 +2,18 @@ package careclues.careclueschat.feature.chat;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -184,6 +187,8 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
                         pickImageFromCamera();
 
                     } else {
+                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(cameraIntent, AppConstant.RequestTag.PERMISSION_REQUEST_CODE_CAMERA_REQUEST);
 //                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, AppConstant.RequestTag.PERMISSION_REQUEST_CODE_STORAGE_REQUEST);
                     }
 
@@ -256,5 +261,30 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
         } else if (requestCode == AppConstant.RequestTag.PICK_CAMERA_REQUEST && resultCode == RESULT_OK) {
                 // TODO ---------- Upload Image
             }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case AppConstant.RequestTag.PERMISSION_REQUEST_CODE_CAMERA_REQUEST:
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(AppUtil.checkPermission(ChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                        pickImageFromCamera();
+                    }else{
+                        ActivityCompat.requestPermissions(ChatActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, AppConstant.RequestTag.PERMISSION_REQUEST_CODE_STORAGE_REQUEST);
+                    }
+                } else {
+                    Toast.makeText(ChatActivity.this, "CAMERA Permission Denied, CAMERA permission allows us to access CAMERA. Please allow in App Settings for additional functionality.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case AppConstant.RequestTag.PERMISSION_REQUEST_CODE_STORAGE_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    Toast.makeText(ChatActivity.this, "WRITE_EXTERNAL_STORAGE Permission Denied.", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 }
