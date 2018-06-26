@@ -29,6 +29,7 @@ public class AppConstant {
 
         int PICK_GALARRY_REQUEST = 103;
         int PICK_CAMERA_REQUEST = 104;
+        int PICK_DOCUMENT_REQUEST = 105;
 
 
     }

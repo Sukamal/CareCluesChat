@@ -1,6 +1,7 @@
 package careclues.careclueschat.feature.chat;
 
 
+import java.io.File;
 import java.util.List;
 
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
@@ -22,6 +23,7 @@ public interface ChatContract {
     interface presenter {
         public void loadData(int count);
         public void sendMessage(String msg);
+        public void uploadFile(File file,String desc);
         public void reconnectToServer();
         public void disconnectToServer();
     }

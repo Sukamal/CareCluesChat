@@ -15,13 +15,17 @@ import com.rocketchat.common.network.Socket;
 import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.ChatRoom;
 import com.rocketchat.core.RocketChatClient;
+import com.rocketchat.core.callback.FileListener;
 import com.rocketchat.core.callback.HistoryCallback;
 import com.rocketchat.core.callback.LoginCallback;
 import com.rocketchat.core.callback.MessageCallback;
 import com.rocketchat.core.internal.rpc.MessageRPC;
+import com.rocketchat.core.model.FileDescriptor;
 import com.rocketchat.core.model.Message;
 import com.rocketchat.core.model.Token;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -185,6 +189,36 @@ public class ChatPresenter implements ChatContract.presenter,
     }
 
     @Override
+    public void uploadFile(File file,String desc) {
+        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
+            @Override
+            public void onUploadStarted(String roomId, String fileName, String description) {
+
+            }
+
+            @Override
+            public void onUploadProgress(int progress, String roomId, String fileName, String description) {
+
+            }
+
+            @Override
+            public void onUploadComplete(int statusCode, FileDescriptor file, String roomId, String fileName, String description) {
+
+            }
+
+            @Override
+            public void onUploadError(RocketChatException error, IOException e) {
+
+            }
+
+            @Override
+            public void onSendFile(Message message, RocketChatException error) {
+
+            }
+        });
+    }
+
+    @Override
     public void reconnectToServer() {
         api.getWebsocketImpl().getSocket().reconnect();
     }
@@ -255,11 +289,11 @@ public class ChatPresenter implements ChatContract.presenter,
 
         Log.e("Message"," On Message : "+ message.id() + " " +message.toString());
 
-//        insertIntoDB(message);
-//        List<ChatMessageModel> list = new ArrayList<>();
-//        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
-//        list.add(chatMessageModel);
-//        view.displayMoreChatList(list);
+        insertIntoDB(message);
+        List<ChatMessageModel> list = new ArrayList<>();
+        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
+        list.add(chatMessageModel);
+        view.displayMoreChatList(list);
 
     }
 

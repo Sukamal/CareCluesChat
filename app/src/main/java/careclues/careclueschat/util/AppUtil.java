@@ -129,8 +129,18 @@ public class AppUtil {
         String imgPath = null;
         try {
 
-            File imagesFolder = new File(Environment.getExternalStorageDirectory()+"/CCCHAT/Media");
-//			File imagesFolder = new File(Environment.getExternalStorageDirectory()+"/LaCity/Media", "LaCityImages");
+//            final String dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/picFolder/";
+//            File newdir = new File(dir);
+//            if (!newdir.exists()) {
+//                newdir.mkdir();
+//            }
+//
+//            String file = dir+count+".jpg";
+//            File newfile = new File(file);
+
+
+            File imagesFolder = new File(Environment.getExternalStorageDirectory()+"/CCCHAT/Media/");
+////			File imagesFolder = new File(Environment.getExternalStorageDirectory()+"/LaCity/Media", "LaCityImages");
             if (!imagesFolder.exists()) {
                 imagesFolder.mkdirs();
             }

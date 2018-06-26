@@ -134,6 +134,8 @@ public class AppDialog {
          */
         void OnGalleryPress();
 
+        void OnDocumentPress();
+
     }
 
     public void showAlertPickImageDialog(final Context context, final PickImageListener dialogListener) {
@@ -170,6 +172,20 @@ public class AppDialog {
                     }
                 }
             });
+
+            TextView TV_pdf = (TextView) dialog.findViewById(R.id.TV_pdf);
+            TV_pdf.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if (dialogListener != null) {
+                        dialogListener.OnDocumentPress();
+                    }
+                }
+            });
+
+
 
             dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
