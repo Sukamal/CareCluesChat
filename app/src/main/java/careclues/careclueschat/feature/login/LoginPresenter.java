@@ -39,10 +39,13 @@ import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.storage.preference.AppPreference;
+import careclues.rocketchat.CcRocketChatClient;
+import careclues.rocketchat.CcSocket;
+import careclues.rocketchat.listner.CcConnectListener;
 
 public class LoginPresenter implements
-        LoginContract.presenter,/*CcConnectListener*/
-        ConnectListener,
+        LoginContract.presenter,CcConnectListener,
+        /*ConnectListener,*/
 
         RoomDataPresenter.FetchRoomListner,
         RoomDataPresenter.FetchSubscriptionListner,
@@ -54,8 +57,8 @@ public class LoginPresenter implements
 
     private LoginContract.view view;
     private Application application;
-    private RocketChatClient chatClient;
-//    private CcRocketChatClient chatClient;
+//    private RocketChatClient chatClient;
+    private CcRocketChatClient chatClient;
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
 
@@ -72,11 +75,13 @@ public class LoginPresenter implements
         appPreference = ((CareCluesChatApplication) application).getAppPreference();
 
         apiExecuter = RestApiExecuter.getInstance();
-//        chatClient = ((CareCluesChatApplication) application).getRocketChatClient();
-//        chatClient.connect(this);
-        chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
-        chatClient.setReconnectionStrategy(null);
+
+        chatClient = ((CareCluesChatApplication) application).getRocketChatClient();
         chatClient.connect(this);
+
+//        chatClient = ((CareCluesChatApplication) application).getRocketChatAPI();
+//        chatClient.setReconnectionStrategy(null);
+//        chatClient.connect(this);
 
 
         roomDataPresenter = new RoomDataPresenter(application);
@@ -93,21 +98,25 @@ public class LoginPresenter implements
 
     @Override
     public void doLogin(String userId,String password) {
-        if (chatClient.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
-            chatClient.login(userId, password, new LoginCallback() {
-                @Override
-                public void onLoginSuccess(Token token) {
-                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
-                    ((CareCluesChatApplication) application).setUserId(token.getUserId());
-                }
+//        if (chatClient.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
+//            chatClient.login(userId, password, new LoginCallback() {
+//                @Override
+//                public void onLoginSuccess(Token token) {
+//                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
+//                    ((CareCluesChatApplication) application).setUserId(token.getUserId());
+//                }
+//
+//                @Override
+//                public void onError(RocketChatException error) {
+//
+//                }
+//            });
+//        }else{
+////            view.onConnectionFaild(2);
+//        }
 
-                @Override
-                public void onError(RocketChatException error) {
-
-                }
-            });
-        }else{
-//            view.onConnectionFaild(2);
+        if(chatClient.getWebsocketImpl().getSocket().getState() == CcSocket.State.CONNECTED){
+            chatClient.login(userId,password);
         }
 
     }
@@ -121,7 +130,7 @@ public class LoginPresenter implements
 
     @Override
     public void disconnectToServer() {
-        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
+//        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
     }
 
    @Override

@@ -22,7 +22,7 @@ public class CareCluesChatApplication extends Application {
     private AppPreference appPreference;
     private RocketChatClient client;
 
-//    private CcRocketChatClient chatClient;
+    private CcRocketChatClient chatClient;
 
 
     public String token;
@@ -55,17 +55,17 @@ public class CareCluesChatApplication extends Application {
             }
         };
 
-        client = new RocketChatClient.Builder()
-                .websocketUrl(serverurl)
-                .restBaseUrl(baseUrl)
-                .logger(logger)
-                .build();
-        Utils.DOMAIN_NAME = "https://ticklechat.careclues.com";
-        client.setReconnectionStrategy(new ReconnectionStrategy(20, 3000));
-
-//        chatClient = new CcRocketChatClient.Builder()
+//        client = new RocketChatClient.Builder()
 //                .websocketUrl(serverurl)
+//                .restBaseUrl(baseUrl)
+//                .logger(logger)
 //                .build();
+//        Utils.DOMAIN_NAME = "https://ticklechat.careclues.com";
+//        client.setReconnectionStrategy(new ReconnectionStrategy(20, 3000));
+
+        chatClient = new CcRocketChatClient.Builder()
+                .websocketUrl(serverurl)
+                .build();
 
     }
 
@@ -97,7 +97,7 @@ public class CareCluesChatApplication extends Application {
         return chatDatabase;
     }
 
-//    public CcRocketChatClient getRocketChatClient() {
-//        return chatClient;
-//    }
+    public CcRocketChatClient getRocketChatClient() {
+        return chatClient;
+    }
 }

@@ -22,5 +22,7 @@ public enum  CcMessageType {
     @SerializedName("ping")
     PING,
     @SerializedName("pong")
-    PONG
+    PONG,
+    @SerializedName("other")
+    OTHER
 }

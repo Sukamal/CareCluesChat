@@ -76,6 +76,11 @@ public class CcWebsocketImpl implements CcSocketListener {
                 break;
             case UNSUBSCRIBED:
                 break;
+            case OTHER:
+                break;
+            default:
+
+                break;
         }
     }
 
