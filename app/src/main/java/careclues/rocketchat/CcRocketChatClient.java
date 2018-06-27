@@ -4,6 +4,7 @@ package careclues.rocketchat;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
+import careclues.rocketchat.listner.CcTokenProvider;
 import okhttp3.OkHttpClient;
 
 import static com.rocketchat.common.utils.Preconditions.checkNotNull;
@@ -14,7 +15,8 @@ public class CcRocketChatClient {
     public CcSocketFactory factory;
     public String socketUrl = "wss://ticklechat.careclues.com/websocket";
     public CcWebsocketImpl websocketImpl;
-    public CcConnectivityManager connectivityManager;
+    public CcTokenProvider tokenProvider;
+
 
 
     private CcRocketChatClient(final Builder builder){
@@ -39,14 +41,18 @@ public class CcRocketChatClient {
         }else{
             factory = builder.factory;
         }
-        connectivityManager = new CcConnectivityManager();
-        websocketImpl = new CcWebsocketImpl(client,factory,socketUrl,connectivityManager);
+
+        tokenProvider = builder.provider;
+        websocketImpl = new CcWebsocketImpl(client, factory,builder.websocketUrl);
+
     }
 
     public static final class Builder {
         private String websocketUrl;
         private OkHttpClient client;
         private CcSocketFactory factory;
+        private CcTokenProvider provider;
+
 
         public Builder websocketUrl(String url) {
             this.websocketUrl = url;
@@ -62,6 +68,12 @@ public class CcRocketChatClient {
             this.factory = factory;
             return this;
         }
+
+        public Builder tokenProvider(CcTokenProvider provider) {
+            this.provider = checkNotNull(provider, "provider == null");
+            return this;
+        }
+
 
         public CcRocketChatClient build() {
             return new CcRocketChatClient(this);

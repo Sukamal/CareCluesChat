@@ -60,7 +60,7 @@ public class CareCluesChatApplication extends Application {
 //                .restBaseUrl(baseUrl)
 //                .logger(logger)
 //                .build();
-//        Utils.DOMAIN_NAME = "https://ticklechat.careclues.com";
+//        CcUtils.DOMAIN_NAME = "https://ticklechat.careclues.com";
 //        client.setReconnectionStrategy(new ReconnectionStrategy(20, 3000));
 
         chatClient = new CcRocketChatClient.Builder()

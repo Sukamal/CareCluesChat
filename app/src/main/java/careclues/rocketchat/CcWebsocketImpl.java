@@ -23,9 +23,21 @@ public class CcWebsocketImpl implements CcSocketListener {
     private String baseUrl;
     private AtomicInteger integer;
     private CcConnectivityManager connectivityManager;
+    private String userId;
 
 
-    CcWebsocketImpl(OkHttpClient client, CcSocketFactory factory, String baseUrl,CcConnectivityManager connectivityManager) {
+
+    CcWebsocketImpl(OkHttpClient client, CcSocketFactory factory, String baseUrl) {
+        this.client = client;
+        this.factory = factory;
+        this.baseUrl = baseUrl;
+        this.socket = factory.create(client, baseUrl, this);
+
+        connectivityManager = new CcConnectivityManager();
+        integer = new AtomicInteger(1);
+    }
+
+    /*CcWebsocketImpl(OkHttpClient client, CcSocketFactory factory, String baseUrl,CcConnectivityManager connectivityManager) {
         this.client = client;
         this.factory = factory;
         this.baseUrl = baseUrl;
@@ -33,11 +45,19 @@ public class CcWebsocketImpl implements CcSocketListener {
         this.connectivityManager = connectivityManager;
         integer = new AtomicInteger(1);
 
-    }
+    }*/
 
     void connect(CcConnectListener listener) {
         connectivityManager.register(listener);
         socket.connect();
+    }
+
+    public String getMyUserId() {
+        return userId;
+    }
+
+    public CcConnectivityManager getConnectivityManager() {
+        return connectivityManager;
     }
 
     void disconnect() {
@@ -56,25 +76,30 @@ public class CcWebsocketImpl implements CcSocketListener {
     }
 
     @Override
-    public void onMessageReceived(CcMessageType type, String id, String message) {
-        switch (type) {
+    public void onMessageReceived(JSONObject message) {
+
+        switch (CcRPC.getMessageType(message.optString("msg"))) {
             case CONNECTED:
                 processOnConnected(message);
                 break;
-            case PING:
-                socket.sendData(CcRPC.PONG_MESSAGE);
-                break;
             case RESULT:
+//                coreMiddleware.processCallback(Long.valueOf(message.optString("id")), message);
                 break;
             case READY:
+//                coreStreamMiddleware.processSubscriptionSuccess(message);
                 break;
             case ADDED:
+//                processCollectionsAdded(message);
                 break;
             case CHANGED:
+//                processCollectionsChanged(message);
                 break;
             case REMOVED:
+                // TODO - collection REMOVED...
+                //dbManager.update(message, RPC.MsgType.REMOVED);
                 break;
-            case UNSUBSCRIBED:
+            case NOSUB:
+//                coreStreamMiddleware.processUnsubscriptionSuccess(message);
                 break;
             case OTHER:
                 break;
@@ -85,11 +110,19 @@ public class CcWebsocketImpl implements CcSocketListener {
     }
 
     private String sessionId;
-    private void processOnConnected(String message) {
-
-        Gson gson = new Gson();
-        sessionId = gson.fromJson(message,CcConnectedMessage.class).session;
+    private void processOnConnected(JSONObject object) {
+        sessionId = object.optString("session");
         connectivityManager.publishConnect(sessionId);
+        /*sendData(BasicRPC.PING_MESSAGE);*/
+
+    }
+
+    private void processCollectionsAdded(JSONObject object) {
+        if (userId == null) {
+            userId = object.optString("id");
+        }
+        // TODO - collections added
+        //dbManager.update(object, RPC.MsgType.ADDED);
     }
 
 
@@ -98,6 +131,9 @@ public class CcWebsocketImpl implements CcSocketListener {
 //        System.out.println("RocketChatAPI onMessageReceived");
 //
 //    }
+
+
+
 
     @Override
     public void onClosing() {
@@ -108,12 +144,15 @@ public class CcWebsocketImpl implements CcSocketListener {
     @Override
     public void onClosed() {
         System.out.println("RocketChatAPI onClosed");
+        connectivityManager.publishDisconnect(true);
+
 
     }
 
     @Override
     public void onFailure(Throwable throwable) {
         System.out.println("RocketChatAPI onFailure");
+        connectivityManager.publishConnectError(throwable);
 
     }
 

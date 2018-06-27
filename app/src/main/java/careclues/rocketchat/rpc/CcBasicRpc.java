@@ -1,11 +1,14 @@
 package careclues.rocketchat.rpc;
 
+import com.rocketchat.common.utils.Utils;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import careclues.rocketchat.Util;
+import careclues.rocketchat.CcUtils;
 
-public class CcBasicRpc extends CcRPC{
+
+public class CcBasicRpc extends CcRPC {
 
     private static final String LOGIN = "login";
     private static final String GET_USER_ROLES = "getUserRoles";
@@ -23,7 +26,7 @@ public class CcBasicRpc extends CcRPC{
         JSONObject loginObject = new JSONObject();
         try {
             loginObject.put("user", new JSONObject().put("username", username));
-            loginObject.put("password", new JSONObject().put("digest", Util.getDigest(password)).put("algorithm", "sha-256"));
+            loginObject.put("password", new JSONObject().put("digest", CcUtils.getDigest(password)).put("algorithm", "sha-256"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -90,5 +93,4 @@ public class CcBasicRpc extends CcRPC{
     public static String logout(int integer) {
         return getRemoteMethodObject(integer, LOGOUT).toString();
     }
-
 }

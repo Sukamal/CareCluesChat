@@ -8,7 +8,7 @@ public interface CcSocketListener {
 
     void onConnected();
 
-    void onMessageReceived(CcMessageType type, String id, String message);
+    void onMessageReceived(JSONObject message);
 
     void onClosing();
 

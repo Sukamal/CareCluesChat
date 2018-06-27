@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 public class CcRPC {
 
+
     //Currently Used
     private static final String TYPE_PING = "ping";
     private static final String TYPE_CONNECTED = "connected";
@@ -26,27 +27,27 @@ public class CcRPC {
     public static final String TYPE_SUB = "sub";
 
 
-    public static CcRPC.MsgType getMessageType(String s) {
+    public static MsgType getMessageType(String s) {
         if (s.equals(TYPE_PING)) {
-            return CcRPC.MsgType.PING;
+            return MsgType.PING;
         } else if (s.equals(TYPE_CONNECTED)) {
-            return CcRPC.MsgType.CONNECTED;
+            return MsgType.CONNECTED;
         } else if (s.equals(TYPE_ADDED)) {
-            return CcRPC.MsgType.ADDED;
+            return MsgType.ADDED;
         } else if (s.equals(TYPE_RESULT)) {
-            return CcRPC.MsgType.RESULT;
+            return MsgType.RESULT;
         } else if (s.equals(TYPE_READY)) {
-            return CcRPC.MsgType.READY;
+            return MsgType.READY;
         } else if (s.equals(TYPE_CHANGED)) {
-            return CcRPC.MsgType.CHANGED;
+            return MsgType.CHANGED;
         } else if (s.equals(TYPE_REMOVED)) {
-            return CcRPC.MsgType.REMOVED;
+            return MsgType.REMOVED;
         } else if (s.equals(TYPE_NOSUB)) {
-            return CcRPC.MsgType.NOSUB;
+            return MsgType.NOSUB;
         } else if (s.equals(TYPE_PONG)) {
-            return CcRPC.MsgType.PONG;
+            return MsgType.PONG;
         } else {
-            return CcRPC.MsgType.OTHER;
+            return MsgType.OTHER;
         }
     }
 
