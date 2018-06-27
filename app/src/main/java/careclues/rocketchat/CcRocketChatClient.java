@@ -1,6 +1,7 @@
 package careclues.rocketchat;
 
 
+import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
@@ -93,14 +94,20 @@ public class CcRocketChatClient {
         websocketImpl.disconnect();
     }
 
-    public void login(String username, String password){
-        websocketImpl.login(username,password);
+
+
+
+
+
+
+
+    public void login(String username, String password, CcLoginCallback loginCallback){
+        websocketImpl.login(username,password,loginCallback);
     }
 
     public void loginUsingToken(String token) {
         websocketImpl.loginUsingToken(token);
     }
-
 
     public void logout() {
         websocketImpl.logout();

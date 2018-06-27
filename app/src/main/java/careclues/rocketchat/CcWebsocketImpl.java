@@ -7,6 +7,8 @@ import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.common.CcCoreMiddleware;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
@@ -24,6 +26,8 @@ public class CcWebsocketImpl implements CcSocketListener {
     private AtomicInteger integer;
     private CcConnectivityManager connectivityManager;
     private String userId;
+    private final CcCoreMiddleware coreMiddleware;
+
 
 
 
@@ -34,6 +38,8 @@ public class CcWebsocketImpl implements CcSocketListener {
         this.socket = factory.create(client, baseUrl, this);
 
         connectivityManager = new CcConnectivityManager();
+        coreMiddleware = new CcCoreMiddleware();
+
         integer = new AtomicInteger(1);
     }
 
@@ -83,7 +89,7 @@ public class CcWebsocketImpl implements CcSocketListener {
                 processOnConnected(message);
                 break;
             case RESULT:
-//                coreMiddleware.processCallback(Long.valueOf(message.optString("id")), message);
+                coreMiddleware.processCallback(Long.valueOf(message.optString("id")), message);
                 break;
             case READY:
 //                coreStreamMiddleware.processSubscriptionSuccess(message);
@@ -156,8 +162,16 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     }
 
-    public void login(String username, String password) {
+
+
+
+
+
+
+
+    public void login(String username, String password,CcLoginCallback loginCallback) {
         int uniqueID = integer.getAndIncrement();
+        coreMiddleware.createCallback(uniqueID, loginCallback, CcCoreMiddleware.CallbackType.LOGIN);
         socket.sendData(CcBasicRpc.login(uniqueID, username, password));
     }
 

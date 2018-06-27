@@ -41,7 +41,10 @@ import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.rocketchat.CcRocketChatClient;
 import careclues.rocketchat.CcSocket;
+import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.common.CcRocketChatException;
 import careclues.rocketchat.listner.CcConnectListener;
+import careclues.rocketchat.models.CcToken;
 
 public class LoginPresenter implements
         LoginContract.presenter,CcConnectListener,
@@ -116,7 +119,21 @@ public class LoginPresenter implements
 //        }
 
         if(chatClient.getWebsocketImpl().getSocket().getState() == CcSocket.State.CONNECTED){
-            chatClient.login(userId,password);
+            chatClient.login(userId, password, new CcLoginCallback() {
+                @Override
+                public void onLoginSuccess(CcToken token) {
+                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
+                    ((CareCluesChatApplication) application).setUserId(token.getUserId());
+                    view.displayMessage(token.getUserId());
+
+
+                }
+
+                @Override
+                public void onError(CcRocketChatException error) {
+
+                }
+            });
         }
 
     }
