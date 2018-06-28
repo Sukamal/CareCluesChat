@@ -5,15 +5,20 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.common.CcCoreMiddleware;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
+import careclues.rocketchat.listner.CcSubscribeListener;
 import careclues.rocketchat.models.CcConnectedMessage;
 import careclues.rocketchat.rpc.CcBasicRpc;
+import careclues.rocketchat.rpc.CcChatHistoryRPC;
 import careclues.rocketchat.rpc.CcRPC;
 import okhttp3.OkHttpClient;
 
@@ -193,5 +198,21 @@ public class CcWebsocketImpl implements CcSocketListener {
     public void getRooms() {
         int uniqueID = integer.getAndIncrement();
         socket.sendData(CcBasicRpc.getRooms(uniqueID));
+    }
+
+
+    public String subscribeRoomMessageEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        String uniqueID = CcUtils.shortUUID();
+//        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+//        coreStreamMiddleware.createSubscription(roomId, listener, CoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
+//        socket.sendData(CoreSubRPC.subscribeRoomMessageEvent(uniqueID, roomId, enable));
+        return uniqueID;
+    }
+
+    void getChatHistory(String roomID, int limit, Date oldestMessageTimestamp,
+                        Date lasttimestamp, CcHistoryCallback callback) {
+        int uniqueID = integer.getAndIncrement();
+        coreMiddleware.createCallback(uniqueID, callback, CcCoreMiddleware.CallbackType.LOAD_HISTORY);
+        socket.sendData(CcChatHistoryRPC.loadHistory(uniqueID, roomID, oldestMessageTimestamp, limit, lasttimestamp));
     }
 }

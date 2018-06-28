@@ -1,5 +1,7 @@
 package careclues.rocketchat.common;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.moshi.JsonDataException;
 
 import org.json.JSONArray;
@@ -7,10 +9,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import careclues.rocketchat.callback.CcCallback;
+import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcToken;
 
 /**
@@ -115,14 +122,18 @@ public class CcCoreMiddleware {
 //                        }
 //                        emojiCallback.onSuccess(emojis);
 //                        break;
-//                    case LOAD_HISTORY:
-//                        HistoryCallback historyCallback = (HistoryCallback) callback;
-//                        array = ((JSONObject) result).optJSONArray("messages");
-//                        List<Message> messages = getMessageListAdapter()
+                    case LOAD_HISTORY:
+                        CcHistoryCallback historyCallback = (CcHistoryCallback) callback;
+                        array = ((JSONObject) result).optJSONArray("messages");
+//                        List<CcMessage> messages = getMessageListAdapter()
 //                                .fromJson(array.toString());
-//                        int unreadNotLoaded = ((JSONObject) result).optInt("unreadNotLoaded");
-//                        historyCallback.onLoadHistory(messages, unreadNotLoaded);
-//                        break;
+
+                        Type listType = new TypeToken<ArrayList<CcMessage>>(){}.getType();
+                        List<CcMessage> messages = new Gson().fromJson(array.toString(), listType);
+
+                        int unreadNotLoaded = ((JSONObject) result).optInt("unreadNotLoaded");
+                        historyCallback.onLoadHistory(messages, unreadNotLoaded);
+                        break;
 //                    case GET_ROOM_MEMBERS:
 //                        RoomCallback.GetMembersCallback membersCallback = (RoomCallback.GetMembersCallback) callback;
 //                        array = ((JSONObject) result).optJSONArray("records");
@@ -180,11 +191,6 @@ public class CcCoreMiddleware {
 //            }
         }
     }
-
-
-
-
-
 
 
 

@@ -1,10 +1,15 @@
 package careclues.rocketchat;
 
 
+import java.util.Date;
+
+import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
+import careclues.rocketchat.listner.CcSubscribeListener;
 import careclues.rocketchat.listner.CcTokenProvider;
 import okhttp3.OkHttpClient;
 
@@ -18,6 +23,7 @@ public class CcRocketChatClient {
     public CcWebsocketImpl websocketImpl;
     public CcTokenProvider tokenProvider;
 
+    public CcChatRoomFactory chatRoomFactory;
 
 
     private CcRocketChatClient(final Builder builder){
@@ -44,6 +50,8 @@ public class CcRocketChatClient {
         }
 
         tokenProvider = builder.provider;
+        chatRoomFactory = new CcChatRoomFactory(this);
+
         websocketImpl = new CcWebsocketImpl(client, factory,builder.websocketUrl);
 
     }
@@ -94,9 +102,23 @@ public class CcRocketChatClient {
         websocketImpl.disconnect();
     }
 
+    public CcChatRoomFactory getChatRoomFactory() {
+        return chatRoomFactory;
+    }
 
 
+    void getChatHistory(String roomID, int limit, Date oldestMessageTimestamp,
+                        Date lasttimestamp, CcHistoryCallback callback) {
+        websocketImpl.getChatHistory(roomID, limit, oldestMessageTimestamp, lasttimestamp, callback);
+    }
 
+    String subscribeRoomMessageEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        return websocketImpl.subscribeRoomMessageEvent(roomId, enable, subscribeListener, listener);
+    }
+
+//    String subscribeRoomTypingEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, TypingListener listener) {
+//        return websocketImpl.subscribeRoomTypingEvent(roomId, enable, subscribeListener, listener);
+//    }
 
 
 
