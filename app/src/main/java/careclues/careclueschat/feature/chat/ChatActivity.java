@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -128,8 +129,15 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     }
 
     @Override
-    public void displayMessage(String message) {
-
+    public void displayMessage(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar
+                        .make(findViewById(R.id.rlActivityLogin), message, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+        });
     }
 
     @Override

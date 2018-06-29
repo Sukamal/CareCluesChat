@@ -46,4 +46,11 @@ public interface RoomDao {
     @Delete
     void delete(RoomEntity entity);
 
+    @Query("select roo.* from room roo inner join subscription sub on sub.roomId = roo.id and roo.readOnly=0 and sub.open=1 order by updatedAt desc")
+    List<RoomEntity> getActiveRoomList();
+
+//    SELECT column_name(s)
+//    FROM table1
+//    INNER JOIN table2 ON table1.column_name = table2.column_name;
+
 }

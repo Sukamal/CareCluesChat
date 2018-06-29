@@ -12,6 +12,7 @@ import careclues.careclueschat.feature.login.model.LoginRequest;
 import careclues.careclueschat.model.AuthToken;
 import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
+import careclues.careclueschat.model.SetTopicRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -126,6 +127,12 @@ public class RestApiExecuter {
     public <T> void sendNewMessage(String id, String rId,String msg,final ServiceCallBack<T> serviceCallBack) {
         SendMassageRequest massageRequest = new SendMassageRequest(id,rId,msg);
         Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).sendNewMessage(massageRequest);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void setRoomTopicw(String roomId, String topic,final ServiceCallBack<T> serviceCallBack) {
+        SetTopicRequest setTopicRequest = new SetTopicRequest(roomId,topic);
+        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).setRoomTopic(setTopicRequest);
         execute(call,serviceCallBack);
     }
 

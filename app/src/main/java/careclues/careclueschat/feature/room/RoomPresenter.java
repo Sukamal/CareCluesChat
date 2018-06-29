@@ -34,6 +34,7 @@ import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.model.RoomMemberModel;
 import careclues.careclueschat.model.RoomMemberResponse;
 import careclues.careclueschat.model.RoomModel;
+import careclues.careclueschat.model.SetTopicResponseModel;
 import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.model.SubscriptionResponse;
 import careclues.careclueschat.network.NetworkError;
@@ -128,7 +129,9 @@ public class RoomPresenter implements RoomContract.presenter,
             @Override
             public void run() {
                 try {
-                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getOpenRoomList();
+
+//                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getOpenRoomList();
+                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
                     populateAdapterData(lastUpdatedRoomList,LOAD_ROOM_DATA);
                 } catch (Throwable e) {
                     Log.e("DBERROR", e.toString());
@@ -165,6 +168,7 @@ public class RoomPresenter implements RoomContract.presenter,
                                     adapterModel.name = "New-Consultant";
                                 } else {
                                     adapterModel.name = memberEntity.name;
+                                    adapterModel.userName = memberEntity.userName;
                                     break;
                                 }
                             }
@@ -212,6 +216,24 @@ public class RoomPresenter implements RoomContract.presenter,
         apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
             @Override
             public void onSuccess(GroupResponseModel response) {
+                System.out.println("New Room : " + response.toString());
+                if(response.success){
+                    setRoomTopic(response.group.id,"text-consultation");
+                }
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+
+    }
+
+    private void setRoomTopic(String roomId,String topic){
+        apiExecuter.setRoomTopicw(roomId, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
+            @Override
+            public void onSuccess(SetTopicResponseModel response) {
                 System.out.println("New Room : " + response.toString());
             }
 

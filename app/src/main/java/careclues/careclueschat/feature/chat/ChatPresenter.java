@@ -343,7 +343,7 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void onConnectError(Throwable websocketException) {
-
+        view.onConnectionFaild(1);
     }
 
 //    @Override

@@ -14,7 +14,8 @@ public class RoomAdapterModel implements Comparable<RoomAdapterModel>{
     public String description;
     @SerializedName("name")
     public String name;
-
+    @SerializedName("userName")
+    public String userName;
     @SerializedName("update")
     public Date updatedAt;
 

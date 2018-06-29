@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mikhaellopez.circularimageview.CircularImageView;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -113,6 +116,16 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
         holder.tvRoomId.setText(roomObjects.get(position).description);
         holder.tvStatus.setText(roomObjects.get(position).Id);
         holder.position = position;
+        if(roomObjects.get(position).userName != null){
+            String avatarPath = "https://ticklechat.careclues.com/avatar/" + roomObjects.get(position).userName;
+
+            Picasso.with(context)
+                    .load(avatarPath)
+                    .into(holder.imageView);
+        }else{
+            holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.user));
+        }
+
 
         if(roomObjects.get(position).updatedAt != null){
             holder.tvDate.setText(format(roomObjects.get(position).updatedAt));

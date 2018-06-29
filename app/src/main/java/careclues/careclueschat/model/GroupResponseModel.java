@@ -13,10 +13,10 @@ public class GroupResponseModel {
 
     @SerializedName("group")
     @Expose
-    private GroupModel group;
+    public GroupModel group;
     @SerializedName("success")
     @Expose
-    private Boolean success;
+    public Boolean success;
 
     @Override
     public String toString() {

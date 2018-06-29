@@ -6,6 +6,7 @@ import java.util.Date;
 import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
+import careclues.rocketchat.listner.CcChatRoomFactory;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;

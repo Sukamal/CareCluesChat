@@ -3,6 +3,7 @@ package careclues.careclueschat.network;
 import careclues.careclueschat.feature.login.model.LoginRequest;
 import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
+import careclues.careclueschat.model.SetTopicRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -47,10 +48,10 @@ public interface ApiInterface {
     @POST("groups.create")
     Call<ResponseBody> createRoom(@Body CreateRoomRequest request);
 
+    @POST("groups.setTopic")
+    Call<ResponseBody> setRoomTopic(@Body SetTopicRequest request);
+
     @POST("chat.sendMessage")
     Call<ResponseBody> sendNewMessage(@Body SendMassageRequest request);
-
-
-
 
 }

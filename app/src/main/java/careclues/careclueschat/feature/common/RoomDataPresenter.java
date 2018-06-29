@@ -210,11 +210,12 @@ public class RoomDataPresenter {
         if(rooms != null && rooms.size() > 0){
             roomEntities = new ArrayList<>();
             for(RoomModel roomModel : rooms){
-//                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation") && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
+                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation")
+                        && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
                     RoomEntity roomEntity;
                     roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
                     roomEntities.add(roomEntity);
-//                }
+                }
             }
             handler.sendEmptyMessage(FETCH_ROOM_COMPLETED);
 
