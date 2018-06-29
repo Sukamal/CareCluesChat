@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import careclues.rocketchat.callback.CcCallback;
 import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcToken;
 
@@ -141,11 +142,11 @@ public class CcCoreMiddleware {
 //                        List<User> users = getUserListAdapter().fromJson(array.toString());
 //                        membersCallback.onGetRoomMembers(total, users);
 //                        break;
-//                    case SEND_MESSAGE:
-//                        MessageCallback.MessageAckCallback ackCallback = (MessageCallback.MessageAckCallback) callback;
-//                        Message message = getMessageAdapter().fromJson(result.toString());
+                    case SEND_MESSAGE:
+                        CcMessageCallback.MessageAckCallback ackCallback = (CcMessageCallback.MessageAckCallback) callback;
+//                        CcMessage message = getMessageAdapter().fromJson(result.toString());
 //                        ackCallback.onMessageAck(message);
-//                        break;
+                        break;
 //                    case SEARCH_MESSAGE:
 //                        SimpleListCallback<Message> searchMessageCallback = (SimpleListCallback<Message>) callback;
 //                        array = ((JSONObject) result).optJSONArray("messages");

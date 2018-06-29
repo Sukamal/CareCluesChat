@@ -11,6 +11,7 @@ import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
 import careclues.rocketchat.listner.CcSubscribeListener;
 import careclues.rocketchat.listner.CcTokenProvider;
+import careclues.rocketchat.listner.CcTypingListener;
 import okhttp3.OkHttpClient;
 
 import static com.rocketchat.common.utils.Preconditions.checkNotNull;
@@ -116,9 +117,9 @@ public class CcRocketChatClient {
         return websocketImpl.subscribeRoomMessageEvent(roomId, enable, subscribeListener, listener);
     }
 
-//    String subscribeRoomTypingEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, TypingListener listener) {
-//        return websocketImpl.subscribeRoomTypingEvent(roomId, enable, subscribeListener, listener);
-//    }
+    String subscribeRoomTypingEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcTypingListener listener) {
+        return websocketImpl.subscribeRoomTypingEvent(roomId, enable, subscribeListener, listener);
+    }
 
 
 
@@ -127,9 +128,20 @@ public class CcRocketChatClient {
         websocketImpl.login(username,password,loginCallback);
     }
 
-    public void loginUsingToken(String token) {
-        websocketImpl.loginUsingToken(token);
+    public void loginUsingToken(String token,CcLoginCallback loginCallback) {
+        websocketImpl.loginUsingToken(token,loginCallback);
     }
+
+    //Tested
+    void sendIsTyping(String roomId, String username, Boolean istyping) {
+        websocketImpl.sendIsTyping(roomId, username, istyping);
+    }
+
+    //Tested
+    void sendMessage(String msgId, String roomID, String message, CcMessageCallback.MessageAckCallback callback) {
+        websocketImpl.sendMessage(msgId, roomID, message, callback);
+    }
+
 
     public void logout() {
         websocketImpl.logout();

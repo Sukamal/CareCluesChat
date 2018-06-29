@@ -18,14 +18,15 @@ public class CcBaseMessage {
     @SerializedName("msg")
     public String msg;
 
+
     @SerializedName("ts")
-    public Date timeStamp;
+    public CcDate timeStamp;
 
     @SerializedName("u")
     public CcUser user;
 
     @SerializedName("_updatedAt")
-    public Date updatedAt;
+    public CcDate updatedAt;
 
     @SerializedName("t")
     public String type;

@@ -43,20 +43,43 @@ import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.util.AppUtil;
+import careclues.rocketchat.CcChatRoom;
+import careclues.rocketchat.CcRocketChatClient;
+import careclues.rocketchat.CcSocket;
+import careclues.rocketchat.callback.CcLoginCallback;
+import careclues.rocketchat.callback.CcMessageCallback;
+import careclues.rocketchat.common.CcRocketChatException;
+import careclues.rocketchat.listner.CcConnectListener;
+import careclues.rocketchat.listner.CcTypingListener;
+import careclues.rocketchat.models.CcBaseRoom;
+import careclues.rocketchat.models.CcMessage;
+import careclues.rocketchat.models.CcToken;
+import careclues.rocketchat.models.CcUser;
 
 public class ChatPresenter implements ChatContract.presenter,
-        ConnectListener,
+
+        CcConnectListener,
+        CcMessageCallback.SubscriptionCallback,
+        CcTypingListener
+
+        /*ConnectListener,
         MessageCallback.SubscriptionCallback,
-        TypingListener {
+        TypingListener*/ {
 
     private ChatContract.view view;
     private Application application;
     private String userId;
     private RoomMemberEntity userDetails;
     private String roomId;
-    private RocketChatClient api;
-    private ChatRoom chatRoom;
+
     private AtomicInteger integer;
+
+
+//    private RocketChatClient api;
+//    private ChatRoom chatRoom;
+
+    private CcRocketChatClient api;
+    private CcChatRoom chatRoom;
 
 
 
@@ -67,9 +90,7 @@ public class ChatPresenter implements ChatContract.presenter,
         integer = new AtomicInteger(1);
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
-        api = ((CareCluesChatApplication) application).getRocketChatAPI();
         getLoginUserDetails(userId);
-        initWebSoket();
 
 
     }
@@ -79,13 +100,16 @@ public class ChatPresenter implements ChatContract.presenter,
             @Override
             public void run() {
                 userDetails = ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().findById(userId);
+                initWebSoket();
+
             }
         });
     }
 
-    private void initWebSoket(){
-
+   /* private void initWebSoket(){
+        api = ((CareCluesChatApplication) application).getRocketChatAPI();
         api.getWebsocketImpl().getConnectivityManager().register(ChatPresenter.this);
+
         List<BaseRoom> rooms = new ArrayList<>();
         BaseRoom  baseRoom;
         baseRoom  = new BaseRoom() {
@@ -151,10 +175,38 @@ public class ChatPresenter implements ChatContract.presenter,
         chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
         chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
 
+    }*/
+
+    private void initWebSoket(){
+        api = ((CareCluesChatApplication) application).getRocketChatClient();
+        api.getWebsocketImpl().getConnectivityManager().register(ChatPresenter.this);
+        List<CcBaseRoom> rooms = new ArrayList<>();
+        CcBaseRoom  baseRoom = new CcBaseRoom() {
+            @Nullable
+            @Override
+            public String name() {
+                return null;
+            }
+        };
+
+        baseRoom.Id = roomId;
+        baseRoom.type = CcBaseRoom.RoomType.PRIVATE;
+        CcUser ccUser = new CcUser();
+        ccUser.id = userDetails.Id;
+        ccUser.name = userDetails.userName;
+        baseRoom.user = ccUser;
+
+        rooms.add(baseRoom);
+        api.getChatRoomFactory().createChatRooms(rooms);
+
+        chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
+        chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
+        chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
+
     }
 
     public void deregisterSocket(){
-        chatRoom.unSubscribeAllEvents();
+//        chatRoom.unSubscribeAllEvents();
     }
 
 
@@ -175,14 +227,14 @@ public class ChatPresenter implements ChatContract.presenter,
 //        api.getWebsocketImpl().getSocket().sendData(MessageRPC.sendMessage(integer.getAndIncrement(), messageEntity.Id, messageEntity.rId,messageEntity.msg));
 
 
-        chatRoom.sendMessage(msg.toString(), new MessageCallback.MessageAckCallback() {
+        chatRoom.sendMessage(msg.toString(), new CcMessageCallback.MessageAckCallback() {
             @Override
-            public void onMessageAck(com.rocketchat.core.model.Message message) {
-                Log.e("Message","Message Send : "+ message.id() + " " +message.toString());
+            public void onMessageAck(CcMessage message) {
+                Log.e("Message","Message Send : "+ message.id + " " +message.toString());
             }
 
             @Override
-            public void onError(RocketChatException error) {
+            public void onError(CcRocketChatException error) {
                 Log.e("ERROR Sending Message: ",error.getMessage());
             }
         });
@@ -190,32 +242,32 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void uploadFile(File file,String desc) {
-        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
-            @Override
-            public void onUploadStarted(String roomId, String fileName, String description) {
-
-            }
-
-            @Override
-            public void onUploadProgress(int progress, String roomId, String fileName, String description) {
-
-            }
-
-            @Override
-            public void onUploadComplete(int statusCode, FileDescriptor file, String roomId, String fileName, String description) {
-
-            }
-
-            @Override
-            public void onUploadError(RocketChatException error, IOException e) {
-
-            }
-
-            @Override
-            public void onSendFile(Message message, RocketChatException error) {
-
-            }
-        });
+//        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
+//            @Override
+//            public void onUploadStarted(String roomId, String fileName, String description) {
+//
+//            }
+//
+//            @Override
+//            public void onUploadProgress(int progress, String roomId, String fileName, String description) {
+//
+//            }
+//
+//            @Override
+//            public void onUploadComplete(int statusCode, FileDescriptor file, String roomId, String fileName, String description) {
+//
+//            }
+//
+//            @Override
+//            public void onUploadError(RocketChatException error, IOException e) {
+//
+//            }
+//
+//            @Override
+//            public void onSendFile(Message message, RocketChatException error) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -253,21 +305,31 @@ public class ChatPresenter implements ChatContract.presenter,
         view.displayMessage(application.getString(R.string.connected));
         String token = ((CareCluesChatApplication)application).getToken();
 //        String token = RestApiExecuter.getInstance().getAuthToken().getToken();
-
-        if (api.getWebsocketImpl().getSocket().getState() == Socket.State.CONNECTED) {
-            api.loginUsingToken(token, new LoginCallback() {
+        if (api.getWebsocketImpl().getSocket().getState() == CcSocket.State.CONNECTED) {
+            api.loginUsingToken(token, new CcLoginCallback() {
                 @Override
-                public void onLoginSuccess(Token token) {
+                public void onError(CcRocketChatException error) {
+
+                }
+
+                @Override
+                public void onLoginSuccess(CcToken token) {
                     chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
                     chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
                     chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
-
                 }
-
-                @Override
-                public void onError(RocketChatException error) {
-                    System.out.println("Connection Error : " + error.toString());
-                }
+//                @Override
+//                public void onLoginSuccess(Token token) {
+//                    chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
+//                    chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
+//                    chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
+//
+//                }
+//
+//                @Override
+//                public void onError(RocketChatException error) {
+//                    System.out.println("Connection Error : " + error.toString());
+//                }
             });
         }else{
             api.getWebsocketImpl().getSocket().reconnect();
@@ -284,14 +346,27 @@ public class ChatPresenter implements ChatContract.presenter,
 
     }
 
+//    @Override
+//    public void onMessage(String roomId, Message message) {
+//
+//        Log.e("Message"," On Message : "+ message.id() + " " +message.toString());
+//
+//        insertIntoDB(message);
+//        List<ChatMessageModel> list = new ArrayList<>();
+//        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
+//        list.add(chatMessageModel);
+//        view.displayMoreChatList(list);
+//
+//    }
+
     @Override
-    public void onMessage(String roomId, Message message) {
+    public void onMessage(String roomId, CcMessage message) {
 
-        Log.e("Message"," On Message : "+ message.id() + " " +message.toString());
+        Log.e("Message"," On Message : "+ message.id + " " +message.toString());
 
-        insertIntoDB(message);
+//        insertIntoDB(message);
         List<ChatMessageModel> list = new ArrayList<>();
-        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id(),message.message(),new Date(message.updatedAt()),message.sender().id());
+        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id,message.msg,new Date(/*message.updatedAt*/),message.user.id);
         list.add(chatMessageModel);
         view.displayMoreChatList(list);
 

@@ -5,6 +5,7 @@ import java.util.Date;
 import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.listner.CcSubscribeListener;
+import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcBaseRoom;
 
 public class CcChatRoom {
@@ -48,13 +49,13 @@ public class CcChatRoom {
 //        client.sendIsTyping(room.roomId(), client.getMyUserName(), istyping);
 //    }
 //
-//    public void sendMessage(String message) {
-//        client.sendMessage(Utils.shortUUID(), room.roomId(), message, null);
-//    }
-//
-//    public void sendMessage(String message, MessageCallback.MessageAckCallback callback) {
-//        client.sendMessage(Utils.shortUUID(), room.roomId(), message, callback);
-//    }
+    public void sendMessage(String message) {
+        client.sendMessage(CcUtils.shortUUID(), room.Id, message, null);
+    }
+
+    public void sendMessage(String message, CcMessageCallback.MessageAckCallback callback) {
+        client.sendMessage(CcUtils.shortUUID(), room.Id, message, callback);
+    }
 //
 //    // TODO: 27/7/17 Need more attention on replying to message
 //    private void replyMessage(Message msg, String message,
@@ -147,12 +148,12 @@ public class CcChatRoom {
         }
     }
 
-//    public void subscribeRoomTypingEvent(SubscribeListener subscribeListener, TypingListener listener) {
-//        if (typingSubId == null) {
-//            typingSubId = client.subscribeRoomTypingEvent(room.roomId(), true, subscribeListener, listener);
-//        }
-//    }
-//
+    public void subscribeRoomTypingEvent(CcSubscribeListener subscribeListener, CcTypingListener listener) {
+        if (typingSubId == null) {
+            typingSubId = client.subscribeRoomTypingEvent(room.Id, true, subscribeListener, listener);
+        }
+    }
+
 //    public void unSubscribeRoomMessageEvent(SubscribeListener subscribeListener) {
 //        if (roomSubId != null) {
 //            client.removeSubscription(room.roomId(), CoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);

@@ -47,9 +47,9 @@ public class CcMessage extends CcBaseMessage{
         stringBuffer.append("\nid : "+id);
         stringBuffer.append("\nroomId : "+rId);
         stringBuffer.append("\nmsg : "+msg);
-        stringBuffer.append("\ntimeStamp : "+timeStamp);
+//        stringBuffer.append("\ntimeStamp : "+timeStamp);
         stringBuffer.append("\nuser : "+user.toString());
-        stringBuffer.append("\nupdatedAt : "+updatedAt);
+//        stringBuffer.append("\nupdatedAt : "+updatedAt);
         stringBuffer.append("\ntype : "+type);
         stringBuffer.append("\nalias : "+alias);
         stringBuffer.append("\ngroupable : "+groupable);

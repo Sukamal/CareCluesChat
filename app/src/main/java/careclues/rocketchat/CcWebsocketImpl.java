@@ -2,6 +2,7 @@ package careclues.rocketchat;
 
 
 import com.google.gson.Gson;
+import com.rocketchat.core.internal.middleware.CoreStreamMiddleware;
 
 import org.json.JSONObject;
 
@@ -12,14 +13,19 @@ import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.common.CcCoreMiddleware;
+import careclues.rocketchat.common.CcCoreStreamMiddleware;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
 import careclues.rocketchat.listner.CcSocketListener;
 import careclues.rocketchat.listner.CcSubscribeListener;
+import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcConnectedMessage;
 import careclues.rocketchat.rpc.CcBasicRpc;
 import careclues.rocketchat.rpc.CcChatHistoryRPC;
+import careclues.rocketchat.rpc.CcCoreSubRPC;
+import careclues.rocketchat.rpc.CcMessageRPC;
 import careclues.rocketchat.rpc.CcRPC;
+import careclues.rocketchat.rpc.CcTypingRPC;
 import okhttp3.OkHttpClient;
 
 public class CcWebsocketImpl implements CcSocketListener {
@@ -32,7 +38,9 @@ public class CcWebsocketImpl implements CcSocketListener {
     private CcConnectivityManager connectivityManager;
     private String userId;
     private final CcCoreMiddleware coreMiddleware;
+    private final CcCoreStreamMiddleware coreStreamMiddleware;
 
+    private CcConnectListener connecTionListner;
 
 
 
@@ -44,6 +52,8 @@ public class CcWebsocketImpl implements CcSocketListener {
 
         connectivityManager = new CcConnectivityManager();
         coreMiddleware = new CcCoreMiddleware();
+        coreStreamMiddleware = new CcCoreStreamMiddleware();
+
 
         integer = new AtomicInteger(1);
     }
@@ -59,6 +69,7 @@ public class CcWebsocketImpl implements CcSocketListener {
     }*/
 
     void connect(CcConnectListener listener) {
+        connecTionListner = listener;
         connectivityManager.register(listener);
         socket.connect();
     }
@@ -103,7 +114,7 @@ public class CcWebsocketImpl implements CcSocketListener {
 //                processCollectionsAdded(message);
                 break;
             case CHANGED:
-//                processCollectionsChanged(message);
+                processCollectionsChanged(message);
                 break;
             case REMOVED:
                 // TODO - collection REMOVED...
@@ -149,7 +160,7 @@ public class CcWebsocketImpl implements CcSocketListener {
     @Override
     public void onClosing() {
         System.out.println("RocketChatAPI onClosing");
-
+        connect(connecTionListner);
     }
 
     @Override
@@ -169,7 +180,17 @@ public class CcWebsocketImpl implements CcSocketListener {
 
 
 
-
+    private void processCollectionsChanged(JSONObject object) {
+        switch (CcDbManager.getCollectionType(object)) {
+            case STREAM_COLLECTION:
+                coreStreamMiddleware.processListeners(object);
+                break;
+            case COLLECTION:
+                // TODO - Collections changed...
+                //dbManager.update(object, RPC.MsgType.CHANGED);
+                break;
+        }
+    }
 
 
 
@@ -180,8 +201,9 @@ public class CcWebsocketImpl implements CcSocketListener {
         socket.sendData(CcBasicRpc.login(uniqueID, username, password));
     }
 
-    public void loginUsingToken(String token) {
+    public void loginUsingToken(String token,CcLoginCallback loginCallback) {
         int uniqueID = integer.getAndIncrement();
+        coreMiddleware.createCallback(uniqueID, loginCallback, CcCoreMiddleware.CallbackType.LOGIN);
         socket.sendData(CcBasicRpc.loginUsingToken(uniqueID, token));
     }
 
@@ -200,12 +222,32 @@ public class CcWebsocketImpl implements CcSocketListener {
         socket.sendData(CcBasicRpc.getRooms(uniqueID));
     }
 
+    //Tested
+    public void sendIsTyping(String roomId, String username, Boolean istyping) {
+        int uniqueID = integer.getAndIncrement();
+        socket.sendData(CcTypingRPC.sendTyping(uniqueID, roomId, username, istyping));
+    }
+
+    //Tested
+    public void sendMessage(String msgId, String roomID, String message, CcMessageCallback.MessageAckCallback callback) {
+        int uniqueID = integer.getAndIncrement();
+        coreMiddleware.createCallback(uniqueID, callback, CcCoreMiddleware.CallbackType.SEND_MESSAGE);
+        socket.sendData(CcMessageRPC.sendMessage(uniqueID, msgId, roomID, message));
+    }
 
     public String subscribeRoomMessageEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
         String uniqueID = CcUtils.shortUUID();
-//        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
-//        coreStreamMiddleware.createSubscription(roomId, listener, CoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
-//        socket.sendData(CoreSubRPC.subscribeRoomMessageEvent(uniqueID, roomId, enable));
+        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        coreStreamMiddleware.createSubscription(roomId, listener, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
+        socket.sendData(CcCoreSubRPC.subscribeRoomMessageEvent(uniqueID, roomId, enable));
+        return uniqueID;
+    }
+
+    String subscribeRoomTypingEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcTypingListener listener) {
+        String uniqueID = CcUtils.shortUUID();
+        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        coreStreamMiddleware.createSubscription(roomId, listener, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_TYPING);
+        socket.sendData(CcCoreSubRPC.subscribeRoomTypingEvent(uniqueID, roomId, enable));
         return uniqueID;
     }
 
