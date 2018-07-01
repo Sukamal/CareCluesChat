@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.rocketchat.common.RocketChatException;
 import com.rocketchat.common.data.lightdb.collection.Collection;
@@ -16,6 +17,8 @@ import com.rocketchat.core.RocketChatClient;
 import com.rocketchat.core.callback.MessageCallback;
 import com.rocketchat.core.callback.RoomCallback;
 import com.rocketchat.core.model.Message;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,21 +50,37 @@ import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
+import careclues.rocketchat.CcChatRoom;
+import careclues.rocketchat.CcRocketChatClient;
+import careclues.rocketchat.callback.CcMessageCallback;
+import careclues.rocketchat.callback.CcRoomCallback;
+import careclues.rocketchat.common.CcRocketChatException;
+import careclues.rocketchat.listner.CcChatRoomFactory;
+import careclues.rocketchat.listner.CcConnectListener;
+import careclues.rocketchat.models.CcMessage;
 
 public class RoomPresenter implements RoomContract.presenter,
         RoomDataPresenter.FetchRoomMemberHistoryListner,
         RoomDataPresenter.FetchLastUpdatedRoomDbListner,
         RoomDataPresenter.FetchMessageListner,
 
-        ConnectListener,MessageCallback.SubscriptionCallback,
-        RoomCallback.GroupCreateCallback
+        CcConnectListener,
+        CcMessageCallback.SubscriptionCallback,
+        CcRoomCallback.GroupCreateCallback
+
+
+        /*ConnectListener,
+        MessageCallback.SubscriptionCallback,
+        RoomCallback.GroupCreateCallback*/
 
 
 {
 
     private RoomContract.view view;
     private Application application;
-    private RocketChatClient chatClient;
+//    private RocketChatClient chatClient;
+    private CcRocketChatClient chatClient;
+
     private List<RoomAdapterModel> modelList;
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
@@ -71,7 +90,8 @@ public class RoomPresenter implements RoomContract.presenter,
     private RoomDataPresenter roomDataPresenter;
     private List<RoomEntity> lastUpdatedRoomList;
 
-    private RocketChatClient api;
+//    private CcRocketChatClient chatClient;
+
 
     private final int LOAD_ROOM_DATA = 1;
     private final int LOAD_MORE_ROOM_DATA = 2;
@@ -87,6 +107,9 @@ public class RoomPresenter implements RoomContract.presenter,
         roomDataPresenter.registerRoomMemberHistoryListner(this);
         roomDataPresenter.registerUpdatedRoomListner(this);
 //        api.getWebsocketImpl().getConnectivityManager().register(RoomPresenter.this);
+
+        chatClient = ((CareCluesChatApplication) application).getRocketChatClient();
+
     }
 
 
@@ -107,6 +130,7 @@ public class RoomPresenter implements RoomContract.presenter,
                 switch (msg.what){
                     case LOAD_ROOM_DATA:
                         view.displyRoomList(modelList);
+                        subsCribeRoomMessageEvent(lastUpdatedRoomList);
                         break;
                     case LOAD_MORE_ROOM_DATA:
                         view.displyMoreRoomList(modelList);
@@ -161,10 +185,9 @@ public class RoomPresenter implements RoomContract.presenter,
                                 adapterModel.updatedAt = entity.updatedAt;
                             }
 
-
                             for (RoomMemberEntity memberEntity : memberEntities) {
                                 RoomMemberModel memberModel = ModelEntityTypeConverter.roomMemberEntityToModel(memberEntity);
-                                if (memberEntity.userName.equalsIgnoreCase("api_admin") || memberEntity.userName.equalsIgnoreCase("bot-la2zewmltd") || memberEntity.userName.equalsIgnoreCase("sachu-985")) {
+                                if (memberEntity.userName.equalsIgnoreCase("api_admin") || memberEntity.userName.equalsIgnoreCase("bot-la2zewmltd") || memberEntity.userName.equalsIgnoreCase(((CareCluesChatApplication) application).getUserName())) {
                                     adapterModel.name = "New-Consultant";
                                 } else {
                                     adapterModel.name = memberEntity.name;
@@ -172,6 +195,39 @@ public class RoomPresenter implements RoomContract.presenter,
                                     break;
                                 }
                             }
+
+                            if(entity.readOnly == false){
+                                adapterModel.status = "Ongoing";
+                            }else{
+                                if(adapterModel.name.equals("New-Consultant")){
+
+                                    String msgType = "";
+
+                                    MessageEntity lastMessage = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getLastMessage(entity.roomId);
+                                    try{
+                                        JSONObject jsonObject = new JSONObject(lastMessage.msg);
+                                        msgType = jsonObject.optString("type");
+                                        if(msgType.equals("unconfirmed_expiry")){
+                                            adapterModel.status = "Inactivity Expired";
+
+                                        }else if(msgType.equals("unpaid_expiry")){
+                                            adapterModel.status = "Payment Expired";
+
+                                        }else if(msgType.equals("rejected_by_physician")){
+                                            adapterModel.status = "Rejected";
+
+                                        }
+                                    }catch (Exception e){
+
+                                    }
+
+                                }else{
+                                    adapterModel.status = "Completed";
+                                }
+                            }
+
+
+
                             modelList.add(adapterModel);
                         }
 
@@ -193,7 +249,9 @@ public class RoomPresenter implements RoomContract.presenter,
             @Override
             public void run() {
 
-                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getClosedRoomList(startCount,threshold);
+//                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getClosedRoomList(startCount,threshold);
+                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getNextRoomList(startCount,threshold);
+
                 if(moreList != null && moreList.size() > 0){
                     roomDataPresenter.fetchMemberAndMessage(moreList);
                 }
@@ -270,7 +328,7 @@ public class RoomPresenter implements RoomContract.presenter,
         view.onConnectionFaild(1);
     }
 
-    @Override
+   /* @Override
     public void onCreateGroup(String roomId) {
 
     }
@@ -283,5 +341,42 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onMessage(String roomId, Message message) {
 
+    }*/
+
+    @Override
+    public void onMessage(String roomId, CcMessage message) {
+        System.out.println("Room Update : " + roomId + "  ,  " + message);
+//        view.displayMessage("Room Update : " + roomId + "  ,  " + message.msg);
+        view.updateRoomMessage(roomId);
+
     }
+
+    @Override
+    public void onCreateGroup(String roomId) {
+
+    }
+
+    @Override
+    public void onError(CcRocketChatException error) {
+
+    }
+
+
+    private void subsCribeRoomMessageEvent(List<RoomEntity> roomList){
+
+        for(RoomEntity room : roomList ){
+            CcChatRoomFactory roomFactory = chatClient.getChatRoomFactory();
+//            roomFactory.addChatRoom()
+//            addChatRoom
+//            CcChatRoom chatRoom = .getChatRoomById(room.roomId);
+//            chatRoom.subscribeRoomMessageEvent(null, RoomPresenter.this);
+
+            chatClient.subscribeRoomMessageEvent(room.roomId,
+                    true, null, RoomPresenter.this);
+        }
+
+    }
+
+
+
 }

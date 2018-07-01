@@ -26,7 +26,7 @@ public interface SubscriptionDao {
     @Query("SELECT * FROM subscription WHERE id = :Id")
     SubscriptionEntity findById(String Id);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<SubscriptionEntity> entityList);
 
     @Query("SELECT * FROM subscription LIMIT :startCount,:endCount")

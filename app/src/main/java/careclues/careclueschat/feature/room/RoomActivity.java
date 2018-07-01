@@ -114,6 +114,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
                 room1Adapter.setAdapterItemClickListner(new RoomAdapter.onAdapterItemClickListner() {
                     @Override
                     public void onListItemClick(int position,String roomId) {
+                        updateRoomStatus(roomId,false);
                         presenter.getMessage(roomId);
                     }
                 });
@@ -150,7 +151,25 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
+    public void updateRoomMessage(final String roomId) {
+
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar
+                        .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
+                        .show();
+                updateRoomStatus(roomId,true);
+                room1Adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
     public void displayMessage(final String message) {
+
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -170,6 +189,15 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     @Override
     public void hideProgressBar() {
 
+    }
+
+    private void updateRoomStatus(String roomId, boolean status){
+        List<RoomAdapterModel> roomObjects = room1Adapter.roomObjects;
+        for (RoomAdapterModel adapterModel : roomObjects){
+            if(adapterModel.Id.equals(roomId)){
+                adapterModel.display = status;
+            }
+        }
     }
 
 }

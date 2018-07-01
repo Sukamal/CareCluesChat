@@ -27,6 +27,7 @@ public class CareCluesChatApplication extends Application {
 
     public String token;
     public String userId;
+    public String userName;
     private Logger logger;
 
     @Override
@@ -91,6 +92,14 @@ public class CareCluesChatApplication extends Application {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public ChatDatabase getChatDatabase() {

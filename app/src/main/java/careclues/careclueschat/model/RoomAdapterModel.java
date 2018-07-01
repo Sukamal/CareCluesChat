@@ -18,6 +18,9 @@ public class RoomAdapterModel implements Comparable<RoomAdapterModel>{
     public String userName;
     @SerializedName("update")
     public Date updatedAt;
+    public String status;
+    public boolean display;
+
 
 
     @Override

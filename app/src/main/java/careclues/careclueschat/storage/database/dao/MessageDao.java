@@ -31,6 +31,9 @@ public interface MessageDao {
     @Query("SELECT * FROM message WHERE rId = :roomId and synced = 'false'")
     List<MessageEntity> getNotSyncedData(String roomId);
 
+    @Query("select * from message where rId = :roomId order by updatedAt desc limit 1")
+    MessageEntity getLastMessage(String roomId);
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<MessageEntity> entityList);
 

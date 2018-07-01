@@ -28,16 +28,16 @@ public interface RoomDao {
     @Query("SELECT * FROM room LIMIT :startCount,:endCount")
     List<RoomEntity> getRoom(int startCount, int endCount);
 
-    @Query("SELECT * FROM room order by updatedAt desc LIMIT :startCount,:endCount")
-    List<RoomEntity> getLastUpdatedRoom(int startCount, int endCount);
+//    @Query("SELECT * FROM room order by updatedAt desc LIMIT :startCount,:endCount")
+//    List<RoomEntity> getLastUpdatedRoom(int startCount, int endCount);
+//
+//    @Query("select * from room where id in (Select roomId from subscription where open=1) order by updatedAt desc")
+//    List<RoomEntity> getOpenRoomList();
+//
+//    @Query("select * from room where id in (Select roomId from subscription where open=0) order by updatedAt desc LIMIT :startCount,:endCount")
+//    List<RoomEntity> getClosedRoomList(int startCount, int endCount);
 
-    @Query("select * from room where id in (Select roomId from subscription where open=1) order by updatedAt desc")
-    List<RoomEntity> getOpenRoomList();
-
-    @Query("select * from room where id in (Select roomId from subscription where open=0) order by updatedAt desc LIMIT :startCount,:endCount")
-    List<RoomEntity> getClosedRoomList(int startCount, int endCount);
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<RoomEntity> entityList);
 
     @Update
@@ -48,6 +48,11 @@ public interface RoomDao {
 
     @Query("select roo.* from room roo inner join subscription sub on sub.roomId = roo.id and roo.readOnly=0 and sub.open=1 order by updatedAt desc")
     List<RoomEntity> getActiveRoomList();
+
+
+    @Query("select ro.* from room ro where ro.id not in (select roo.id from room roo inner join subscription sub on sub.roomId = roo.id and roo.readOnly=0 and sub.open=1 ) order by updatedAt desc LIMIT :startCount,:endCount")
+    List<RoomEntity> getNextRoomList(int startCount, int endCount);
+
 
 //    SELECT column_name(s)
 //    FROM table1

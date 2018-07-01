@@ -161,7 +161,9 @@ public class RoomDataPresenter {
             @Override
             public void run() {
                 try {
-                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,count);
+//                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,count);
+                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
+
                     handler.sendEmptyMessage(FETCH_UPDATED_ROOM);
                 } catch (Throwable e) {
                     Log.e("DBERROR", e.toString());

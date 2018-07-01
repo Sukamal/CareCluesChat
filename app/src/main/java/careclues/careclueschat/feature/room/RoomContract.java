@@ -17,6 +17,7 @@ public interface RoomContract {
         public void displyRoomList(List<RoomAdapterModel> list);
         public void displyMoreRoomList(List<RoomAdapterModel> list);
         public void displyChatScreen(String roomId);
+        public void updateRoomMessage(String roomId);
     }
 
     interface presenter {

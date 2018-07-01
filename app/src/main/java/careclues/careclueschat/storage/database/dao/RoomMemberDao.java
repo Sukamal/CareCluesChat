@@ -28,7 +28,7 @@ public interface RoomMemberDao {
     @Query("SELECT * FROM roomMember WHERE rId = :Id")
     List<RoomMemberEntity> findByRoomId(String Id);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<RoomMemberEntity> entityList);
 
     @Update

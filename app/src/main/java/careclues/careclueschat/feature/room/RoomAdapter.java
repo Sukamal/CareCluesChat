@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +34,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
 
 
-    private List<RoomAdapterModel> roomObjects;
+    public List<RoomAdapterModel> roomObjects;
     private Context context;
     private RecyclerView recyclerView;
     public int visibleThreshold = 10;
@@ -114,7 +115,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.tvUserName.setText(roomObjects.get(position).name);
         holder.tvRoomId.setText(roomObjects.get(position).description);
-        holder.tvStatus.setText(roomObjects.get(position).Id);
+        holder.tvStatus.setText(roomObjects.get(position).status + "  : " + roomObjects.get(position).Id);
         holder.position = position;
         if(roomObjects.get(position).userName != null){
             String avatarPath = "https://ticklechat.careclues.com/avatar/" + roomObjects.get(position).userName;
@@ -124,6 +125,12 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
                     .into(holder.imageView);
         }else{
             holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.user));
+        }
+
+        if(roomObjects.get(position).display){
+            holder.tvChange.setVisibility(View.VISIBLE);
+        }else{
+            holder.tvChange.setVisibility(View.GONE);
         }
 
 
@@ -167,25 +174,28 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        CardView roomItem;
+        RelativeLayout roomItem;
         TextView tvUserName;
         TextView tvRoomId;
         TextView tvStatus;
         TextView tvDate;
         TextView tvTime;
+        TextView tvChange;
         ImageView imageView;
         int position;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            roomItem = (CardView) itemView.findViewById(R.id.card_view);
+            roomItem = (RelativeLayout) itemView.findViewById(R.id.rr_item);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
             tvRoomId = (TextView) itemView.findViewById(R.id.tvRoomId);
             tvStatus = (TextView) itemView.findViewById(R.id.tvStatus);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
             imageView = (ImageView) itemView.findViewById(R.id.image_view);
+            tvChange = (TextView) itemView.findViewById(R.id.tvChange);
+
         }
     }
 

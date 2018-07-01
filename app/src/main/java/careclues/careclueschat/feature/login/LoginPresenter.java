@@ -29,6 +29,7 @@ import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.network.NetworkError;
@@ -125,8 +126,6 @@ public class LoginPresenter implements
                     ((CareCluesChatApplication) application).setToken(token.getAuthToken());
                     ((CareCluesChatApplication) application).setUserId(token.getUserId());
                     view.displayMessage(token.getUserId());
-
-
                 }
 
                 @Override
@@ -157,12 +156,14 @@ public class LoginPresenter implements
 
     @Override
     public void onDisconnect(boolean closedByServer) {
-        view.onConnectionFaild(2);
+        reconnectToServer();
+//        view.onConnectionFaild(2);
     }
 
     @Override
     public void onConnectError(Throwable websocketException) {
-        view.onConnectionFaild(1);
+//        view.onConnectionFaild(1);
+        reconnectToServer();
     }
 
 
@@ -223,12 +224,25 @@ public class LoginPresenter implements
 //                ((CareCluesChatApplication) application).setToken(response.getData().getAuthToken());
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(),response.getData().getAuthToken());
 //                System.out.println("Api Response : "+response.toString());
+                getLoginUserDetails(response.getData().getUserId());
                 mHandler.sendEmptyMessage(LOG_IN_SUCCESS);
             }
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
                 mHandler.sendEmptyMessage(LOG_IN_FAIL);
+            }
+        });
+    }
+
+    private void getLoginUserDetails(final String userId){
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                RoomMemberEntity userDetails = ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().findById(userId);
+                if(userDetails != null){
+                    ((CareCluesChatApplication) application).setUserName(userDetails.userName);
+                }
             }
         });
     }
