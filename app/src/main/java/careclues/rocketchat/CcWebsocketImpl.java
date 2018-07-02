@@ -251,6 +251,25 @@ public class CcWebsocketImpl implements CcSocketListener {
         return uniqueID;
     }
 
+    //TODO  Needs to handle calback
+    public String subscribeRoomChangeEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        String uniqueID = CcUtils.shortUUID();
+        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        coreStreamMiddleware.createSubscription(roomId, listener, CcCoreStreamMiddleware.SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
+        socket.sendData(CcCoreSubRPC.subscribeRoomChanged(uniqueID));
+        return uniqueID;
+    }
+
+    //TODO  Needs to handle calback
+    public String subscribeSubscriptionChangeEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        String uniqueID = CcUtils.shortUUID();
+        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        coreStreamMiddleware.createSubscription(roomId, listener, CcCoreStreamMiddleware.SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
+        socket.sendData(CcCoreSubRPC.subscribeSubscriptionChanged(uniqueID));
+        return uniqueID;
+    }
+
+
     void getChatHistory(String roomID, int limit, Date oldestMessageTimestamp,
                         Date lasttimestamp, CcHistoryCallback callback) {
         int uniqueID = integer.getAndIncrement();

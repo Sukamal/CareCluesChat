@@ -119,6 +119,7 @@ public class CcCoreStreamMiddleware {
     public enum SubscriptionType {
         SUBSCRIBE_ROOM_MESSAGE,
         SUBSCRIBE_ROOM_TYPING,
+        ROOM_SUBSCRIPTION_CHANGED,
         OTHER
     }
 
@@ -127,6 +128,8 @@ public class CcCoreStreamMiddleware {
             return SubscriptionType.SUBSCRIBE_ROOM_MESSAGE;
         } else if (s.equals("stream-notify-room")) {
             return SubscriptionType.SUBSCRIBE_ROOM_TYPING;
+        }else if (s.equals("stream-notify-user")) {
+            return SubscriptionType.ROOM_SUBSCRIPTION_CHANGED;
         }
         return SubscriptionType.OTHER;
     }

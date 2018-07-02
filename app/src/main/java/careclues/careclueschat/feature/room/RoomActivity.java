@@ -38,17 +38,12 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     @Override
     public void initComponents() {
 
-        String apiuserId = RestApiExecuter.getInstance().getAuthToken().getUserId();
-        String apiTocken = RestApiExecuter.getInstance().getAuthToken().getToken();
-        String socuserId = ((CareCluesChatApplication)getApplicationContext()).getUserId();
-        String soctoken = ((CareCluesChatApplication)getApplicationContext()).getToken();
-
-        System.out.println("apiuserId : "+apiuserId+"  , apiTocken : " +apiTocken+"  , socuserId : "+socuserId+"  , soctoken : " +soctoken);
-
-
         presenter = new RoomPresenter(this,getApplication());
         initRecycleView();
-        presenter.getRoom();
+
+        presenter.doLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+//
+
     }
 
     private void initRecycleView(){
@@ -103,6 +98,16 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
             }
         });
 
+    }
+
+    @Override
+    public void onSoketLoginSuccess() {
+//        presenter.doApiLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+    }
+
+    @Override
+    public void onLoginSuccess() {
+        presenter.getOpenRoom();
     }
 
     @Override

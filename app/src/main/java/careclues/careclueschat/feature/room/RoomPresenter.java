@@ -30,6 +30,7 @@ import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.ChatPresenter;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
+import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.MessageModel;
 import careclues.careclueschat.model.MessageResponseModel;
@@ -52,17 +53,26 @@ import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 import careclues.rocketchat.CcChatRoom;
 import careclues.rocketchat.CcRocketChatClient;
+import careclues.rocketchat.CcSocket;
+import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.callback.CcRoomCallback;
 import careclues.rocketchat.common.CcRocketChatException;
 import careclues.rocketchat.listner.CcChatRoomFactory;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.models.CcMessage;
+import careclues.rocketchat.models.CcToken;
 
 public class RoomPresenter implements RoomContract.presenter,
         RoomDataPresenter.FetchRoomMemberHistoryListner,
         RoomDataPresenter.FetchLastUpdatedRoomDbListner,
         RoomDataPresenter.FetchMessageListner,
+
+
+
+        RoomDataPresenter.FetchRoomListner,
+        RoomDataPresenter.FetchSubscriptionListner,
+
 
         CcConnectListener,
         CcMessageCallback.SubscriptionCallback,
@@ -76,25 +86,29 @@ public class RoomPresenter implements RoomContract.presenter,
 
 {
 
+
+    private final int LOG_IN_SUCCESS = 1;
+    private final int LOG_IN_FAIL = 2;
+    private final int LOAD_ROOM_DATA = 3;
+    private final int LOAD_MORE_ROOM_DATA = 4;
+
+    private boolean isFirstTimeLoad = true;
+
     private RoomContract.view view;
     private Application application;
 //    private RocketChatClient chatClient;
     private CcRocketChatClient chatClient;
-
-    private List<RoomAdapterModel> modelList;
     private RestApiExecuter apiExecuter;
     private AppPreference appPreference;
     private Handler handler;
+    private RoomDataPresenter roomDataPresenter;
+
+
+    private List<RoomAdapterModel> modelList;
     private RoomAdapterModel adapterModel;
     private List<RoomEntity> moreList;
-    private RoomDataPresenter roomDataPresenter;
     private List<RoomEntity> lastUpdatedRoomList;
 
-//    private CcRocketChatClient chatClient;
-
-
-    private final int LOAD_ROOM_DATA = 1;
-    private final int LOAD_MORE_ROOM_DATA = 2;
 
     public RoomPresenter(RoomContract.view view, Application application) {
         this.view = view;
@@ -104,33 +118,190 @@ public class RoomPresenter implements RoomContract.presenter,
         handleMessage();
 
         roomDataPresenter = new RoomDataPresenter(application);
-        roomDataPresenter.registerRoomMemberHistoryListner(this);
-        roomDataPresenter.registerUpdatedRoomListner(this);
-//        api.getWebsocketImpl().getConnectivityManager().register(RoomPresenter.this);
 
+        roomDataPresenter.registerRoomListner(this);
+        roomDataPresenter.registerSubscriptionListner(this);
+        roomDataPresenter.registerUpdatedRoomListner(this);
+        roomDataPresenter.registerRoomMemberHistoryListner(this);
+
+        initWebSocket();
+
+    }
+
+    private void initWebSocket(){
+//      api.getWebsocketImpl().getConnectivityManager().register(RoomPresenter.this);
         chatClient = ((CareCluesChatApplication) application).getRocketChatClient();
+        chatClient.connect(this);
 
     }
 
 
+
+    @Override
+    public void doLogin(String userId,String password) {
+        if(chatClient.getWebsocketImpl().getSocket().getState() == CcSocket.State.CONNECTED){
+            chatClient.login(userId, password, new CcLoginCallback() {
+                @Override
+                public void onLoginSuccess(CcToken token) {
+                    ((CareCluesChatApplication) application).setToken(token.getAuthToken());
+                    ((CareCluesChatApplication) application).setUserId(token.getUserId());
+                    view.displayMessage(token.getUserId());
+//                    view.onSoketLoginSuccess();
+                    doApiLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+                }
+
+                @Override
+                public void onError(CcRocketChatException error) {
+
+                }
+            });
+        }
+
+    }
+
+
+
+    @Override
+    public void reconnectToServer() {
+        chatClient.getWebsocketImpl().getSocket().reconnect();
+    }
+
+    @Override
+    public void disconnectToServer() {
+//        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
+    }
+
+    @Override
+    public void onConnect(String sessionID) {
+        view.displayMessage(application.getString(R.string.connected));
+        doLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+    }
+
+    @Override
+    public void onDisconnect(boolean closedByServer) {
+        reconnectToServer();
+//        view.onConnectionFaild(2);
+    }
+
+    @Override
+    public void onConnectError(Throwable websocketException) {
+//        view.onConnectionFaild(1);
+        reconnectToServer();
+    }
+
+
+    //-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
+
+
+    @Override
+    public void onFetchRoom(List<RoomEntity> entities) {
+        Toast.makeText(application, "onFetchRoom", Toast.LENGTH_SHORT).show();
+        roomDataPresenter.getSubscription(null,entities);
+    }
+
+
+    @Override
+    public void onFetchSubscription(List<SubscriptionEntity> entities) {
+        Toast.makeText(application, "onFetchSubscription", Toast.LENGTH_SHORT).show();
+        roomDataPresenter.getUpdatedRoomList(10);
+    }
+
     @Override
     public void onFetchDbUpdatedRoom(List<RoomEntity> entities) {
-        populateAdapterData(entities,LOAD_ROOM_DATA);
+        if(isFirstTimeLoad){
+            roomDataPresenter.fetchMemberAndMessage(entities);
+        }else{
+            populateAdapterData(entities,LOAD_ROOM_DATA);
+        }
+
     }
 
     @Override
     public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities) {
-        populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
+        if(isFirstTimeLoad){
+            isFirstTimeLoad = false;
+            view.onLoginSuccess();
+        }else{
+            populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
+
+        }
+
+
     }
+
+    @Override
+    public void doApiLogin(String userId,String password){
+
+//        careclues.rocketchat.CcRocketChatClient chatClient = new careclues.rocketchat.CcRocketChatClient();
+//        chatClient.websocketImpl.login(userId,password);
+
+
+
+        apiExecuter.doLogin(userId, password, new ServiceCallBack<LoginResponse>(LoginResponse.class) {
+            @Override
+            public void onSuccess(LoginResponse response) {
+//                ((CareCluesChatApplication) application).setToken(response.getData().getAuthToken());
+                RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(),response.getData().getAuthToken());
+//                System.out.println("Api Response : "+response.toString());
+                getLoginUserDetails(response.getData().getUserId());
+                handler.sendEmptyMessage(LOG_IN_SUCCESS);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                handler.sendEmptyMessage(LOG_IN_FAIL);
+            }
+        });
+    }
+
+    private void getLoginUserDetails(final String userId){
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                RoomMemberEntity userDetails = ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().findById(userId);
+                if(userDetails != null){
+                    ((CareCluesChatApplication) application).setUserName(userDetails.userName);
+                }
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    @Override
+//    public void onFetchDbUpdatedRoom(List<RoomEntity> entities) {
+//        populateAdapterData(entities,LOAD_ROOM_DATA);
+//    }
+//
+//    @Override
+//    public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities) {
+//        populateAdapterData(moreList,LOAD_MORE_ROOM_DATA);
+//    }
 
     private void handleMessage(){
         handler = new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what){
+                    case LOG_IN_SUCCESS:
+                        roomDataPresenter.getRoom(null);
+                        break;
+                    case LOG_IN_FAIL:
+
+                        break;
                     case LOAD_ROOM_DATA:
                         view.displyRoomList(modelList);
-                        subsCribeRoomMessageEvent(lastUpdatedRoomList);
                         break;
                     case LOAD_MORE_ROOM_DATA:
                         view.displyMoreRoomList(modelList);
@@ -141,13 +312,13 @@ public class RoomPresenter implements RoomContract.presenter,
     }
 
     @Override
-    public void getRoom() {
+    public void getOpenRoom() {
         modelList = new ArrayList<>();
 //        roomDataPresenter.getUpdatedRoomList(10);
-        getOpenRoom();
+        getOpenRoomDb();
     }
 
-    public  void getOpenRoom(){
+    public  void getOpenRoomDb(){
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -156,6 +327,7 @@ public class RoomPresenter implements RoomContract.presenter,
 
 //                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getOpenRoomList();
                     lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
+                    subsCribeRoomMessageEvent(lastUpdatedRoomList);
                     populateAdapterData(lastUpdatedRoomList,LOAD_ROOM_DATA);
                 } catch (Throwable e) {
                     Log.e("DBERROR", e.toString());
@@ -226,8 +398,6 @@ public class RoomPresenter implements RoomContract.presenter,
                                 }
                             }
 
-
-
                             modelList.add(adapterModel);
                         }
 
@@ -251,6 +421,7 @@ public class RoomPresenter implements RoomContract.presenter,
 
 //                moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getClosedRoomList(startCount,threshold);
                 moreList = ((CareCluesChatApplication)application).getChatDatabase().roomDao().getNextRoomList(startCount,threshold);
+                subsCribeRoomMessageEvent(moreList);
 
                 if(moreList != null && moreList.size() > 0){
                     roomDataPresenter.fetchMemberAndMessage(moreList);
@@ -259,13 +430,13 @@ public class RoomPresenter implements RoomContract.presenter,
         });
     }
 
-    @Override
-    public void reconnectToServer() {
-    }
-
-    @Override
-    public void disconnectToServer() {
-    }
+//    @Override
+//    public void reconnectToServer() {
+//    }
+//
+//    @Override
+//    public void disconnectToServer() {
+//    }
 
     @Override
     public void createNewRoom() {
@@ -313,7 +484,7 @@ public class RoomPresenter implements RoomContract.presenter,
         view.displyChatScreen(roomId);
     }
 
-    @Override
+  /*  @Override
     public void onConnect(String sessionID) {
         view.displayMessage(application.getString(R.string.connected));
     }
@@ -328,7 +499,7 @@ public class RoomPresenter implements RoomContract.presenter,
         view.onConnectionFaild(1);
     }
 
-   /* @Override
+    @Override
     public void onCreateGroup(String roomId) {
 
     }
