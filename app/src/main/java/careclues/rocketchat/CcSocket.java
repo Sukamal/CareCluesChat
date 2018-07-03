@@ -1,6 +1,7 @@
 package careclues.rocketchat;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.rocketchat.common.data.rpc.RPC;
@@ -148,7 +149,7 @@ public class CcSocket extends WebSocketListener {
         JSONObject message = null;
         try {
             message = new JSONObject(text);
-            System.out.println("------------------------------ "+message);
+            Log.v("onTextmessage",message.toString());
 
         } catch (JSONException e) {
             e.printStackTrace();

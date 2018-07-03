@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,7 +30,9 @@ import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
+import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.DateFormatter;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 
 /**
@@ -49,6 +52,7 @@ public class RoomDataPresenter {
     private Timer timer;
 
     private Application application;
+    private AppPreference appPreference;
     private RestApiExecuter apiExecuter;
     private List<RoomEntity> lastUpdatedRoomList;
     private List<RoomEntity> roomEntities;
@@ -64,6 +68,7 @@ public class RoomDataPresenter {
 
     public RoomDataPresenter(Application application){
         this.application = application;
+        appPreference = ((CareCluesChatApplication)application).getAppPreference();
         apiExecuter = RestApiExecuter.getInstance();
         initHandler();
 
@@ -128,6 +133,7 @@ public class RoomDataPresenter {
                         break;
                     case FETCH_SUBSCRIPTION_COMPLETED:
                         insertSubscriptionRecordIntoDb(subscriptionEntities);
+                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(new Date(),"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                         if(subscriptionListner != null){
                             subscriptionListner.onFetchSubscription(subscriptionEntities);
                         }
@@ -261,16 +267,19 @@ public class RoomDataPresenter {
     }
 
     private void filterSubscriptionRecord(List<SubscriptionModel> update, final List<RoomEntity> moreList){
-        subscriptionEntities = new ArrayList<>();
-        List<String> roomIdList = new ArrayList<>();
-        for(RoomEntity roomModel : moreList){
-            roomIdList.add(roomModel.roomId);
-        }
-        for(SubscriptionModel subscriptionModel : update){
-            if( roomIdList.contains(subscriptionModel.rId)){
-                SubscriptionEntity subscriptionEntity ;
-                subscriptionEntity = ModelEntityTypeConverter.subscriptionModelToEntity(subscriptionModel);
-                subscriptionEntities.add(subscriptionEntity);
+
+        if(moreList != null){
+            subscriptionEntities = new ArrayList<>();
+            List<String> roomIdList = new ArrayList<>();
+            for(RoomEntity roomModel : moreList){
+                roomIdList.add(roomModel.roomId);
+            }
+            for(SubscriptionModel subscriptionModel : update){
+                if( roomIdList.contains(subscriptionModel.rId)){
+                    SubscriptionEntity subscriptionEntity ;
+                    subscriptionEntity = ModelEntityTypeConverter.subscriptionModelToEntity(subscriptionModel);
+                    subscriptionEntities.add(subscriptionEntity);
+                }
             }
         }
 
@@ -440,8 +449,7 @@ public class RoomDataPresenter {
     }
 
     private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities) {
-        System.out.println("insertMessageRecordIntoDb : " + messageEntities.size());
-
+        Log.v("DBMESSAGE","insertMessageRecordIntoDb : " + messageEntities.size());
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {

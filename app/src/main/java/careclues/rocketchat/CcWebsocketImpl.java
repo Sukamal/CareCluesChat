@@ -1,6 +1,8 @@
 package careclues.rocketchat;
 
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.rocketchat.core.internal.middleware.CoreStreamMiddleware;
 
@@ -92,7 +94,7 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     @Override
     public void onConnected() {
-        System.out.println("RocketChatAPI Connected");
+        Log.v("CcWebsocketImpl","RocketChatAPI Connected");
         integer.set(1);
         socket.sendData(CcBasicRpc.ConnectObject());
     }
@@ -159,13 +161,13 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     @Override
     public void onClosing() {
-        System.out.println("RocketChatAPI onClosing");
+        Log.v("CcWebsocketImpl","RocketChatAPI onClosing");
         connect(connecTionListner);
     }
 
     @Override
     public void onClosed() {
-        System.out.println("RocketChatAPI onClosed");
+        Log.v("CcWebsocketImpl","RocketChatAPI onClosed");
         connectivityManager.publishDisconnect(true);
 
 
@@ -173,7 +175,7 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     @Override
     public void onFailure(Throwable throwable) {
-        System.out.println("RocketChatAPI onFailure");
+        Log.v("CcWebsocketImpl","RocketChatAPI onFailure");
         connectivityManager.publishConnectError(throwable);
 
     }

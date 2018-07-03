@@ -1,7 +1,12 @@
 package careclues.careclueschat.feature.room;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -22,13 +27,13 @@ import careclues.careclueschat.util.AppUtil;
 
 public class RoomActivity extends BaseActivity implements RoomContract.view{
 
-    @BindView(R.id.rvRoom)
-    RecyclerView rvRoom;
+    public RoomPresenter presenter;
 
-//    private RecyclerView.LayoutManager layoutManager;
-    private LinearLayoutManager layoutManager;
-    private RoomPresenter presenter;
-    private RoomAdapter room1Adapter;
+    private performFragmentAction activityAction;
+
+    public void setFragmentAction(performFragmentAction activityAction){
+        this.activityAction = activityAction;
+    }
 
     @Override
     public int getContentLayout() {
@@ -39,24 +44,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     public void initComponents() {
 
         presenter = new RoomPresenter(this,getApplication());
-        initRecycleView();
-
-        presenter.doLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
-//
-
-    }
-
-    private void initRecycleView(){
-//        rvRoom.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rvRoom.setLayoutManager(layoutManager);
-//        rvRoom.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    @OnClick(R.id.fab)
-    void createNewRoom(){
-        presenter.createNewRoom();
+//        presenter.doLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
     }
 
     @Override
@@ -112,39 +100,18 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void displyRoomList(final List<RoomAdapterModel> list) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                room1Adapter = new RoomAdapter(list,RoomActivity.this,rvRoom);
-                room1Adapter.setAdapterItemClickListner(new RoomAdapter.onAdapterItemClickListner() {
-                    @Override
-                    public void onListItemClick(int position,String roomId) {
-                        updateRoomStatus(roomId,false);
-                        presenter.getMessage(roomId);
-                    }
-                });
-                rvRoom.setAdapter(room1Adapter);
-                room1Adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
-                    @Override
-                    public void onLoadMore() {
-                        presenter.getMoreRoom(room1Adapter.lastVisibleItem + 1, room1Adapter.visibleThreshold);
-                    }
-                });
-            }
-        });
+
+        RoomListFragment fragment = new RoomListFragment();
+        fragment.list = list;
+        addFragment(fragment,false,null);
 
     }
 
     @Override
     public void displyMoreRoomList(List<RoomAdapterModel> list) {
-        room1Adapter.addLoadData(list);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                room1Adapter.notifyDataSetChanged();
-
-            }
-        });
+        if(activityAction != null){
+            activityAction.displyMoreRoomList(list);
+        }
     }
 
     @Override
@@ -157,24 +124,18 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void updateRoomMessage(final String roomId) {
-
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Snackbar
                         .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
                         .show();
-                updateRoomStatus(roomId,true);
-                room1Adapter.notifyDataSetChanged();
             }
         });
     }
 
     @Override
     public void displayMessage(final String message) {
-
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -196,13 +157,12 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     }
 
-    private void updateRoomStatus(String roomId, boolean status){
-        List<RoomAdapterModel> roomObjects = room1Adapter.roomObjects;
-        for (RoomAdapterModel adapterModel : roomObjects){
-            if(adapterModel.Id.equals(roomId)){
-                adapterModel.display = status;
-            }
-        }
+    public interface performFragmentAction {
+        void displyRoomList(List<RoomAdapterModel> list);
+        void displyMoreRoomList(List<RoomAdapterModel> list);
     }
+
+
+
 
 }

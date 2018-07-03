@@ -62,8 +62,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
-                System.out.println("totalItemCount : " + String.valueOf(totalItemCount)+"lastVisibleItem : "+ String.valueOf(lastVisibleItem));
-
                 if (!loading && totalItemCount == lastVisibleItem +1) {
                     // End has been reached Do something
                     if (loadMoreListener != null) {

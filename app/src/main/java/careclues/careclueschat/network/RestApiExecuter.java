@@ -1,5 +1,7 @@
 package careclues.careclueschat.network;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -56,6 +58,7 @@ public class RestApiExecuter {
 
                 try {
                     String rawRespons = response.body().string();
+                    Log.v("Response",rawRespons);
                     JSONObject jsonObject = new JSONObject(rawRespons);
                     Gson gson = new Gson();
                     T resPonse = (T) gson.fromJson(jsonObject.toString(),serviceCallBack.getClassType());

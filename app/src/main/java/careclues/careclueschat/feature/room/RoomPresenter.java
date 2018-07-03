@@ -67,17 +67,12 @@ public class RoomPresenter implements RoomContract.presenter,
         RoomDataPresenter.FetchRoomMemberHistoryListner,
         RoomDataPresenter.FetchLastUpdatedRoomDbListner,
         RoomDataPresenter.FetchMessageListner,
-
-
-
         RoomDataPresenter.FetchRoomListner,
         RoomDataPresenter.FetchSubscriptionListner,
-
 
         CcConnectListener,
         CcMessageCallback.SubscriptionCallback,
         CcRoomCallback.GroupCreateCallback
-
 
         /*ConnectListener,
         MessageCallback.SubscriptionCallback,
@@ -148,6 +143,7 @@ public class RoomPresenter implements RoomContract.presenter,
                     view.displayMessage(token.getUserId());
 //                    view.onSoketLoginSuccess();
                     doApiLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+
                 }
 
                 @Override
@@ -163,11 +159,13 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void reconnectToServer() {
+        view.displayMessage("reconnectToServer");
         chatClient.getWebsocketImpl().getSocket().reconnect();
     }
 
     @Override
     public void disconnectToServer() {
+        view.displayMessage("disconnectToServer");
 //        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
     }
 
@@ -186,7 +184,7 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onConnectError(Throwable websocketException) {
 //        view.onConnectionFaild(1);
-        reconnectToServer();
+//        reconnectToServer();
     }
 
 
@@ -203,6 +201,7 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onFetchSubscription(List<SubscriptionEntity> entities) {
         Toast.makeText(application, "onFetchSubscription", Toast.LENGTH_SHORT).show();
+
         roomDataPresenter.getUpdatedRoomList(10);
     }
 
@@ -235,8 +234,6 @@ public class RoomPresenter implements RoomContract.presenter,
 //        careclues.rocketchat.CcRocketChatClient chatClient = new careclues.rocketchat.CcRocketChatClient();
 //        chatClient.websocketImpl.login(userId,password);
 
-
-
         apiExecuter.doLogin(userId, password, new ServiceCallBack<LoginResponse>(LoginResponse.class) {
             @Override
             public void onSuccess(LoginResponse response) {
@@ -252,6 +249,7 @@ public class RoomPresenter implements RoomContract.presenter,
                 handler.sendEmptyMessage(LOG_IN_FAIL);
             }
         });
+
     }
 
     private void getLoginUserDetails(final String userId){
@@ -265,15 +263,6 @@ public class RoomPresenter implements RoomContract.presenter,
             }
         });
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -295,7 +284,8 @@ public class RoomPresenter implements RoomContract.presenter,
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what){
                     case LOG_IN_SUCCESS:
-                        roomDataPresenter.getRoom(null);
+                        String lastUpdate = appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name());
+                        roomDataPresenter.getRoom(lastUpdate);
                         break;
                     case LOG_IN_FAIL:
 
@@ -405,7 +395,7 @@ public class RoomPresenter implements RoomContract.presenter,
                     }
 
                 } catch (Throwable e) {
-                    System.out.println("Error111111111111111111111111111111111");
+                    Log.e("RoomPresenter","ERRORR!!!!!!!!!!!!!!" + e.toString());
                 }
 
             }
@@ -445,7 +435,7 @@ public class RoomPresenter implements RoomContract.presenter,
         apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
             @Override
             public void onSuccess(GroupResponseModel response) {
-                System.out.println("New Room : " + response.toString());
+                Log.e("NEWROOM","New Room : " + response.toString());
                 if(response.success){
                     setRoomTopic(response.group.id,"text-consultation");
                 }
@@ -463,7 +453,7 @@ public class RoomPresenter implements RoomContract.presenter,
         apiExecuter.setRoomTopicw(roomId, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
             @Override
             public void onSuccess(SetTopicResponseModel response) {
-                System.out.println("New Room : " + response.toString());
+                Log.e("NEWROOM","SetTopic : " + response.toString());
             }
 
             @Override
@@ -516,7 +506,7 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void onMessage(String roomId, CcMessage message) {
-        System.out.println("Room Update : " + roomId + "  ,  " + message);
+        Log.e("ROOMUPDATE","Room Update : " + roomId + "  ,  " + message);
 //        view.displayMessage("Room Update : " + roomId + "  ,  " + message.msg);
         view.updateRoomMessage(roomId);
 

@@ -2,15 +2,19 @@ package careclues.careclueschat.application;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.util.Log;
 
 import com.rocketchat.common.network.ReconnectionStrategy;
 import com.rocketchat.common.utils.Logger;
 import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.RocketChatClient;
 
+import java.util.Date;
+
 import careclues.careclueschat.storage.database.ChatDatabase;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.DateFormatter;
 import careclues.rocketchat.CcRocketChatClient;
 
 public class CareCluesChatApplication extends Application {
@@ -35,6 +39,7 @@ public class CareCluesChatApplication extends Application {
         super.onCreate();
 
         appPreference = new AppPreference(this);
+//        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(new Date(),"yyyy-MM-dd'T'HH.mm.ss.SSS'Z'"));
 //        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(),"2018-01-01T09:12:58.633Z");
 
         chatDatabase = Room.databaseBuilder(this,ChatDatabase.class, AppConstant.DATABASE_NAME).build();

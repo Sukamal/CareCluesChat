@@ -293,7 +293,7 @@ public class ChatPresenter implements ChatContract.presenter,
                     view.displayChatList(msgList);
 
                 } catch (Throwable e) {
-                    System.out.println("Error111111111111111111111111111111111");
+                    Log.e("ERROR", "Errorr!!!!"+e.toString());
                 }
 
             }
