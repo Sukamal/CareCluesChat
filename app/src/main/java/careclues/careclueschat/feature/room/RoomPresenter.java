@@ -140,9 +140,9 @@ public class RoomPresenter implements RoomContract.presenter,
                 public void onLoginSuccess(CcToken token) {
                     ((CareCluesChatApplication) application).setToken(token.getAuthToken());
                     ((CareCluesChatApplication) application).setUserId(token.getUserId());
-                    view.displayMessage(token.getUserId());
-//                    view.onSoketLoginSuccess();
+                    ((CareCluesChatApplication) application).setUserName("sachu-985");
                     doApiLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+                    view.displayMessage(token.getUserId());
 
                 }
 
@@ -359,7 +359,7 @@ public class RoomPresenter implements RoomContract.presenter,
                             }
 
                             if(entity.readOnly == false){
-                                adapterModel.status = "Ongoing";
+                                adapterModel.status = application.getResources().getString(R.string.tc_status_ongoing);;
                             }else{
                                 if(adapterModel.name.equals("New-Consultant")){
 
@@ -370,13 +370,14 @@ public class RoomPresenter implements RoomContract.presenter,
                                         JSONObject jsonObject = new JSONObject(lastMessage.msg);
                                         msgType = jsonObject.optString("type");
                                         if(msgType.equals("unconfirmed_expiry")){
-                                            adapterModel.status = "Inactivity Expired";
+                                            adapterModel.status = application.getResources().getString(R.string.tc_status_inactivity_expired);
 
                                         }else if(msgType.equals("unpaid_expiry")){
-                                            adapterModel.status = "Payment Expired";
+                                            adapterModel.status = application.getResources().getString(R.string.tc_status_payment_expired);
 
                                         }else if(msgType.equals("rejected_by_physician")){
-                                            adapterModel.status = "Rejected";
+                                            adapterModel.status = application.getResources().getString(R.string.tc_status_rejected);
+                                            ;
 
                                         }
                                     }catch (Exception e){
@@ -384,7 +385,7 @@ public class RoomPresenter implements RoomContract.presenter,
                                     }
 
                                 }else{
-                                    adapterModel.status = "Completed";
+                                    adapterModel.status = application.getResources().getString(R.string.tc_status_completed);;
                                 }
                             }
 

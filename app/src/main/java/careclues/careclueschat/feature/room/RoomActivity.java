@@ -102,7 +102,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     public void displyRoomList(final List<RoomAdapterModel> list) {
 
         RoomListFragment fragment = new RoomListFragment();
-        fragment.list = list;
+        fragment.setRoomList(list);
         addFragment(fragment,false,null);
 
     }

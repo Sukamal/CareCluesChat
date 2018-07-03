@@ -10,5 +10,11 @@
     <string name="txt_Upload_photo">Gallery</string>
     <string name="txt_Upload_file">Upload file</string>
 
+    <string name="tc_status_inactivity_expired">Expired due to inactivity</string>
+    <string name="tc_status_payment_expired">Expired due to non-payment</string>
+    <string name="tc_status_completed">Completed</string>
+    <string name="tc_status_ongoing">Ongoing</string>
+    <string name="tc_status_rejected">Physician Unavailable</string>
+
 
 </resources>

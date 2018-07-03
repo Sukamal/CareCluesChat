@@ -163,7 +163,6 @@ public class CcSocket extends WebSocketListener {
         CcRPC.MsgType messageType = CcRPC.getMessageType(message.optString("msg"));
         if (messageType == CcRPC.MsgType.PING) {
 //            sendData(CcRPC.PONG_MESSAGE);
-
             pingHandler.postDelayed(new TimerTask() {
                 @Override
                 public void run() {

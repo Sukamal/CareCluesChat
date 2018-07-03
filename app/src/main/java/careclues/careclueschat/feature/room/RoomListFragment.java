@@ -29,6 +29,9 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
 
     public List<RoomAdapterModel> list;
 
+    public void setRoomList(List<RoomAdapterModel> list){
+        this.list = list;
+    }
 
     @Nullable
     @Override
