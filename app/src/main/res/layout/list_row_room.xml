@@ -121,7 +121,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:background="#9c9c9c"
+                android:background="#Ff0000"
                 android:layout_below="@+id/ll_container_msg"
                 android:layout_marginTop="@dimen/margin_10"
                 android:layout_toRightOf="@id/image_view"/>
