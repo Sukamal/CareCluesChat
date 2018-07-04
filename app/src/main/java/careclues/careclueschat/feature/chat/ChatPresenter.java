@@ -206,7 +206,7 @@ public class ChatPresenter implements ChatContract.presenter,
     }
 
     public void deregisterSocket(){
-//        chatRoom.unSubscribeAllEvents();
+        chatRoom.unSubscribeAllEvents();
     }
 
 

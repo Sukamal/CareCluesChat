@@ -49,6 +49,8 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     @BindView(R.id.et_message)
     EditText etMessage;
 
+
+    //THIS IS GIT TEST
     @Override
     public int getContentLayout() {
         return R.layout.activity_chat;

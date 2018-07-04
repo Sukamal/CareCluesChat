@@ -6,6 +6,7 @@ import java.util.Date;
 import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
+import careclues.rocketchat.common.CcCoreStreamMiddleware;
 import careclues.rocketchat.listner.CcChatRoomFactory;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcSocketFactory;
@@ -118,12 +119,14 @@ public class CcRocketChatClient {
         return websocketImpl.subscribeRoomMessageEvent(roomId, enable, subscribeListener, listener);
     }
 
-    String subscribeRoomTypingEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcTypingListener listener) {
+    public String subscribeRoomTypingEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcTypingListener listener) {
         return websocketImpl.subscribeRoomTypingEvent(roomId, enable, subscribeListener, listener);
     }
 
 
-
+    public void removeSubscription(String roomId, CcCoreStreamMiddleware.SubscriptionType type) {
+        websocketImpl.removeSubscription(roomId, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
+    }
 
     public void login(String username, String password, CcLoginCallback loginCallback){
         websocketImpl.login(username,password,loginCallback);
@@ -141,6 +144,14 @@ public class CcRocketChatClient {
     //Tested
     void sendMessage(String msgId, String roomID, String message, CcMessageCallback.MessageAckCallback callback) {
         websocketImpl.sendMessage(msgId, roomID, message, callback);
+    }
+
+    void unsubscribeRoom(String subId, CcSubscribeListener subscribeListener) {
+        websocketImpl.unsubscribeRoom(subId, subscribeListener);
+    }
+
+    public void removeAllSubscriptions(String roomId) {
+        websocketImpl.removeAllSubscriptions(roomId);
     }
 
 

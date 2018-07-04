@@ -4,6 +4,7 @@ import java.util.Date;
 
 import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
+import careclues.rocketchat.common.CcCoreStreamMiddleware;
 import careclues.rocketchat.listner.CcSubscribeListener;
 import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcBaseRoom;
@@ -154,26 +155,26 @@ public class CcChatRoom {
         }
     }
 
-//    public void unSubscribeRoomMessageEvent(SubscribeListener subscribeListener) {
-//        if (roomSubId != null) {
-//            client.removeSubscription(room.roomId(), CoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
-//            client.unsubscribeRoom(roomSubId, subscribeListener);
-//            roomSubId = null;
-//        }
-//    }
-//
-//    public void unSubscribeRoomTypingEvent(SubscribeListener subscribeListener) {
-//        if (typingSubId != null) {
-//            client.removeSubscription(room.roomId(), CoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_TYPING);
-//            client.unsubscribeRoom(typingSubId, subscribeListener);
-//            typingSubId = null;
-//        }
-//    }
-//
-//    public void unSubscribeAllEvents() {
-//        client.removeAllSubscriptions(room.roomId());
-//        unSubscribeRoomMessageEvent(null);
-//        unSubscribeRoomTypingEvent(null);
-//    }
+    public void unSubscribeRoomMessageEvent(CcSubscribeListener subscribeListener) {
+        if (roomSubId != null) {
+            client.removeSubscription(room.Id, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
+            client.unsubscribeRoom(roomSubId, subscribeListener);
+            roomSubId = null;
+        }
+    }
+
+    public void unSubscribeRoomTypingEvent(CcSubscribeListener subscribeListener) {
+        if (typingSubId != null) {
+            client.removeSubscription(room.Id, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_TYPING);
+            client.unsubscribeRoom(typingSubId, subscribeListener);
+            typingSubId = null;
+        }
+    }
+
+    public void unSubscribeAllEvents() {
+        client.removeAllSubscriptions(room.Id);
+        unSubscribeRoomMessageEvent(null);
+        unSubscribeRoomTypingEvent(null);
+    }
 
 }

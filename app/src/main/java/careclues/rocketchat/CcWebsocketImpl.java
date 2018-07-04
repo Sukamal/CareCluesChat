@@ -271,6 +271,20 @@ public class CcWebsocketImpl implements CcSocketListener {
         return uniqueID;
     }
 
+    void unsubscribeRoom(String subId, CcSubscribeListener subscribeListener) {
+        socket.sendData(CcCoreSubRPC.unsubscribeRoom(subId));
+        coreStreamMiddleware.createSubscriptionListener(subId, subscribeListener);
+    }
+
+    void removeSubscription(String roomId, CcCoreStreamMiddleware.SubscriptionType type) {
+        coreStreamMiddleware.removeSubscription(roomId, type);
+    }
+
+    void removeAllSubscriptions(String roomId) {
+        coreStreamMiddleware.removeAllSubscriptions(roomId);
+    }
+
+
 
     void getChatHistory(String roomID, int limit, Date oldestMessageTimestamp,
                         Date lasttimestamp, CcHistoryCallback callback) {
