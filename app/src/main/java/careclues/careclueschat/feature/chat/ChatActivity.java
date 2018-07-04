@@ -130,14 +130,14 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 
     @Override
     public void displayMessage(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar
-                        .make(findViewById(R.id.rlActivityLogin), message, Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Snackbar
+//                        .make(findViewById(R.id.rlActivityLogin), message, Snackbar.LENGTH_LONG)
+//                        .show();
+//            }
+//        });
     }
 
     @Override

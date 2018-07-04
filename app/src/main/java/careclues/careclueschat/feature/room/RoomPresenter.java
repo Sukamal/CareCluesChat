@@ -140,8 +140,8 @@ public class RoomPresenter implements RoomContract.presenter,
                 public void onLoginSuccess(CcToken token) {
                     ((CareCluesChatApplication) application).setToken(token.getAuthToken());
                     ((CareCluesChatApplication) application).setUserId(token.getUserId());
-                    ((CareCluesChatApplication) application).setUserName("sachu-985");
-                    doApiLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+                    ((CareCluesChatApplication) application).setUserName(AppConstant.USER_NAME);
+                    doApiLogin(AppConstant.USER_NAME, AppConstant.PASSWORD);
                     view.displayMessage(token.getUserId());
 
                 }
@@ -172,7 +172,7 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onConnect(String sessionID) {
         view.displayMessage(application.getString(R.string.connected));
-        doLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
+        doLogin(AppConstant.USER_NAME, AppConstant.PASSWORD);
     }
 
     @Override
