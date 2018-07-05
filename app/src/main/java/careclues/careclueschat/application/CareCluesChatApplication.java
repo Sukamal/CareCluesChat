@@ -26,6 +26,7 @@ public class CareCluesChatApplication extends Application {
     private ChatDatabase chatDatabase;
     private AppPreference appPreference;
     private RocketChatClient client;
+    //test
 
     private CcRocketChatClient chatClient;
 
