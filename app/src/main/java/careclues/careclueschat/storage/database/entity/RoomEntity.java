@@ -60,7 +60,4 @@ public class RoomEntity {
     public Boolean readOnly;
 
 
-
-
-
 }

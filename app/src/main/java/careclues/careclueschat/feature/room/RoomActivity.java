@@ -2,36 +2,31 @@ package careclues.careclueschat.feature.room;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import careclues.careclueschat.R;
-import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.chat.ChatActivity;
-import careclues.careclueschat.feature.chat.TestChatACtivity;
+import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseActivity;
-import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
-import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     public RoomPresenter presenter;
 
-    private performFragmentAction activityAction;
+    @BindView(R.id.iv_loading)
+    ImageView ivLoading;
 
-    public void setFragmentAction(performFragmentAction activityAction){
+    private performRoomFragmentAction activityAction;
+
+    public void setFragmentAction(performRoomFragmentAction activityAction){
         this.activityAction = activityAction;
     }
 
@@ -100,7 +95,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void displyRoomList(final List<RoomAdapterModel> list) {
-
+        ivLoading.setVisibility(View.GONE);
         RoomListFragment fragment = new RoomListFragment();
         fragment.setRoomList(list);
         addFragment(fragment,false,null);
@@ -116,10 +111,15 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void displyChatScreen(String roomId) {
-        Intent intent = new Intent(RoomActivity.this, ChatActivity.class);
-//      Intent intent = new Intent(RoomActivity.this, TestChatACtivity.class);
-        intent.putExtra("roomId",roomId);
-        startActivity(intent);
+//        Intent intent = new Intent(RoomActivity.this, ChatActivity.class);
+////      Intent intent = new Intent(RoomActivity.this, TestChatACtivity.class);
+//        intent.putExtra("roomId",roomId);
+//        startActivity(intent);
+
+        Fragment fragment = new ChatFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("roomId",roomId);
+        addFragment(fragment,true,bundle);
     }
 
     @Override
@@ -157,7 +157,12 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     }
 
-    public interface performFragmentAction {
+    public interface performRoomFragmentAction {
+        void displyRoomList(List<RoomAdapterModel> list);
+        void displyMoreRoomList(List<RoomAdapterModel> list);
+    }
+
+    public interface performChatFragmentAction {
         void displyRoomList(List<RoomAdapterModel> list);
         void displyMoreRoomList(List<RoomAdapterModel> list);
     }

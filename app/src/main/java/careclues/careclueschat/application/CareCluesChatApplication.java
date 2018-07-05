@@ -15,6 +15,7 @@ import careclues.careclueschat.storage.database.ChatDatabase;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.DateFormatter;
+import careclues.rocketchat.CcReconnectionStrategy;
 import careclues.rocketchat.CcRocketChatClient;
 
 public class CareCluesChatApplication extends Application {
@@ -73,6 +74,7 @@ public class CareCluesChatApplication extends Application {
                 .websocketUrl(serverurl)
                 .build();
 
+        chatClient.setReconnectionStrategy(new CcReconnectionStrategy(20, 3000));
     }
 
     public AppPreference getAppPreference() {

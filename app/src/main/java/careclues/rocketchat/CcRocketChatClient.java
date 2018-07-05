@@ -3,6 +3,7 @@ package careclues.rocketchat;
 
 import java.util.Date;
 
+import careclues.careclueschat.util.AppConstant;
 import careclues.rocketchat.callback.CcHistoryCallback;
 import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
@@ -22,7 +23,7 @@ public class CcRocketChatClient {
 
     public OkHttpClient client;
     public CcSocketFactory factory;
-    public String socketUrl = "wss://ticklechat.careclues.com/websocket";
+    public String socketUrl = AppConstant.SOCKET_URL;
     public CcWebsocketImpl websocketImpl;
     public CcTokenProvider tokenProvider;
 
@@ -101,10 +102,21 @@ public class CcRocketChatClient {
         websocketImpl.connect(listener);
     }
 
+    public void setReconnectionStrategy(CcReconnectionStrategy strategy) {
+        websocketImpl.setReconnectionStrategy(strategy);
+    }
+
     public void disconnect() {
         websocketImpl.disconnect();
     }
 
+    public void disablePing() {
+        websocketImpl.disablePing();
+    }
+
+    public void enablePing() {
+        websocketImpl.enablePing();
+    }
     public CcChatRoomFactory getChatRoomFactory() {
         return chatRoomFactory;
     }
@@ -136,17 +148,15 @@ public class CcRocketChatClient {
         websocketImpl.loginUsingToken(token,loginCallback);
     }
 
-    //Tested
-    void sendIsTyping(String roomId, String username, Boolean istyping) {
+    public void sendIsTyping(String roomId, String username, Boolean istyping) {
         websocketImpl.sendIsTyping(roomId, username, istyping);
     }
 
-    //Tested
-    void sendMessage(String msgId, String roomID, String message, CcMessageCallback.MessageAckCallback callback) {
+    public void sendMessage(String msgId, String roomID, String message, CcMessageCallback.MessageAckCallback callback) {
         websocketImpl.sendMessage(msgId, roomID, message, callback);
     }
 
-    void unsubscribeRoom(String subId, CcSubscribeListener subscribeListener) {
+    public void unsubscribeRoom(String subId, CcSubscribeListener subscribeListener) {
         websocketImpl.unsubscribeRoom(subId, subscribeListener);
     }
 

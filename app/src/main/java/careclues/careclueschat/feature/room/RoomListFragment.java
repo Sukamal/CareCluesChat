@@ -1,6 +1,5 @@
 package careclues.careclueschat.feature.room;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +19,7 @@ import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
 
-public class RoomListFragment extends BaseFragment implements RoomActivity.performFragmentAction {
+public class RoomListFragment extends BaseFragment implements RoomActivity.performRoomFragmentAction {
 
     private LinearLayoutManager layoutManager;
     private RoomAdapter room1Adapter;

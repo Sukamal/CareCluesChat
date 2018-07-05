@@ -2,6 +2,7 @@ package careclues.careclueschat.feature.common;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void addFragment(final Fragment fragment, final boolean addtoBac, final Bundle bundle){
-        new Handler().post(new Runnable() {
+
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 if(bundle != null){
@@ -44,6 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if(addtoBac){
                     fragmentTransaction.addToBackStack(fragment.getClass().getName());
                 }
+//                fragmentTransaction.commitAllowingStateLoss();
                 fragmentTransaction.commit();
             }
         });

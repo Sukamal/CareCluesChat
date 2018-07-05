@@ -11,4 +11,13 @@ tools:context=".feature.room.RoomActivity">
         android:layout_height="match_parent">
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/loading"
+        android:layout_centerInParent="true"
+        />
+
 </RelativeLayout>

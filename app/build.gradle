@@ -76,5 +76,8 @@ dependencies {
     compile "com.squareup.picasso:picasso:2.4.0"
     compile 'com.mikhaellopez:circularimageview:3.0.2'
 
+
+
+
     compile 'com.github.stfalcon:chatkit:0.2.2'
 }

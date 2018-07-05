@@ -31,7 +31,7 @@ public class CcSocket extends WebSocketListener {
     private CcTaskHandler timeoutHandler;
     private long pingInterval;
     private WebSocket ws;
-    private State currentState = State.DISCONNECTED;
+    private State currentState;
     private CcReconnectionStrategy strategy;
 
     private Timer timer;
@@ -48,7 +48,7 @@ public class CcSocket extends WebSocketListener {
         setState(State.DISCONNECTED);
         selfDisconnect = false;
         pingEnable = false;
-        pingInterval = 2000;
+        pingInterval = 6000;
         pingHandler = new CcTaskHandler();
         timeoutHandler = new CcTaskHandler();
         createSocket();
@@ -94,8 +94,6 @@ public class CcSocket extends WebSocketListener {
     public State getState() {
         return currentState;
     }
-
-
 
 
     // OkHttp WebSocket callbacks
@@ -149,7 +147,7 @@ public class CcSocket extends WebSocketListener {
         JSONObject message = null;
         try {
             message = new JSONObject(text);
-            Log.v("onTextmessage",message.toString());
+            Log.v("Receiving Message :",message.toString());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -158,17 +156,25 @@ public class CcSocket extends WebSocketListener {
 
         // Valid message - reschedule next ping
         reschedulePing();
-
         // Proccess PING messages or send the message downstream
         CcRPC.MsgType messageType = CcRPC.getMessageType(message.optString("msg"));
         if (messageType == CcRPC.MsgType.PING) {
-//            sendData(CcRPC.PONG_MESSAGE);
+            sendData(CcRPC.PONG_MESSAGE);
+
             pingHandler.postDelayed(new TimerTask() {
                 @Override
                 public void run() {
                     sendData(RPC.PING_MESSAGE);
+
                 }
-            }, 10);
+            }, 8000);
+
+//            pingHandler.postDelayed(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    sendData(RPC.PING_MESSAGE);
+//                }
+//            }, 10);
 
         } else {
             listener.onMessageReceived(message);
@@ -205,6 +211,7 @@ public class CcSocket extends WebSocketListener {
 
     public void sendData(String message) {
         if (getState() == State.CONNECTED) {
+            Log.v("Sending_Message :",message.toString());
             ws.send(message);
         }
     }
@@ -256,7 +263,6 @@ public class CcSocket extends WebSocketListener {
 
 
 
-    // TODO: 15/8/17 solve problem of PONG RECEIVE FAILED by giving a fair chance
     protected void reschedulePing() {
         if (!pingEnable)
             return;
@@ -267,6 +273,7 @@ public class CcSocket extends WebSocketListener {
             @Override
             public void run() {
                 sendData(RPC.PING_MESSAGE);
+
             }
         }, pingInterval);
         timeoutHandler.postDelayed(new TimerTask() {
@@ -278,7 +285,7 @@ public class CcSocket extends WebSocketListener {
                 }
                 timeoutHandler.removeLast();
             }
-        }, 2 * pingInterval);
+        }, 1 * pingInterval);
     }
 
 

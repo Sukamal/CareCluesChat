@@ -51,12 +51,9 @@ public class CcWebsocketImpl implements CcSocketListener {
         this.factory = factory;
         this.baseUrl = baseUrl;
         this.socket = factory.create(client, baseUrl, this);
-
         connectivityManager = new CcConnectivityManager();
         coreMiddleware = new CcCoreMiddleware();
         coreStreamMiddleware = new CcCoreStreamMiddleware();
-
-
         integer = new AtomicInteger(1);
     }
 
@@ -70,27 +67,6 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     }*/
 
-    void connect(CcConnectListener listener) {
-        connecTionListner = listener;
-        connectivityManager.register(listener);
-        socket.connect();
-    }
-
-    public String getMyUserId() {
-        return userId;
-    }
-
-    public CcConnectivityManager getConnectivityManager() {
-        return connectivityManager;
-    }
-
-    void disconnect() {
-        socket.disconnect();
-    }
-
-    public CcSocket getSocket() {
-        return socket;
-    }
 
     @Override
     public void onConnected() {
@@ -110,10 +86,10 @@ public class CcWebsocketImpl implements CcSocketListener {
                 coreMiddleware.processCallback(Long.valueOf(message.optString("id")), message);
                 break;
             case READY:
-//                coreStreamMiddleware.processSubscriptionSuccess(message);
+                coreStreamMiddleware.processSubscriptionSuccess(message);
                 break;
             case ADDED:
-//                processCollectionsAdded(message);
+                processCollectionsAdded(message);
                 break;
             case CHANGED:
                 processCollectionsChanged(message);
@@ -123,7 +99,7 @@ public class CcWebsocketImpl implements CcSocketListener {
                 //dbManager.update(message, RPC.MsgType.REMOVED);
                 break;
             case NOSUB:
-//                coreStreamMiddleware.processUnsubscriptionSuccess(message);
+                coreStreamMiddleware.processUnsubscriptionSuccess(message);
                 break;
             case OTHER:
                 break;
@@ -133,36 +109,10 @@ public class CcWebsocketImpl implements CcSocketListener {
         }
     }
 
-    private String sessionId;
-    private void processOnConnected(JSONObject object) {
-        sessionId = object.optString("session");
-        connectivityManager.publishConnect(sessionId);
-        /*sendData(BasicRPC.PING_MESSAGE);*/
-
-    }
-
-    private void processCollectionsAdded(JSONObject object) {
-        if (userId == null) {
-            userId = object.optString("id");
-        }
-        // TODO - collections added
-        //dbManager.update(object, RPC.MsgType.ADDED);
-    }
-
-
-//    @Override
-//    public void onMessageReceived(JSONObject message) {
-//        System.out.println("RocketChatAPI onMessageReceived");
-//
-//    }
-
-
-
-
     @Override
     public void onClosing() {
         Log.v("CcWebsocketImpl","RocketChatAPI onClosing");
-        connect(connecTionListner);
+//        connect(connecTionListner);
     }
 
     @Override
@@ -180,6 +130,61 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     }
 
+
+
+    public void connect(CcConnectListener listener) {
+        connecTionListner = listener;
+        connectivityManager.register(listener);
+        socket.connect();
+    }
+
+    void setReconnectionStrategy(CcReconnectionStrategy strategy) {
+        socket.setReconnectionStrategy(strategy);
+    }
+
+    public String getMyUserId() {
+        return userId;
+    }
+
+    public CcConnectivityManager getConnectivityManager() {
+        return connectivityManager;
+    }
+
+    public void disconnect() {
+        socket.disconnect();
+    }
+
+    public CcSocket getSocket() {
+        return socket;
+    }
+
+    void setPingInterval(long interval) {
+        socket.setPingInterval(interval);
+    }
+
+    void disablePing() {
+        socket.disablePing();
+    }
+
+    void enablePing() {
+        socket.enablePing();
+    }
+
+    private String sessionId;
+    private void processOnConnected(JSONObject object) {
+        sessionId = object.optString("session");
+        connectivityManager.publishConnect(sessionId);
+        /*sendData(BasicRPC.PING_MESSAGE);*/
+
+    }
+
+    private void processCollectionsAdded(JSONObject object) {
+        if (userId == null) {
+            userId = object.optString("id");
+        }
+        // TODO - collections added
+        //dbManager.update(object, RPC.MsgType.ADDED);
+    }
 
 
     private void processCollectionsChanged(JSONObject object) {

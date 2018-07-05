@@ -10,6 +10,7 @@ public class RoomAdapterModel implements Comparable<RoomAdapterModel>{
 
     @SerializedName("_id")
     public String Id;
+    public String roomName;
     @SerializedName("description")
     public String description;
     @SerializedName("name")

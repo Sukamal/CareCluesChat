@@ -28,7 +28,6 @@ import java.util.TimerTask;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
-import careclues.careclueschat.feature.chat.ChatPresenter;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.model.GroupResponseModel;
@@ -113,7 +112,6 @@ public class RoomPresenter implements RoomContract.presenter,
         handleMessage();
 
         roomDataPresenter = new RoomDataPresenter(application);
-
         roomDataPresenter.registerRoomListner(this);
         roomDataPresenter.registerSubscriptionListner(this);
         roomDataPresenter.registerUpdatedRoomListner(this);
@@ -127,8 +125,27 @@ public class RoomPresenter implements RoomContract.presenter,
 //      api.getWebsocketImpl().getConnectivityManager().register(RoomPresenter.this);
         chatClient = ((CareCluesChatApplication) application).getRocketChatClient();
         chatClient.connect(this);
-
     }
+
+
+    @Override
+    public void onConnect(String sessionID) {
+        view.displayMessage(application.getString(R.string.connected));
+        doLogin(AppConstant.USER_NAME, AppConstant.PASSWORD);
+    }
+
+    @Override
+    public void onDisconnect(boolean closedByServer) {
+        reconnectToServer();
+//        view.onConnectionFaild(2);
+    }
+
+    @Override
+    public void onConnectError(Throwable websocketException) {
+//        view.onConnectionFaild(1);
+//        reconnectToServer();
+    }
+
 
 
 
@@ -166,26 +183,10 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void disconnectToServer() {
         view.displayMessage("disconnectToServer");
+        chatClient.disconnect();
 //        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
     }
 
-    @Override
-    public void onConnect(String sessionID) {
-        view.displayMessage(application.getString(R.string.connected));
-        doLogin(AppConstant.USER_NAME, AppConstant.PASSWORD);
-    }
-
-    @Override
-    public void onDisconnect(boolean closedByServer) {
-        reconnectToServer();
-//        view.onConnectionFaild(2);
-    }
-
-    @Override
-    public void onConnectError(Throwable websocketException) {
-//        view.onConnectionFaild(1);
-//        reconnectToServer();
-    }
 
 
     //-------------------------------------------------LOAD BASIC DATA----------------------------------------------------------------------------------
@@ -337,12 +338,14 @@ public class RoomPresenter implements RoomContract.presenter,
                         for (final RoomEntity entity : rooms) {
                             adapterModel = new RoomAdapterModel();
                             adapterModel.Id = entity.roomId;
+                            adapterModel.roomName = entity.roomName;
                             adapterModel.description = entity.description;
                             List<RoomMemberEntity> memberEntities = ((CareCluesChatApplication) application).getChatDatabase().roomMemberDao().findByRoomId(entity.roomId);
-                            List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(entity.roomId, 1);
+//                            List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(entity.roomId, 1);
+                            MessageEntity lastMessage = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getLastMessage(entity.roomId);
 
-                            if (messageEntities != null && messageEntities.size() > 0) {
-                                adapterModel.updatedAt = messageEntities.get(0).updatedAt;
+                            if (lastMessage != null) {
+                                adapterModel.updatedAt = lastMessage.updatedAt;
                             }else{
                                 adapterModel.updatedAt = entity.updatedAt;
                             }
@@ -365,7 +368,6 @@ public class RoomPresenter implements RoomContract.presenter,
 
                                     String msgType = "";
 
-                                    MessageEntity lastMessage = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getLastMessage(entity.roomId);
                                     try{
                                         JSONObject jsonObject = new JSONObject(lastMessage.msg);
                                         msgType = jsonObject.optString("type");
@@ -377,7 +379,6 @@ public class RoomPresenter implements RoomContract.presenter,
 
                                         }else if(msgType.equals("rejected_by_physician")){
                                             adapterModel.status = application.getResources().getString(R.string.tc_status_rejected);
-                                            ;
 
                                         }
                                     }catch (Exception e){
@@ -466,6 +467,7 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void getMessage(String roomId) {
+        roomDataPresenter.unreGisterMessageListner();
         roomDataPresenter.registerMessageListner(this);
         roomDataPresenter.fetchMessages(roomId);
     }

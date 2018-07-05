@@ -54,6 +54,19 @@ public interface RoomDao {
     List<RoomEntity> getNextRoomList(int startCount, int endCount);
 
 
+//    @Query("select roo.*, (select updatedAt msgTime from message where rId = roo.id order by updatedAt desc limit 1)msgTime from room roo inner join subscription sub on sub.roomId = roo.id and roo.readOnly=0 and sub.open=1 order by updatedAt desc")
+//    List<RoomListModel> getActiveRoomList1();
+//
+//
+//    @Query("select ro.*, (select updatedAt msgTime from message where rId = ro.id order by updatedAt desc limit 1)msgTime from room ro where ro.id not in (select roo.id from room roo inner join subscription sub on sub.roomId = roo.id and roo.readOnly=0 and sub.open=1 ) order by updatedAt desc LIMIT :startCount,:endCount")
+//    List<RoomListModel> getNextRoomList1(int startCount, int endCount);
+
+
+
+
+
+
+
 //    SELECT column_name(s)
 //    FROM table1
 //    INNER JOIN table2 ON table1.column_name = table2.column_name;

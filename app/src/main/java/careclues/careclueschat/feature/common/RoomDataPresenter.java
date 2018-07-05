@@ -115,6 +115,10 @@ public class RoomDataPresenter {
         this.fetchMessageListner = fetchMessageListner;
     }
 
+    public void unreGisterMessageListner(){
+        fetchMessageListner = null;
+    }
+
     private void initHandler(){
         handler = new Handler(Looper.getMainLooper()){
             @Override
@@ -406,7 +410,7 @@ public class RoomDataPresenter {
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
-
+                Log.e("Error","Error!!!!");
             }
         });
     }

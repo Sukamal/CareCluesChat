@@ -1,8 +1,6 @@
 package careclues.careclueschat.feature.room;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,7 +11,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mikhaellopez.circularimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -22,11 +19,8 @@ import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.R;
-import careclues.careclueschat.feature.chat.ChatActivity;
-import careclues.careclueschat.feature.chat.TestChatACtivity;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
-import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.DateFormatter;
 
 
@@ -113,7 +107,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.tvUserName.setText(roomObjects.get(position).name);
         holder.tvRoomId.setText(roomObjects.get(position).description);
-        holder.tvStatus.setText(roomObjects.get(position).status + "  : " + roomObjects.get(position).Id);
+        holder.tvStatus.setText(roomObjects.get(position).status + "\n" + roomObjects.get(position).Id + "\n" + roomObjects.get(position).roomName);
         holder.position = position;
         if(roomObjects.get(position).userName != null){
             String avatarPath = "https://ticklechat.careclues.com/avatar/" + roomObjects.get(position).userName;

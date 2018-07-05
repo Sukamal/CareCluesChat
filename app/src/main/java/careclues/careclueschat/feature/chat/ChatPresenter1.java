@@ -1,4 +1,4 @@
-package careclues.careclueschat.feature.chat.chatmodel;
+package careclues.careclueschat.feature.chat;
 
 import android.app.Application;
 import android.support.annotation.Nullable;
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
-import careclues.careclueschat.feature.chat.ChatContract;
+import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.network.RestApiExecuter;
@@ -36,7 +36,12 @@ import careclues.rocketchat.models.CcToken;
 import careclues.rocketchat.models.CcUser;
 
 public class ChatPresenter1 implements ChatContract.presenter,
-        CcTypingListener{
+
+        CcTypingListener
+
+        /*ConnectListener,
+        MessageCallback.SubscriptionCallback,
+        TypingListener*/ {
 
     private ChatContract.view view;
     private Application application;
@@ -45,6 +50,11 @@ public class ChatPresenter1 implements ChatContract.presenter,
     private String roomId;
 
     private AtomicInteger integer;
+
+
+//    private RocketChatClient api;
+//    private ChatRoom chatRoom;
+
     private CcRocketChatClient api;
     private CcChatRoom chatRoom;
 
@@ -73,6 +83,7 @@ public class ChatPresenter1 implements ChatContract.presenter,
         });
     }
 
+
     private void initWebSoket(){
         api = ((CareCluesChatApplication) application).getRocketChatClient();
         List<CcBaseRoom> rooms = new ArrayList<>();
@@ -100,7 +111,7 @@ public class ChatPresenter1 implements ChatContract.presenter,
     }
 
     public void deregisterSocket(){
-//        chatRoom.unSubscribeAllEvents();
+        chatRoom.unSubscribeAllEvents();
     }
 
 
@@ -126,15 +137,42 @@ public class ChatPresenter1 implements ChatContract.presenter,
 
     @Override
     public void uploadFile(File file,String desc) {
+//        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
+//            @Override
+//            public void onUploadStarted(String roomId, String fileName, String description) {
+//
+//            }
+//
+//            @Override
+//            public void onUploadProgress(int progress, String roomId, String fileName, String description) {
+//
+//            }
+//
+//            @Override
+//            public void onUploadComplete(int statusCode, FileDescriptor file, String roomId, String fileName, String description) {
+//
+//            }
+//
+//            @Override
+//            public void onUploadError(RocketChatException error, IOException e) {
+//
+//            }
+//
+//            @Override
+//            public void onSendFile(Message message, RocketChatException error) {
+//
+//            }
+//        });
     }
 
     @Override
     public void reconnectToServer() {
+        api.getWebsocketImpl().getSocket().reconnect();
     }
 
     @Override
     public void disconnectToServer() {
-
+        deregisterSocket();
     }
 
     private void getChatHistory(final String roomId, final int count){
