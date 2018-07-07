@@ -7,6 +7,7 @@ import java.util.List;
 import careclues.careclueschat.feature.common.CommonViewInterface;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.model.SubscriptionModel;
+import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 
 public interface RoomContract {
@@ -18,7 +19,7 @@ public interface RoomContract {
         public void onLoginSuccess();
         public void displyRoomList(List<RoomAdapterModel> list);
         public void displyMoreRoomList(List<RoomAdapterModel> list);
-        public void updateRoomMessage(String roomId);
+        public void updateRoomMessage(String roomId, MessageEntity msg);
         public void displyChatScreen(String roomId);
 
     }

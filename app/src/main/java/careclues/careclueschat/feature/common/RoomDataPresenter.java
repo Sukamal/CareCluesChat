@@ -458,9 +458,9 @@ public class RoomDataPresenter {
             @Override
             public void run() {
                 try {
-                    for(MessageEntity entity: messageEntities){
-                        Log.e("MESSAGE : ", entity.toString());
-                    }
+//                    for(MessageEntity entity: messageEntities){
+//                        Log.e("MESSAGE : ", entity.toString());
+//                    }
                     ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
                     handler.sendEmptyMessage(FETCH_MESSAGE_COMPLETED);
                 } catch (Throwable e) {

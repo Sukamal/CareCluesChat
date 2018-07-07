@@ -200,8 +200,6 @@ public class CcWebsocketImpl implements CcSocketListener {
     }
 
 
-
-
     public void login(String username, String password,CcLoginCallback loginCallback) {
         int uniqueID = integer.getAndIncrement();
         coreMiddleware.createCallback(uniqueID, loginCallback, CcCoreMiddleware.CallbackType.LOGIN);

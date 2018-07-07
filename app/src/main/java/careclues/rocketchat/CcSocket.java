@@ -109,6 +109,7 @@ public class CcSocket extends WebSocketListener {
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
+
         onTextMessage(text);
     }
 

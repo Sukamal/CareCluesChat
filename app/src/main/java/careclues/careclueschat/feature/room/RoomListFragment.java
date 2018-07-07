@@ -18,6 +18,8 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
+import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.storage.database.entity.RoomEntity;
 
 public class RoomListFragment extends BaseFragment implements RoomActivity.performRoomFragmentAction {
 
@@ -95,6 +97,18 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
         });
     }
 
+    @Override
+    public void updateRoomMessage(MessageEntity msg) {
+        for(RoomAdapterModel adapterModel : room1Adapter.roomObjects){
+            if(adapterModel.Id.equals(msg.rId)){
+                adapterModel.updatedAt = msg.updatedAt;
+                break;
+            }
+        }
+
+        room1Adapter.rearangeData();
+    }
+
     private void updateRoomStatus(String roomId, boolean status){
         List<RoomAdapterModel> roomObjects = room1Adapter.roomObjects;
         for (RoomAdapterModel adapterModel : roomObjects){
@@ -108,5 +122,6 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
     void createNewRoom(){
         ((RoomActivity)getActivity()).presenter.createNewRoom();
     }
+
 
 }

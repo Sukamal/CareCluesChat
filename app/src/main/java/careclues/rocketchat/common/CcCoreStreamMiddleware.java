@@ -70,17 +70,9 @@ public class CcCoreStreamMiddleware {
                     listener = subs.get(roomId).get(SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
                     CcMessageCallback.SubscriptionCallback subscriptionListener = (CcMessageCallback.SubscriptionCallback) listener;
                     try {
-
-
                         Gson gson = new Gson();
-//                        Gson gson = new GsonBuilder().serializeNulls().create();
-//                        JsonReader reader = new JsonReader(new StringReader(array.getJSONObject(0).toString().trim()));
-//                        reader.setLenient(true);
-//                        CcMessage message = gson.fromJson(String.valueOf(reader),CcMessage.class);
-
-
                         CcMessage message = gson.fromJson(array.getJSONObject(0).toString().trim(),CcMessage.class);
-                        subscriptionListener.onMessage(roomId, message);
+//                        subscriptionListener.onMessage(roomId, message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

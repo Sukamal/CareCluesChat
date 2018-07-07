@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.model.BaseRoomModel;
@@ -19,6 +20,7 @@ import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
+import careclues.rocketchat.models.CcMessage;
 
 public class ModelEntityTypeConverter {
 
@@ -63,6 +65,8 @@ public class ModelEntityTypeConverter {
         }
 
     }
+
+
 
     public static SubscriptionEntity subscriptionModelToEntity(SubscriptionModel data) {
         if (data == null) {
@@ -192,6 +196,34 @@ public class ModelEntityTypeConverter {
             return null;
         }
 
+    }
+
+    public static MessageEntity ccMessageToEntity(CcMessage data) {
+        if (data == null) {
+            return null;
+        }
+        MessageEntity messageEntity = new MessageEntity();
+
+        messageEntity.Id = data.id;
+        messageEntity.rId = data.rId;
+        messageEntity.msg = data.msg;
+        messageEntity.timeStamp = new Date(data.timeStamp.date);
+
+        RoomUserModel roomUserModel = new RoomUserModel();
+        roomUserModel.id = data.user.id;
+        roomUserModel.name = data.user.name;
+        roomUserModel.userName = data.user.userName;
+        messageEntity.user = roomUserModel;
+        messageEntity.updatedAt = new Date(data.updatedAt.date);
+        messageEntity.type = data.type;
+        messageEntity.alias = data.alias;
+        messageEntity.groupable = data.groupable;
+        messageEntity.mentions = data.mentions;
+        messageEntity.parseUrls = data.parseUrls;
+        messageEntity.meta = data.meta;
+        messageEntity.synced = true;
+
+        return messageEntity;
     }
 
 

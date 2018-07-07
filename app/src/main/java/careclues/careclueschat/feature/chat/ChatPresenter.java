@@ -361,9 +361,6 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void onMessage(String roomId, CcMessage message) {
-
-        Log.e("Message"," On Message : "+ message.id + " " +message.toString());
-
 //        insertIntoDB(message);
         List<ChatMessageModel> list = new ArrayList<>();
         ChatMessageModel chatMessageModel = new ChatMessageModel(message.id,message.msg,new Date(/*message.updatedAt*/),message.user.id);

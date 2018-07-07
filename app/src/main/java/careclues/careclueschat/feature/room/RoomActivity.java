@@ -15,6 +15,8 @@ import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.model.RoomAdapterModel;
+import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomActivity extends BaseActivity implements RoomContract.view{
@@ -123,7 +125,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void updateRoomMessage(final String roomId) {
+    public void updateRoomMessage(final String roomId,MessageEntity messageEntity) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -132,6 +134,9 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
                         .show();
             }
         });
+        activityAction.updateRoomMessage(messageEntity);
+
+
     }
 
     @Override
@@ -160,6 +165,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     public interface performRoomFragmentAction {
         void displyRoomList(List<RoomAdapterModel> list);
         void displyMoreRoomList(List<RoomAdapterModel> list);
+        void updateRoomMessage(MessageEntity msg);
     }
 
     public interface performChatFragmentAction {

@@ -468,7 +468,7 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void getMessage(String roomId) {
         roomDataPresenter.unreGisterMessageListner();
-        roomDataPresenter.registerMessageListner(this);
+//        roomDataPresenter.registerMessageListner(this);
         roomDataPresenter.fetchMessages(roomId);
     }
 
@@ -510,8 +510,9 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onMessage(String roomId, CcMessage message) {
         Log.e("ROOMUPDATE","Room Update : " + roomId + "  ,  " + message);
-//        view.displayMessage("Room Update : " + roomId + "  ,  " + message.msg);
-        view.updateRoomMessage(roomId);
+        final MessageEntity messageEntity = ModelEntityTypeConverter.ccMessageToEntity(message);
+        updateRoomMessageDb(messageEntity);
+        view.updateRoomMessage(roomId,messageEntity);
 
     }
 
@@ -539,6 +540,21 @@ public class RoomPresenter implements RoomContract.presenter,
                     true, null, RoomPresenter.this);
         }
 
+    }
+
+
+    private void updateRoomMessageDb(final MessageEntity messageEntity){
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ((CareCluesChatApplication) application).getChatDatabase().messageDao().addMessage(messageEntity);
+                } catch (Throwable e) {
+                    Log.e("DBERROR", e.toString());
+                }
+
+            }
+        });
     }
 
 

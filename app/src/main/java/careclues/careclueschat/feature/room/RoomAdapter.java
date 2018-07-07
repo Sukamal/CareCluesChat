@@ -205,4 +205,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     public void setAdapterItemClickListner(onAdapterItemClickListner itemClickListner){
         this.itemClickListner = itemClickListner;
     }
+
+    public void rearangeData(){
+        Collections.sort(roomObjects);
+        notifyDataSetChanged();
+
+    }
 }

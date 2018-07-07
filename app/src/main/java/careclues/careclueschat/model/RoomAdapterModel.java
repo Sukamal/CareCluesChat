@@ -27,9 +27,9 @@ public class RoomAdapterModel implements Comparable<RoomAdapterModel>{
     @Override
     public int compareTo(@NonNull RoomAdapterModel roomAdapterModel) {
         if(updatedAt != null && roomAdapterModel.updatedAt!= null){
-            if(updatedAt.equals(roomAdapterModel.updatedAt))
+            if(updatedAt.getTime()==(roomAdapterModel.updatedAt.getTime()))
                 return 0;
-            else if(updatedAt.before(roomAdapterModel.updatedAt))
+            else if(updatedAt.getTime() < (roomAdapterModel.updatedAt.getTime()))
                 return 1;
             else
                 return -1;
