@@ -144,7 +144,7 @@ public class RoomDataPresenter {
                         break;
                     case FETCH_MEMBER_MESSAGE_COMPLETED:
                         insertRoomMemberRecordIntoDb(roomMemberEntities);
-                        insertMessageRecordIntoDb(messageEntities);
+                        insertMessageRecordIntoDb(messageEntities,false);
                         if(roomMemberHistoryListner != null){
                             roomMemberHistoryListner.onFetchRoomMemberMessage(roomMemberEntities,messageEntities);
                         }
@@ -399,13 +399,13 @@ public class RoomDataPresenter {
         });
     }
 
-    public void fetchMessages(final String roomId){
+    public void fetchMessages(final String roomId, final boolean isOnItemClick){
         this.roomId = roomId;
         apiExecuter.getChatMessage(roomId,0,null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
                 filterMessageRecord(response.messages);
-                insertMessageRecordIntoDb(messageEntities);
+                insertMessageRecordIntoDb(messageEntities,isOnItemClick);
             }
 
             @Override
@@ -452,7 +452,7 @@ public class RoomDataPresenter {
         });
     }
 
-    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities) {
+    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities,final boolean isOnItemClick) {
         Log.v("DBMESSAGE","insertMessageRecordIntoDb : " + messageEntities.size());
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -462,7 +462,11 @@ public class RoomDataPresenter {
 //                        Log.e("MESSAGE : ", entity.toString());
 //                    }
                     ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
-                    handler.sendEmptyMessage(FETCH_MESSAGE_COMPLETED);
+
+                    if(isOnItemClick){
+                        handler.sendEmptyMessage(FETCH_MESSAGE_COMPLETED);
+
+                    }
                 } catch (Throwable e) {
                     Log.e("DBERROR", e.toString());
                 }

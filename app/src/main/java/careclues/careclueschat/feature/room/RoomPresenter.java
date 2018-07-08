@@ -119,6 +119,7 @@ public class RoomPresenter implements RoomContract.presenter,
         roomDataPresenter.registerSubscriptionListner(this);
         roomDataPresenter.registerUpdatedRoomListner(this);
         roomDataPresenter.registerRoomMemberHistoryListner(this);
+        roomDataPresenter.registerMessageListner(this);
 
         initWebSocket();
 
@@ -470,9 +471,9 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void getMessage(String roomId) {
-        roomDataPresenter.unreGisterMessageListner();
+//        roomDataPresenter.unreGisterMessageListner();
 //        roomDataPresenter.registerMessageListner(this);
-        roomDataPresenter.fetchMessages(roomId);
+        roomDataPresenter.fetchMessages(roomId,true);
     }
 
     @Override
@@ -564,7 +565,8 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void onTyping(String roomId, String user, Boolean istyping) {
-        view.displayMessage(user + "Typing..");
+//        view.displayMessage(user + "Typing..");
+        view.onUserTyping(roomId,user,istyping);
 
     }
 }

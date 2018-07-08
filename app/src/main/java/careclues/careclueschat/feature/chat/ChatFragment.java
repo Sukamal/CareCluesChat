@@ -19,13 +19,14 @@ import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
+import careclues.careclueschat.feature.room.RoomActivity;
 import careclues.careclueschat.network.RestApiExecuter;
 
-public class ChatFragment extends BaseFragment implements ChatContract.view{
+public class ChatFragment extends BaseFragment implements ChatContract.view,RoomActivity.performChatFragmentAction {
 
     private String roomId;
     private String userId;
-    private ChatPresenter presenter;
+    private ChatPresenter1 presenter;
     private LinearLayoutManager layoutManager;
     private ChatMessageAdapter messageAdapter;
 
@@ -48,6 +49,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_chat, container, false);
         ButterKnife.bind(this, view);
+        ((RoomActivity)getActivity()).setChatFragmentAction(this);
+
         return view;
     }
 
@@ -59,7 +62,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view{
     }
 
     private void initView(){
-        presenter = new ChatPresenter(this,roomId,getActivity().getApplication());
+        presenter = new ChatPresenter1(this,roomId,getActivity().getApplication());
         presenter.loadData(50);
     }
 
@@ -132,5 +135,24 @@ public class ChatFragment extends BaseFragment implements ChatContract.view{
     @OnClick(R.id.ib_submit)
     public void sendMessage(){
         presenter.sendMessage(etMessage.getText().toString());
+    }
+
+    @Override
+    public void displyUserTyping(final String roomId, final String user, final Boolean istyping) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ChatFragment.this.roomId.equals(roomId) && istyping) {
+
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(user + "is typing..");
+
+                }else {
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle("");
+
+                }
+
+            }
+
+        });
     }
 }

@@ -35,13 +35,7 @@ import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcToken;
 import careclues.rocketchat.models.CcUser;
 
-public class ChatPresenter1 implements ChatContract.presenter,
-
-        CcTypingListener
-
-        /*ConnectListener,
-        MessageCallback.SubscriptionCallback,
-        TypingListener*/ {
+public class ChatPresenter1 implements ChatContract.presenter {
 
     private ChatContract.view view;
     private Application application;
@@ -50,10 +44,6 @@ public class ChatPresenter1 implements ChatContract.presenter,
     private String roomId;
 
     private AtomicInteger integer;
-
-
-//    private RocketChatClient api;
-//    private ChatRoom chatRoom;
 
     private CcRocketChatClient api;
     private CcChatRoom chatRoom;
@@ -106,7 +96,6 @@ public class ChatPresenter1 implements ChatContract.presenter,
         api.getChatRoomFactory().createChatRooms(rooms);
 
         chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
-        chatRoom.subscribeRoomTypingEvent(null, ChatPresenter1.this);
 
     }
 
@@ -209,16 +198,16 @@ public class ChatPresenter1 implements ChatContract.presenter,
 
     }
 
-    @Override
-    public void onTyping(String roomId, String user, Boolean istyping) {
-
-        if(istyping){
-            view.displyTypingStatus(user + " is typing...");
-        }else{
-            view.displyTypingStatus("");
-
-        }
-    }
+//    @Override
+//    public void onTyping(String roomId, String user, Boolean istyping) {
+//
+//        if(istyping){
+//            view.displyTypingStatus(user + " is typing...");
+//        }else{
+//            view.displyTypingStatus("");
+//
+//        }
+//    }
 
     private void insertIntoDB(Message message){
         final MessageEntity messageEntity = new MessageEntity();

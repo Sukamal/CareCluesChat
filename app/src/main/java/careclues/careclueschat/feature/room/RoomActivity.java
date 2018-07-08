@@ -1,6 +1,5 @@
 package careclues.careclueschat.feature.room;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -11,12 +10,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import careclues.careclueschat.R;
-import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
-import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomActivity extends BaseActivity implements RoomContract.view{
@@ -26,10 +23,15 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     @BindView(R.id.iv_loading)
     ImageView ivLoading;
 
-    private performRoomFragmentAction activityAction;
+    private performRoomFragmentAction roomFragmentAction;
+    private performChatFragmentAction chatFragmentAction;
 
-    public void setFragmentAction(performRoomFragmentAction activityAction){
-        this.activityAction = activityAction;
+    public void setRoomFragmentAction(performRoomFragmentAction activityAction){
+        this.roomFragmentAction = activityAction;
+    }
+
+    public void setChatFragmentAction(performChatFragmentAction activityAction){
+        this.chatFragmentAction = activityAction;
     }
 
     @Override
@@ -106,8 +108,8 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void displyMoreRoomList(List<RoomAdapterModel> list) {
-        if(activityAction != null){
-            activityAction.displyMoreRoomList(list);
+        if(roomFragmentAction != null){
+            roomFragmentAction.displyMoreRoomList(list);
         }
     }
 
@@ -126,9 +128,9 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void onUserTyping(String roomId, String user, Boolean istyping) {
-        Snackbar
-                .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
-                .show();
+        if(chatFragmentAction != null){
+            chatFragmentAction.displyUserTyping(roomId,user,istyping);
+        }
     }
 
     @Override
@@ -139,7 +141,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
                 Snackbar
                         .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
                         .show();
-                activityAction.updateRoomMessage(messageEntity);
+                roomFragmentAction.updateRoomMessage(messageEntity);
             }
         });
 
@@ -177,8 +179,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     public interface performChatFragmentAction {
-        void displyRoomList(List<RoomAdapterModel> list);
-        void displyMoreRoomList(List<RoomAdapterModel> list);
+        void displyUserTyping(String roomId, String user, Boolean istyping);
     }
 
 

@@ -20,7 +20,6 @@ import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
-import careclues.careclueschat.storage.database.entity.RoomEntity;
 
 public class RoomListFragment extends BaseFragment implements RoomActivity.performRoomFragmentAction {
 
@@ -41,7 +40,7 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
         View view = inflater.inflate(R.layout.fragment_room_list, container, false);
         ButterKnife.bind(this, view);
         Bundle bundle = getArguments();
-        ((RoomActivity)getActivity()).setFragmentAction(this);
+        ((RoomActivity)getActivity()).setRoomFragmentAction(this);
         return view;
     }
 
