@@ -125,16 +125,24 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void updateRoomMessage(final String roomId,MessageEntity messageEntity) {
+    public void onUserTyping(String roomId, String user, Boolean istyping) {
+        Snackbar
+                .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
+                .show();
+    }
+
+    @Override
+    public void updateRoomMessage(final String roomId,final MessageEntity messageEntity) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Snackbar
                         .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
                         .show();
+                activityAction.updateRoomMessage(messageEntity);
             }
         });
-        activityAction.updateRoomMessage(messageEntity);
+
 
 
     }

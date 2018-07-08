@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -101,13 +102,15 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
     public void updateRoomMessage(MessageEntity msg) {
         for(RoomAdapterModel adapterModel : room1Adapter.roomObjects){
             if(adapterModel.Id.equals(msg.rId)){
-                adapterModel.updatedAt = msg.updatedAt;
+//                adapterModel.updatedAt = msg.updatedAt;
+                adapterModel.updatedAt = new Date();
                 break;
             }
         }
 
         room1Adapter.rearangeData();
     }
+
 
     private void updateRoomStatus(String roomId, boolean status){
         List<RoomAdapterModel> roomObjects = room1Adapter.roomObjects;
@@ -121,7 +124,22 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
     @OnClick(R.id.fab)
     void createNewRoom(){
         ((RoomActivity)getActivity()).presenter.createNewRoom();
+//        testupdateRoomMessage("B4Ycy99ntgvquFBPR");
+//        testupdateRoomMessage("HmawBnbQYYqWKSxmc");
+
     }
+
+    public void testupdateRoomMessage(String roomId) {
+        for(RoomAdapterModel adapterModel : room1Adapter.roomObjects){
+            if(adapterModel.Id.equals(roomId)){
+                adapterModel.updatedAt = new Date();
+                break;
+            }
+        }
+
+        room1Adapter.rearangeData();
+    }
+
 
 
 }

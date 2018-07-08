@@ -28,6 +28,7 @@ import java.util.TimerTask;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.feature.chat.ChatPresenter;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.feature.login.model.LoginResponse;
 import careclues.careclueschat.model.GroupResponseModel;
@@ -59,6 +60,7 @@ import careclues.rocketchat.callback.CcRoomCallback;
 import careclues.rocketchat.common.CcRocketChatException;
 import careclues.rocketchat.listner.CcChatRoomFactory;
 import careclues.rocketchat.listner.CcConnectListener;
+import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcToken;
 
@@ -71,7 +73,8 @@ public class RoomPresenter implements RoomContract.presenter,
 
         CcConnectListener,
         CcMessageCallback.SubscriptionCallback,
-        CcRoomCallback.GroupCreateCallback
+        CcRoomCallback.GroupCreateCallback,
+        CcTypingListener
 
         /*ConnectListener,
         MessageCallback.SubscriptionCallback,
@@ -536,8 +539,9 @@ public class RoomPresenter implements RoomContract.presenter,
 //            CcChatRoom chatRoom = .getChatRoomById(room.roomId);
 //            chatRoom.subscribeRoomMessageEvent(null, RoomPresenter.this);
 
-            chatClient.subscribeRoomMessageEvent(room.roomId,
-                    true, null, RoomPresenter.this);
+            chatClient.subscribeRoomMessageEvent(room.roomId,true, null, RoomPresenter.this);
+            chatClient.subscribeRoomTypingEvent(room.roomId,true,null,RoomPresenter.this);
+
         }
 
     }
@@ -558,5 +562,9 @@ public class RoomPresenter implements RoomContract.presenter,
     }
 
 
+    @Override
+    public void onTyping(String roomId, String user, Boolean istyping) {
+        view.displayMessage(user + "Typing..");
 
+    }
 }

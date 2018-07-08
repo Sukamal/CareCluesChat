@@ -72,7 +72,7 @@ public class CcCoreStreamMiddleware {
                     try {
                         Gson gson = new Gson();
                         CcMessage message = gson.fromJson(array.getJSONObject(0).toString().trim(),CcMessage.class);
-//                        subscriptionListener.onMessage(roomId, message);
+                        subscriptionListener.onMessage(roomId, message);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
