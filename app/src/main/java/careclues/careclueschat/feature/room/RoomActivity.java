@@ -3,6 +3,7 @@ package careclues.careclueschat.feature.room;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -22,6 +23,8 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @BindView(R.id.iv_loading)
     ImageView ivLoading;
+
+    public String dispalyFragment;
 
     private performRoomFragmentAction roomFragmentAction;
     private performChatFragmentAction chatFragmentAction;
@@ -141,13 +144,20 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
                 Snackbar
                         .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
                         .show();
-                roomFragmentAction.updateRoomMessage(messageEntity);
+                if(dispalyFragment.equals(RoomListFragment.class.getName())){
+                    roomFragmentAction.updateRoomMessage(messageEntity);
+
+                }else if(dispalyFragment.equals(ChatFragment.class.getName())){
+                    chatFragmentAction.updateChatMessage(messageEntity);
+
+                }
             }
         });
 
 
 
     }
+
 
     @Override
     public void displayMessage(final String message) {
@@ -180,6 +190,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     public interface performChatFragmentAction {
         void displyUserTyping(String roomId, String user, Boolean istyping);
+        void updateChatMessage(MessageEntity msg);
     }
 
 

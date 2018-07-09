@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,6 +23,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.room.RoomActivity;
 import careclues.careclueschat.network.RestApiExecuter;
+import careclues.careclueschat.storage.database.entity.MessageEntity;
 
 public class ChatFragment extends BaseFragment implements ChatContract.view,RoomActivity.performChatFragmentAction {
 
@@ -50,6 +53,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         View view = inflater.inflate(R.layout.activity_chat, container, false);
         ButterKnife.bind(this, view);
         ((RoomActivity)getActivity()).setChatFragmentAction(this);
+        ((RoomActivity)getActivity()).dispalyFragment = ChatFragment.class.getName();
 
         return view;
     }
@@ -154,5 +158,24 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             }
 
         });
+    }
+
+    @Override
+    public void updateChatMessage(MessageEntity message) {
+        if(message.rId.equals(roomId)){
+            List<ChatMessageModel> list = new ArrayList<>();
+            ChatMessageModel chatMessageModel = new ChatMessageModel(message.Id,message.msg,message.updatedAt,message.user.id);
+            list.add(chatMessageModel);
+            messageAdapter.addMessage(list);
+            messageAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        ((RoomActivity)getActivity()).setChatFragmentAction(null);
+
     }
 }

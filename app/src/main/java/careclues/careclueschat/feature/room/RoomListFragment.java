@@ -41,6 +41,7 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
         ButterKnife.bind(this, view);
         Bundle bundle = getArguments();
         ((RoomActivity)getActivity()).setRoomFragmentAction(this);
+        ((RoomActivity)getActivity()).dispalyFragment = RoomListFragment.class.getName();
         return view;
     }
 
