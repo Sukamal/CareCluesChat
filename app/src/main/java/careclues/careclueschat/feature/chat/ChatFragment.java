@@ -167,7 +167,10 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             ChatMessageModel chatMessageModel = new ChatMessageModel(message.Id,message.msg,message.updatedAt,message.user.id);
             list.add(chatMessageModel);
             messageAdapter.addMessage(list);
+            etMessage.setText("");
             messageAdapter.notifyDataSetChanged();
+            layoutManager.smoothScrollToPosition(rvChatHistory,null,messageAdapter.getItemCount());
+
         }
 
     }
