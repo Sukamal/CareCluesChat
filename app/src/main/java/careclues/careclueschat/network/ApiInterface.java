@@ -1,6 +1,6 @@
 package careclues.careclueschat.network;
 
-import careclues.careclueschat.feature.login.model.LoginRequest;
+import careclues.careclueschat.model.LoginRequest;
 import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
 import careclues.careclueschat.model.SetTopicRequest;

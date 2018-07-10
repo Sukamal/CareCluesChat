@@ -131,7 +131,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
     }
 
     @Override
-    public void displayMessage(final String message) {
+    public void displayToastMessage(final String message) {
 //        runOnUiThread(new Runnable() {
 //            @Override
 //            public void run() {

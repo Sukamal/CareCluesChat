@@ -60,7 +60,6 @@ public class CcRocketChatClient {
 
         tokenProvider = builder.provider;
         chatRoomFactory = new CcChatRoomFactory(this);
-
         websocketImpl = new CcWebsocketImpl(client, factory,builder.websocketUrl);
 
     }

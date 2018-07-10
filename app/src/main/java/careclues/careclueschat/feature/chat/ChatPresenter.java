@@ -3,29 +3,11 @@ package careclues.careclueschat.feature.chat;
 import android.app.Application;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 
-import com.rocketchat.common.RocketChatException;
-import com.rocketchat.common.data.lightdb.collection.Collection;
-import com.rocketchat.common.data.lightdb.document.UserDocument;
-import com.rocketchat.common.data.model.BaseRoom;
-import com.rocketchat.common.listener.ConnectListener;
-import com.rocketchat.common.listener.TypingListener;
-import com.rocketchat.common.network.Socket;
 import com.rocketchat.common.utils.Utils;
-import com.rocketchat.core.ChatRoom;
-import com.rocketchat.core.RocketChatClient;
-import com.rocketchat.core.callback.FileListener;
-import com.rocketchat.core.callback.HistoryCallback;
-import com.rocketchat.core.callback.LoginCallback;
-import com.rocketchat.core.callback.MessageCallback;
-import com.rocketchat.core.internal.rpc.MessageRPC;
-import com.rocketchat.core.model.FileDescriptor;
 import com.rocketchat.core.model.Message;
-import com.rocketchat.core.model.Token;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,14 +17,11 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
-import careclues.careclueschat.feature.chat.chatmodel.User;
 import careclues.careclueschat.model.BaseUserModel;
-import careclues.careclueschat.model.RoomMemberModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
-import careclues.careclueschat.util.AppUtil;
 import careclues.rocketchat.CcChatRoom;
 import careclues.rocketchat.CcRocketChatClient;
 import careclues.rocketchat.CcSocket;
@@ -302,7 +281,7 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void onConnect(String sessionID) {
-        view.displayMessage(application.getString(R.string.connected));
+        view.displayToastMessage(application.getString(R.string.connected));
         String token = ((CareCluesChatApplication)application).getToken();
 //        String token = RestApiExecuter.getInstance().getAuthToken().getToken();
         if (api.getWebsocketImpl().getSocket().getState() == CcSocket.State.CONNECTED) {
@@ -319,7 +298,7 @@ public class ChatPresenter implements ChatContract.presenter,
                     chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);
                 }
 //                @Override
-//                public void onLoginSuccess(Token token) {
+//                public void onFetchBasicData(Token token) {
 //                    chatRoom = api.getChatRoomFactory().getChatRoomById(roomId);
 //                    chatRoom.subscribeRoomMessageEvent(null, ChatPresenter.this);
 //                    chatRoom.subscribeRoomTypingEvent(null, ChatPresenter.this);

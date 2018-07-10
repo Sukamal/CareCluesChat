@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 
-import careclues.careclueschat.feature.login.model.LoginRequest;
+import careclues.careclueschat.model.LoginRequest;
 import careclues.careclueschat.model.AuthToken;
 import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
@@ -19,7 +19,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * Created by SukamalD on 6/2/2018.

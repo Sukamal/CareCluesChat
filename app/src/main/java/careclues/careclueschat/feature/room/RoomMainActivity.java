@@ -18,7 +18,7 @@ import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.util.AppUtil;
 
-public class RoomActivity extends BaseActivity implements RoomContract.view{
+public class RoomMainActivity extends BaseActivity implements RoomContract.view{
 
     public RoomPresenter presenter;
 
@@ -26,9 +26,9 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     ConstraintLayout clLoading;
 
     public String dispalyFragment;
-
     private performRoomFragmentAction roomFragmentAction;
     private performChatFragmentAction chatFragmentAction;
+
 
     public void setRoomFragmentAction(performRoomFragmentAction activityAction){
         this.roomFragmentAction = activityAction;
@@ -45,9 +45,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void initComponents() {
-
         presenter = new RoomPresenter(this,getApplication());
-//        presenter.doLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
     }
 
     @Override
@@ -92,22 +90,24 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
-    public void onSoketLoginSuccess() {
-//        presenter.doApiLogin("sachu-985", "XVQuexlHYvphcWYgtyLZLtf");
-    }
-
-    @Override
-    public void onLoginSuccess() {
+    public void onFetchBasicData() {
         presenter.getOpenRoom();
     }
 
     @Override
-    public void displyRoomList(final List<RoomAdapterModel> list) {
+    public void displyRoomListScreen(final List<RoomAdapterModel> list) {
         clLoading.setVisibility(View.GONE);
         RoomListFragment fragment = new RoomListFragment();
         fragment.setRoomList(list);
         addFragment(fragment,false,null);
+    }
 
+    @Override
+    public void displyChatScreen(String roomId) {
+        Fragment fragment = new ChatFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("roomId",roomId);
+        addFragment(fragment,true,bundle);
     }
 
     @Override
@@ -115,19 +115,6 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
         if(roomFragmentAction != null){
             roomFragmentAction.displyMoreRoomList(list);
         }
-    }
-
-    @Override
-    public void displyChatScreen(String roomId) {
-//        Intent intent = new Intent(RoomActivity.this, ChatActivity.class);
-////      Intent intent = new Intent(RoomActivity.this, TestChatACtivity.class);
-//        intent.putExtra("roomId",roomId);
-//        startActivity(intent);
-
-        Fragment fragment = new ChatFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("roomId",roomId);
-        addFragment(fragment,true,bundle);
     }
 
     @Override
@@ -154,14 +141,11 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
                 }
             }
         });
-
-
-
     }
 
 
     @Override
-    public void displayMessage(final String message) {
+    public void displayToastMessage(final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -5,7 +5,7 @@
 android:id="@+id/activity_room"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".feature.room.RoomActivity">
+tools:context=".feature.room.RoomMainActivity">
     <FrameLayout
         android:id="@+id/fl_MainContainer"
         android:layout_width="match_parent"

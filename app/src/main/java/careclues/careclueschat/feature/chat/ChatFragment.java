@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,11 +20,11 @@ import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
-import careclues.careclueschat.feature.room.RoomActivity;
+import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
-public class ChatFragment extends BaseFragment implements ChatContract.view,RoomActivity.performChatFragmentAction {
+public class ChatFragment extends BaseFragment implements ChatContract.view,RoomMainActivity.performChatFragmentAction {
 
     private String roomId;
     private String userId;
@@ -52,8 +51,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_chat, container, false);
         ButterKnife.bind(this, view);
-        ((RoomActivity)getActivity()).setChatFragmentAction(this);
-        ((RoomActivity)getActivity()).dispalyFragment = ChatFragment.class.getName();
+        ((RoomMainActivity)getActivity()).setChatFragmentAction(this);
+        ((RoomMainActivity)getActivity()).dispalyFragment = ChatFragment.class.getName();
 
         return view;
     }
@@ -112,7 +111,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     }
 
     @Override
-    public void displayMessage(String message) {
+    public void displayToastMessage(String message) {
 
     }
 
@@ -178,7 +177,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @Override
     public void onDetach() {
         super.onDetach();
-        ((RoomActivity)getActivity()).setChatFragmentAction(null);
+        ((RoomMainActivity)getActivity()).setChatFragmentAction(null);
 
     }
 }

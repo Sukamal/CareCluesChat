@@ -22,10 +22,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".feature.chat.TestChatACtivity"></activity>
         <activity android:name=".feature.chat.ChatActivity"></activity>
-        <activity android:name=".feature.login.LoginActivity">
-
-        </activity>
-        <activity android:name=".feature.room.RoomActivity">
+        <activity android:name=".feature.room.RoomMainActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

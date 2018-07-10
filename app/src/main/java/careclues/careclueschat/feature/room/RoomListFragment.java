@@ -21,7 +21,7 @@ import careclues.careclueschat.feature.common.OnLoadMoreListener;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
-public class RoomListFragment extends BaseFragment implements RoomActivity.performRoomFragmentAction {
+public class RoomListFragment extends BaseFragment implements RoomMainActivity.performRoomFragmentAction {
 
     private LinearLayoutManager layoutManager;
     private RoomAdapter room1Adapter;
@@ -40,8 +40,8 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
         View view = inflater.inflate(R.layout.fragment_room_list, container, false);
         ButterKnife.bind(this, view);
         Bundle bundle = getArguments();
-        ((RoomActivity)getActivity()).setRoomFragmentAction(this);
-        ((RoomActivity)getActivity()).dispalyFragment = RoomListFragment.class.getName();
+        ((RoomMainActivity)getActivity()).setRoomFragmentAction(this);
+        ((RoomMainActivity)getActivity()).dispalyFragment = RoomListFragment.class.getName();
         return view;
     }
 
@@ -71,14 +71,14 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
                     @Override
                     public void onListItemClick(int position,String roomId) {
                         updateRoomStatus(roomId,false);
-                        ((RoomActivity)getActivity()).presenter.getMessage(roomId);
+                        ((RoomMainActivity)getActivity()).presenter.getMessage(roomId);
                     }
                 });
                 rvRoom.setAdapter(room1Adapter);
                 room1Adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
                     @Override
                     public void onLoadMore() {
-                        ((RoomActivity)getActivity()).presenter.getMoreRoom(room1Adapter.lastVisibleItem + 1, room1Adapter.visibleThreshold);
+                        ((RoomMainActivity)getActivity()).presenter.getMoreRoom(room1Adapter.lastVisibleItem + 1, room1Adapter.visibleThreshold);
                     }
                 });
             }
@@ -123,7 +123,7 @@ public class RoomListFragment extends BaseFragment implements RoomActivity.perfo
 
     @OnClick(R.id.fab)
     void createNewRoom(){
-        ((RoomActivity)getActivity()).presenter.createNewRoom();
+        ((RoomMainActivity)getActivity()).presenter.createNewRoom();
 //        testupdateRoomMessage("B4Ycy99ntgvquFBPR");
 //        testupdateRoomMessage("HmawBnbQYYqWKSxmc");
 
