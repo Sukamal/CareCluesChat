@@ -40,15 +40,20 @@ public abstract class BaseActivity extends AppCompatActivity {
                     fragment.setArguments(bundle);
                 }
 
-                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (!isFinishing() /*&& !isDestroyed()*/) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
 //                fragmentManager.popBackStackImmediate(fragment.getClass().getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
-                if(addtoBac){
-                    fragmentTransaction.addToBackStack(fragment.getClass().getName());
-                }
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
+                    if(addtoBac){
+                        fragmentTransaction.addToBackStack(fragment.getClass().getName());
+                    }
 //                fragmentTransaction.commitAllowingStateLoss();
-                fragmentTransaction.commit();
+                    fragmentTransaction.commit();
+                }
+
+
+
             }
         });
     }

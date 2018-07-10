@@ -176,7 +176,7 @@ public class RoomDataPresenter {
 
                     handler.sendEmptyMessage(FETCH_UPDATED_ROOM);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", e.toString());
+                    Log.e("DBERROR", "getUpdatedRoomList : "+e.toString());
                 }
 
             }
@@ -299,7 +299,7 @@ public class RoomDataPresenter {
                 try {
                     ((CareCluesChatApplication) application).getChatDatabase().roomDao().insertAll(roomEntities);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", e.getMessage());
+                    Log.e("DBERROR"," insertRoomRecordIntoDb : " + e.getMessage());
                 }
             }
         });
@@ -314,7 +314,7 @@ public class RoomDataPresenter {
                 try {
                     ((CareCluesChatApplication) application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", e.getMessage());
+                    Log.e("DBERROR"," insertSubscriptionRecordIntoDb : "+ e.getMessage());
                 }
             }
         });
@@ -446,14 +446,13 @@ public class RoomDataPresenter {
                     ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
 
                 }catch (Throwable e){
-                    Log.e("DBERROR",e.getMessage());
+                    Log.e("DBERROR", " insertRoomMemberRecordIntoDb : "+e.getMessage());
                 }
             }
         });
     }
 
     private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities,final boolean isOnItemClick) {
-        Log.v("DBMESSAGE","insertMessageRecordIntoDb : " + messageEntities.size());
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
@@ -468,7 +467,7 @@ public class RoomDataPresenter {
 
                     }
                 } catch (Throwable e) {
-                    Log.e("DBERROR", e.toString());
+                    Log.e("DBERROR", " insertMessageRecordIntoDb : "+ e.toString());
                 }
 
             }

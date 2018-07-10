@@ -118,6 +118,7 @@ public class CcWebsocketImpl implements CcSocketListener {
     @Override
     public void onClosed() {
         Log.v("CcWebsocketImpl","RocketChatAPI onClosed");
+        coreMiddleware.cleanup();
         connectivityManager.publishDisconnect(true);
 
 

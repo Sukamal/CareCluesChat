@@ -238,7 +238,6 @@ public class CcSocket extends WebSocketListener {
 
 
 
-    /* visible for testing */
     void processReconnection() {
         if (strategy != null && !selfDisconnect) {
             if (strategy.getNumberOfAttempts() < strategy.getMaxAttempts()) {

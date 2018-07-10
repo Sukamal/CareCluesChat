@@ -38,6 +38,9 @@ public class CcCoreMiddleware {
         callbacks.put(i, CcPair.create(callback, type));
     }
 
+    public void cleanup() {
+        callbacks.clear();
+    }
 
     public void processCallback(long i, JSONObject object) {
         JSONArray array;

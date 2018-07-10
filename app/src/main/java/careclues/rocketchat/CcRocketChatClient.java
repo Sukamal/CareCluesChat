@@ -1,6 +1,9 @@
 package careclues.rocketchat;
 
 
+import com.rocketchat.core.RocketChatClient;
+import com.rocketchat.core.WebsocketImpl;
+
 import java.util.Date;
 
 import careclues.careclueschat.util.AppConstant;
@@ -26,6 +29,8 @@ public class CcRocketChatClient {
     public String socketUrl = AppConstant.SOCKET_URL;
     public CcWebsocketImpl websocketImpl;
     public CcTokenProvider tokenProvider;
+    public WebsocketImpl websockImpl;
+
 
     public CcChatRoomFactory chatRoomFactory;
 

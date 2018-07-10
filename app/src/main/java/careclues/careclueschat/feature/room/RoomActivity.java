@@ -1,6 +1,7 @@
 package careclues.careclueschat.feature.room;
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,8 +22,8 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     public RoomPresenter presenter;
 
-    @BindView(R.id.iv_loading)
-    ImageView ivLoading;
+    @BindView(R.id.cl_loading)
+    ConstraintLayout clLoading;
 
     public String dispalyFragment;
 
@@ -102,7 +103,7 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void displyRoomList(final List<RoomAdapterModel> list) {
-        ivLoading.setVisibility(View.GONE);
+        clLoading.setVisibility(View.GONE);
         RoomListFragment fragment = new RoomListFragment();
         fragment.setRoomList(list);
         addFragment(fragment,false,null);
@@ -192,8 +193,5 @@ public class RoomActivity extends BaseActivity implements RoomContract.view{
         void displyUserTyping(String roomId, String user, Boolean istyping);
         void updateChatMessage(MessageEntity msg);
     }
-
-
-
 
 }

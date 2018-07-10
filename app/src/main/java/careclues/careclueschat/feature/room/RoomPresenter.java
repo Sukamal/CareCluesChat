@@ -186,9 +186,8 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void disconnectToServer() {
-        view.displayMessage("disconnectToServer");
         chatClient.disconnect();
-//        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
+        chatClient.getWebsocketImpl().getConnectivityManager().unRegister(this);
     }
 
 
@@ -325,7 +324,7 @@ public class RoomPresenter implements RoomContract.presenter,
                     subsCribeRoomMessageEvent(lastUpdatedRoomList);
                     populateAdapterData(lastUpdatedRoomList,LOAD_ROOM_DATA);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", e.toString());
+                    Log.e("DBERROR", " getOpenRoomDb : " + e.toString());
                 }
 
             }
@@ -555,7 +554,7 @@ public class RoomPresenter implements RoomContract.presenter,
                 try {
                     ((CareCluesChatApplication) application).getChatDatabase().messageDao().addMessage(messageEntity);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", e.toString());
+                    Log.e("DBERROR", " updateRoomMessageDb : "+e.toString());
                 }
 
             }
