@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Set Custom Font -->
+        <item name="android:typeface">serif</item>
     </style>
 
     <style name="Text_Normal">

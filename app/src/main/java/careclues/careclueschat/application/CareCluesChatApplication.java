@@ -15,6 +15,7 @@ import careclues.careclueschat.storage.database.ChatDatabase;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.DateFormatter;
+import careclues.careclueschat.util.TypefaceUtil;
 import careclues.rocketchat.CcReconnectionStrategy;
 import careclues.rocketchat.CcRocketChatClient;
 
@@ -39,6 +40,11 @@ public class CareCluesChatApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        TypefaceUtil.overrideFont(getApplicationContext(), "DEFAULT", "fonts/rb.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
+        TypefaceUtil.overrideFont(getApplicationContext(), "MONOSPACE", "fonts/rb.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
+        TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "fonts/rb.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
+        TypefaceUtil.overrideFont(getApplicationContext(), "SANS_SERIF", "fonts/rb.ttf"); // font from assets: "assets/fonts/Roboto-Regular.ttf
 
         appPreference = new AppPreference(this);
 //        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(new Date(),"yyyy-MM-dd'T'HH.mm.ss.SSS'Z'"));

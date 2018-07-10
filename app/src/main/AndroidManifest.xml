@@ -20,9 +20,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".feature.chat.TestChatACtivity"></activity>
-        <activity android:name=".feature.chat.ChatActivity"></activity>
-        <activity android:name=".feature.room.RoomMainActivity">
+        <activity android:name=".feature.chat.TestChatACtivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".feature.chat.ChatActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"></activity>
+        <activity android:name=".feature.room.RoomMainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
