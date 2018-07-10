@@ -1,4 +1,4 @@
-package careclues.careclueschat.feature.room;
+package careclues.careclueschat.model;
 
 import com.google.gson.annotations.SerializedName;
 

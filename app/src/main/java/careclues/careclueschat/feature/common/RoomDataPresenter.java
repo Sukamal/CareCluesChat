@@ -13,8 +13,7 @@ import java.util.TimerTask;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
-import careclues.careclueschat.feature.room.RoomPresenter;
-import careclues.careclueschat.feature.room.RoomResponse;
+import careclues.careclueschat.model.RoomResponse;
 import careclues.careclueschat.model.BaseRoomModel;
 import careclues.careclueschat.model.MessageModel;
 import careclues.careclueschat.model.MessageResponseModel;

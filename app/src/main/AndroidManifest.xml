@@ -20,10 +20,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".feature.chat.TestChatACtivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".feature.chat.ChatActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"></activity>
         <activity android:name=".feature.room.RoomMainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
 
