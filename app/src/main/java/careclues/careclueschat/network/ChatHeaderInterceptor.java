@@ -3,6 +3,7 @@ package careclues.careclueschat.network;
 import java.io.IOException;
 
 import careclues.careclueschat.model.AuthToken;
+import careclues.careclueschat.util.AppConstant;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,7 +12,7 @@ import okhttp3.Response;
  * Created by SukamalD on 6/2/2018.
  */
 
-public class HeaderInterceptor implements Interceptor {
+public class ChatHeaderInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {

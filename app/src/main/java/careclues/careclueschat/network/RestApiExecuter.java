@@ -86,58 +86,70 @@ public class RestApiExecuter {
         loginRequest.setUsername(userId);
         loginRequest.setPassword(password);
         authToken = AuthToken.getInstance();
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).doLogin(loginRequest);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).doLogin(loginRequest);
         execute(call,serviceCallBack);
     }
 
     public <T> void getRooms(final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getRooms();
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).getRooms();
         execute(call,serviceCallBack);
     }
 
     public <T> void getRooms(String updatedSince, final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getRooms(updatedSince);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).getRooms(updatedSince);
         execute(call,serviceCallBack);
     }
 
     public <T> void getSubscription(final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getSubscription();
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).getSubscription();
         execute(call,serviceCallBack);
     }
 
     public <T> void getSubscription(String updatedSince,final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getSubscription(updatedSince);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).getSubscription(updatedSince);
         execute(call,serviceCallBack);
     }
 
     public <T> void getRoomMembers(String roomId,final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getRoomMembers(roomId);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).getRoomMembers(roomId);
         execute(call,serviceCallBack);
     }
 
     public <T> void getChatMessage(String roomId,int count,String updatedSince,final ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).getChatHistory(roomId,count,updatedSince);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).getChatHistory(roomId,count,updatedSince);
         execute(call,serviceCallBack);
     }
 
     public <T> void createPrivateRoom(String name,String[] members,final ServiceCallBack<T> serviceCallBack) {
         CreateRoomRequest roomRequest = new CreateRoomRequest(name,members);
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).createRoom(roomRequest);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).createRoom(roomRequest);
         execute(call,serviceCallBack);
     }
 
     public <T> void sendNewMessage(String id, String rId,String msg,final ServiceCallBack<T> serviceCallBack) {
         SendMassageRequest massageRequest = new SendMassageRequest(id,rId,msg);
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).sendNewMessage(massageRequest);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).sendNewMessage(massageRequest);
         execute(call,serviceCallBack);
     }
 
     public <T> void setRoomTopicw(String roomId, String topic,final ServiceCallBack<T> serviceCallBack) {
         SetTopicRequest setTopicRequest = new SetTopicRequest(roomId,topic);
-        Call<ResponseBody> call = ApiClient.getRetrofit().create(ApiInterface.class).setRoomTopic(setTopicRequest);
+        Call<ResponseBody> call = ApiClient.getChatRetrofit().create(ChatApiInterface.class).setRoomTopic(setTopicRequest);
         execute(call,serviceCallBack);
     }
 
 
 
+
+    //----------------- CC server Api------------------
+
+    public <T> void getUserProfile(String userId, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).getUserProfile(userId);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void getServerResponse(String url, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).getServerResponse(url);
+        execute(call,serviceCallBack);
+    }
 }

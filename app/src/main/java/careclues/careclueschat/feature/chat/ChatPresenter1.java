@@ -13,26 +13,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
+import careclues.careclueschat.model.LinkModel;
 import careclues.careclueschat.model.RoomUserModel;
+import careclues.careclueschat.model.ServerResponseModel;
+import careclues.careclueschat.model.UserProfileResponseModel;
+import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
+import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.rocketchat.CcChatRoom;
 import careclues.rocketchat.CcRocketChatClient;
-import careclues.rocketchat.CcSocket;
-import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.common.CcRocketChatException;
-import careclues.rocketchat.listner.CcConnectListener;
-import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcBaseRoom;
 import careclues.rocketchat.models.CcMessage;
-import careclues.rocketchat.models.CcToken;
 import careclues.rocketchat.models.CcUser;
 
 public class ChatPresenter1 implements ChatContract.presenter {
@@ -122,6 +121,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 Log.e("ERROR Sending Message: ",error.getMessage());
             }
         });
+
+//        getUserProfile("985");
     }
 
     @Override
@@ -163,6 +164,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     public void disconnectToServer() {
         deregisterSocket();
     }
+
 
     private void getChatHistory(final String roomId, final int count){
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
@@ -265,6 +267,53 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
         return  messageEntity;
 
+    }
+
+
+    private RestApiExecuter apiExecuter;
+    private UserProfileResponseModel userProfileModel = null;
+    private ServerResponseModel serverResponseModel = null;
+
+    public UserProfileResponseModel getUserProfile(String userId){
+        apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.getUserProfile(userId, new ServiceCallBack<UserProfileResponseModel>(UserProfileResponseModel.class) {
+            @Override
+            public void onSuccess(UserProfileResponseModel response) {
+                userProfileModel = response;
+                getUserFamilyMember();
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                userProfileModel = null;
+            }
+        });
+        return userProfileModel;
+    }
+
+    public void getUserFamilyMember(){
+        if(userProfileModel != null){
+            getServerResponse(userProfileModel.data.getLink("dependants"));
+        }
+    }
+
+    public ServerResponseModel getServerResponse(String url){
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.getServerResponse(url, new ServiceCallBack<ServerResponseModel>(ServerResponseModel.class) {
+            @Override
+            public void onSuccess(ServerResponseModel response) {
+                serverResponseModel = response;
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                serverResponseModel = null;
+            }
+        });
+        return serverResponseModel;
     }
 
 

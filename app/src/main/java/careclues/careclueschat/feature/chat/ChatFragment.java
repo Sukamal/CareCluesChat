@@ -19,19 +19,21 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.views.MessageInputView;
 
-public class ChatFragment extends BaseFragment implements ChatContract.view,RoomMainActivity.performChatFragmentAction {
+public class ChatFragment extends BaseFragment implements ChatContract.view,RoomMainActivity.performChatFragmentAction,
+        ChatMessageAdapter.InputTypeListner{
 
     private String roomId;
     private String userId;
     private ChatPresenter1 presenter;
     private LinearLayoutManager layoutManager;
     private ChatMessageAdapter messageAdapter;
-
     private LinearLayoutManager layoutManagerAns;
     private ChatAnsAdapter chatAnsAdapter;
 
@@ -41,8 +43,12 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     RecyclerView rvChatHistory;
     @BindView(R.id.et_message)
     EditText etMessage;
+    @BindView(R.id.mi_messageinput)
+    MessageInputView inputView;
     @BindView(R.id.rvAnswers)
     RecyclerView rvAnswers;
+
+
 
 
     @Override
@@ -73,8 +79,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     private void initView(){
         presenter = new ChatPresenter1(this,roomId,getActivity().getApplication());
         presenter.loadData(50);
-
-        loadAnswers(populateTestAnsList());
     }
 
     private void initRecycleView() {
@@ -145,6 +149,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             public void run() {
                 messageAdapter = new ChatMessageAdapter(getActivity(), list,userId);
                 rvChatHistory.setAdapter(messageAdapter);
+                messageAdapter.setInputTypeListner(ChatFragment.this);
             }
         });
     }
@@ -219,5 +224,33 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
 
         return answers;
+    }
+
+    @Override
+    public void onInputType(ServerMessageModel messageModel) {
+        if(messageModel != null){
+            switch (messageModel.control){
+                case "text":
+                    populateInput(true);
+                    break;
+                case "primarySymptomSelect":
+                    populateInput(false);
+                    break;
+                default:
+                    populateInput(false);
+                    break;
+            }
+        }
+    }
+
+    private void populateInput(boolean istext){
+        if(istext){
+            inputView.setVisibility(View.VISIBLE);
+            rvAnswers.setVisibility(View.GONE);
+        }else {
+            inputView.setVisibility(View.GONE);
+            rvAnswers.setVisibility(View.VISIBLE);
+            loadAnswers(populateTestAnsList());
+        }
     }
 }

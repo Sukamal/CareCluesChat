@@ -16,7 +16,7 @@ import retrofit2.http.Query;
  * Created by SukamalD on 27-12-2017.
  */
 
-public interface ApiInterface {
+public interface ChatApiInterface {
 
 //    @GET("posts")
 //    Call<ResponseBody> getRawPostsData();

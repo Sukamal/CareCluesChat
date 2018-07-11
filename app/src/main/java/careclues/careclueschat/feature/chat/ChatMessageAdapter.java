@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.room.RoomAdapter;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.util.DateFormatter;
@@ -32,6 +34,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     private Context context;
     private String userId;
     private DateFormatter.Formatter dateFormatter;
+    private InputTypeListner inputTypeListner;
+
+
+    public interface InputTypeListner{
+        public void onInputType(ServerMessageModel messageModel);
+    }
+
+    public void setInputTypeListner(InputTypeListner inputTypeListner){
+        this.inputTypeListner = inputTypeListner;
+    }
 
     public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList,String userId){
         this.context = context;
@@ -65,11 +77,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         if(chatMessageModel.userId.equalsIgnoreCase(userId/*"sachu-985" "2eRbrjSZnsACYkRx4"*/)){
             holder.cvLeft.setVisibility(View.GONE);
             holder.cvRight.setVisibility(View.VISIBLE);
-            holder.tvRight.setText(chatMessageModel.text);
+            holder.tvRight.setText(chatMessageModel.messageModel.content);
         }else{
             holder.cvLeft.setVisibility(View.VISIBLE);
             holder.cvRight.setVisibility(View.GONE);
-            holder.tvLeft.setText(chatMessageModel.text);
+            holder.tvLeft.setText(chatMessageModel.messageModel.content);
+        }
+
+        if(position == (messageList.size()-1)){
+            if(inputTypeListner != null) {
+                inputTypeListner.onInputType(chatMessageModel.messageModel);
+                Toast.makeText(context, "LAST type is : " + chatMessageModel.messageModel.type, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
