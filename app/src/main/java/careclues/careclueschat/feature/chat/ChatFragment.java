@@ -32,11 +32,17 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     private LinearLayoutManager layoutManager;
     private ChatMessageAdapter messageAdapter;
 
+    private LinearLayoutManager layoutManagerAns;
+    private ChatAnsAdapter chatAnsAdapter;
+
+
 
     @BindView(R.id.rvChatHistory)
     RecyclerView rvChatHistory;
     @BindView(R.id.et_message)
     EditText etMessage;
+    @BindView(R.id.rvAnswers)
+    RecyclerView rvAnswers;
 
 
     @Override
@@ -67,6 +73,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     private void initView(){
         presenter = new ChatPresenter1(this,roomId,getActivity().getApplication());
         presenter.loadData(50);
+
+        loadAnswers(populateTestAnsList());
     }
 
     private void initRecycleView() {
@@ -74,6 +82,12 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         layoutManager.setStackFromEnd(true);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rvChatHistory.setLayoutManager(layoutManager);
+    }
+
+    private void initAnsRecycleView() {
+        layoutManagerAns = new LinearLayoutManager(getActivity());
+        layoutManagerAns.setOrientation(LinearLayoutManager.HORIZONTAL);
+        rvAnswers.setLayoutManager(layoutManagerAns);
     }
 
     @Override
@@ -179,5 +193,31 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         super.onDetach();
         ((RoomMainActivity)getActivity()).setChatFragmentAction(null);
 
+    }
+
+    private void loadAnswers(List<String> answers){
+        initAnsRecycleView();
+        if(answers != null){
+            chatAnsAdapter = new ChatAnsAdapter(getActivity(),answers);
+            rvAnswers.setAdapter(chatAnsAdapter);
+        }
+    }
+
+    private List<String> populateTestAnsList(){
+        List<String> answers = new ArrayList<>();
+
+        answers.add("Yes");
+        answers.add("No");
+        answers.add("Answer 1");
+        answers.add("Answer 222222222");
+        answers.add("Answer 3");
+        answers.add("Answer 4222222222222222222");
+        answers.add("Ans 5");
+        answers.add("Answer 6");
+        answers.add("Answer 7345gdf dfgd");
+        answers.add("Load More");
+
+
+        return answers;
     }
 }

@@ -4,14 +4,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".feature.chat.ChatActivity">
+    android:layout_height="match_parent">
 
-    <careclues.careclueschat.views.MessageInputView
-        android:id="@+id/mi_messageinput"
+    <LinearLayout
+        android:id="@+id/ll_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvAnswers"
+            android:layout_width="match_parent"
+            android:scrollbarSize="2dp"
+            android:layout_height="wrap_content"/>
+        <careclues.careclueschat.views.MessageInputView
+            android:id="@+id/mi_messageinput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvChatHistory"
@@ -19,6 +33,6 @@
         android:layout_width="match_parent"
         android:scrollbarSize="2dp"
         android:layout_height="match_parent"
-        android:layout_above="@id/mi_messageinput"/>
+        android:layout_above="@id/ll_input_layout"/>
 
 </RelativeLayout>
