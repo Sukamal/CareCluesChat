@@ -1,8 +1,14 @@
 package careclues.careclueschat.feature.chat;
 
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +26,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import careclues.careclueschat.R;
+import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
+import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
@@ -48,6 +58,11 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @BindView(R.id.rvAnswers)
     RecyclerView rvAnswers;
 
+    @BindView(R.id.bottom_sheet)
+    public FrameLayout bottomSheet;
+
+    private View view;
+
 
 
 
@@ -61,7 +76,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_chat, container, false);
+        view = inflater.inflate(R.layout.activity_chat, container, false);
         ButterKnife.bind(this, view);
         ((RoomMainActivity)getActivity()).setChatFragmentAction(this);
         ((RoomMainActivity)getActivity()).dispalyFragment = ChatFragment.class.getName();
@@ -200,27 +215,38 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
     }
 
-    private void loadAnswers(List<String> answers){
+    private void loadAnswers(List<ChatAnsModel> answers){
         initAnsRecycleView();
         if(answers != null){
-            chatAnsAdapter = new ChatAnsAdapter(getActivity(),answers);
+            chatAnsAdapter = new ChatAnsAdapter(getActivity(),answers,false);
             rvAnswers.setAdapter(chatAnsAdapter);
+            chatAnsAdapter.setItemClickListener(new OnAdapterItemClickListener() {
+                @Override
+                public void onItemClick(Object value) {
+                    ChatAnsModel ansModel = (ChatAnsModel) value;
+                    if(ansModel.answer.equals("Load More")){
+                        displayMoreAnswer(true);
+                    }else{
+
+                    }
+                }
+            });
         }
     }
 
-    private List<String> populateTestAnsList(){
-        List<String> answers = new ArrayList<>();
+    private List<ChatAnsModel> populateTestAnsList(){
+        List<ChatAnsModel> answers = new ArrayList<>();
 
-        answers.add("Yes");
-        answers.add("No");
-        answers.add("Answer 1");
-        answers.add("Answer 222222222");
-        answers.add("Answer 3");
-        answers.add("Answer 4222222222222222222");
-        answers.add("Ans 5");
-        answers.add("Answer 6");
-        answers.add("Answer 7345gdf dfgd");
-        answers.add("Load More");
+        answers.add(new ChatAnsModel("Yes",false));
+        answers.add(new ChatAnsModel("No",false));
+        answers.add(new ChatAnsModel("Answer 1",false));
+        answers.add(new ChatAnsModel("Answer 222222222",false));
+        answers.add(new ChatAnsModel("Answer 3",false));
+        answers.add(new ChatAnsModel("Answer 4222222222222222222",false));
+        answers.add(new ChatAnsModel("Ans 5",false));
+        answers.add(new ChatAnsModel("Answer 6",false));
+        answers.add(new ChatAnsModel("Answer 7345gdf dfgd",false));
+        answers.add(new ChatAnsModel("Load More",false));
 
 
         return answers;
@@ -235,6 +261,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
                     break;
                 case "primarySymptomSelect":
                     populateInput(false);
+
                     break;
                 default:
                     populateInput(false);
@@ -249,8 +276,33 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             rvAnswers.setVisibility(View.GONE);
         }else {
             inputView.setVisibility(View.GONE);
-            rvAnswers.setVisibility(View.VISIBLE);
-            loadAnswers(populateTestAnsList());
+            rvAnswers.setVisibility(View.GONE);
+//            loadAnswers(populateTestAnsList());
+            displayMoreAnswer(false);
+
         }
+    }
+
+    private void displayMoreAnswer(boolean isMultiSelect){
+        bottomSheet.setVisibility(View.VISIBLE);
+        bottomSheet.removeAllViews();
+        MoreAnswerCustomView answerView = new MoreAnswerCustomView(getActivity());
+        answerView.displayAnswerList(populateTestAnsList(),isMultiSelect);
+        answerView.setAnswerSelectedListner(new MoreAnswerCustomView.AnswerSelectedListner() {
+            @Override
+            public void onAnswerSelected(List<String> answers) {
+                bottomSheet.setVisibility(View.GONE);
+                if(answers != null){
+                    String result = "";
+                    for(String ss : answers){
+                        result = result + ss;
+                    }
+
+                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+        bottomSheet.addView(answerView);
     }
 }
