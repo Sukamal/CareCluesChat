@@ -13,11 +13,27 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvAnswers"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:scrollbarSize="2dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/ib_submit_ans"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_send"
+                android:background="@drawable/selector_message_send"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvAnswers"
+                android:layout_width="match_parent"
+                android:scrollbarSize="2dp"
+                android:layout_toLeftOf="@id/ib_submit_ans"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
         <careclues.careclueschat.views.MessageInputView
             android:id="@+id/mi_messageinput"
             android:layout_width="match_parent"

@@ -1,14 +1,8 @@
 package careclues.careclueschat.feature.chat;
 
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -46,6 +41,9 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     private ChatMessageAdapter messageAdapter;
     private LinearLayoutManager layoutManagerAns;
     private ChatAnsAdapter chatAnsAdapter;
+    private List<String> selectedAnswerList;
+    private boolean isMultiSelectAns = true;
+
 
 
 
@@ -57,7 +55,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     MessageInputView inputView;
     @BindView(R.id.rvAnswers)
     RecyclerView rvAnswers;
-
+    @BindView(R.id.ib_submit_ans)
+    ImageButton ibSubmitAns;
     @BindView(R.id.bottom_sheet)
     public FrameLayout bottomSheet;
 
@@ -193,6 +192,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         });
     }
 
+
+    // Will fire when soket listen any new message
     @Override
     public void updateChatMessage(MessageEntity message) {
         if(message.rId.equals(roomId)){
@@ -216,18 +217,36 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     }
 
     private void loadAnswers(List<ChatAnsModel> answers){
+        selectedAnswerList = new ArrayList<>();
         initAnsRecycleView();
+        if(isMultiSelectAns){
+            ibSubmitAns.setVisibility(View.VISIBLE);
+            ibSubmitAns.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    displaySelectedAnswers();
+                }
+            });
+        }
         if(answers != null){
-            chatAnsAdapter = new ChatAnsAdapter(getActivity(),answers,false);
+            chatAnsAdapter = new ChatAnsAdapter(getActivity(),answers,isMultiSelectAns);
             rvAnswers.setAdapter(chatAnsAdapter);
             chatAnsAdapter.setItemClickListener(new OnAdapterItemClickListener() {
                 @Override
                 public void onItemClick(Object value) {
                     ChatAnsModel ansModel = (ChatAnsModel) value;
                     if(ansModel.answer.equals("Load More")){
-                        displayMoreAnswer(true);
+                        displayMoreAnswer(isMultiSelectAns);
                     }else{
+                        if(ansModel.isSelected){
+                            selectedAnswerList.add(ansModel.answer);
+                        }else{
+                            selectedAnswerList.remove(ansModel.answer);
+                        }
 
+                        if(!isMultiSelectAns){
+                            displaySelectedAnswers();
+                        }
                     }
                 }
             });
@@ -276,9 +295,9 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             rvAnswers.setVisibility(View.GONE);
         }else {
             inputView.setVisibility(View.GONE);
-            rvAnswers.setVisibility(View.GONE);
-//            loadAnswers(populateTestAnsList());
-            displayMoreAnswer(false);
+            rvAnswers.setVisibility(View.VISIBLE);
+            loadAnswers(populateTestAnsList());
+//            displayMoreAnswer(false);
 
         }
     }
@@ -292,17 +311,26 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             @Override
             public void onAnswerSelected(List<String> answers) {
                 bottomSheet.setVisibility(View.GONE);
-                if(answers != null){
-                    String result = "";
-                    for(String ss : answers){
-                        result = result + ss;
-                    }
+                selectedAnswerList = answers;
+                displaySelectedAnswers();
 
-                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-
-                }
             }
         });
         bottomSheet.addView(answerView);
+    }
+
+    private void displaySelectedAnswers(){
+        String selectedAnswers = "";
+        if(selectedAnswerList != null){
+            for(String ans : selectedAnswerList){
+                if(selectedAnswers != null && selectedAnswers.length()>0){
+                    selectedAnswers = selectedAnswers + "\n";
+                }
+                selectedAnswers = selectedAnswers + ans;
+            }
+
+            Toast.makeText(getContext(), selectedAnswers, Toast.LENGTH_SHORT).show();
+
+        }
     }
 }

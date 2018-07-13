@@ -27,6 +27,7 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
         this.text = text;
         this.createdAt = createdAt;
         this.userId = userId;
+        this.messageModel = parseMessage(text);
     }
 
     public ChatMessageModel(MessageEntity messageEntity){

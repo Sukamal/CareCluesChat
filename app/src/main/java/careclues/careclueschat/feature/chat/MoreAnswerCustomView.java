@@ -26,7 +26,7 @@ public class MoreAnswerCustomView extends ConstraintLayout implements View.OnCli
     private Button cancelButton;
     private Context context;
     private AnswerSelectedListner selectedListner;
-    private List<String> answers;
+    private List<String> selectedAnswers;
     private boolean isMultiSelect;
 
 
@@ -68,7 +68,7 @@ public class MoreAnswerCustomView extends ConstraintLayout implements View.OnCli
         layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        answers = new ArrayList<>();
+        selectedAnswers = new ArrayList<>();
 
     }
 
@@ -96,7 +96,7 @@ public class MoreAnswerCustomView extends ConstraintLayout implements View.OnCli
         switch (v.getId()){
             case R.id.btnOk:
                 if(selectedListner != null){
-                    selectedListner.onAnswerSelected(answers);
+                    selectedListner.onAnswerSelected(selectedAnswers);
                 }
                 break;
 
@@ -113,14 +113,14 @@ public class MoreAnswerCustomView extends ConstraintLayout implements View.OnCli
     public void onItemClick(Object value) {
         ChatAnsModel ansModel = (ChatAnsModel) value;
         if(ansModel.isSelected){
-            answers.add(ansModel.answer);
+            selectedAnswers.add(ansModel.answer);
         }else{
-            answers.remove(ansModel.answer);
+            selectedAnswers.remove(ansModel.answer);
         }
 
         if(!isMultiSelect){
             if(selectedListner != null){
-                selectedListner.onAnswerSelected(answers);
+                selectedListner.onAnswerSelected(selectedAnswers);
             }
         }
 
