@@ -1,5 +1,7 @@
 package careclues.careclueschat.feature.chat.chatmodel;
 
+import android.arch.persistence.room.Ignore;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -16,7 +18,6 @@ public class ServerMessageModel {
     public String type;
     @SerializedName("control")
     public String control;
-
     @SerializedName("patient")
     public PatientModel patientModel;
     @SerializedName("category")

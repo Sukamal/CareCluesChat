@@ -330,26 +330,22 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     public void getUserFamilyMember(){
         if(userProfileModel != null){
-            getServerResponse(userProfileModel.data.getLink("dependants"));
+            String url = userProfileModel.data.getLink("dependants");
+            if(apiExecuter == null)
+                apiExecuter = RestApiExecuter.getInstance();
+
+            apiExecuter.getServerResponse(url, new ServiceCallBack<FamilyMemberResponseModel>(FamilyMemberResponseModel.class) {
+                @Override
+                public void onSuccess(FamilyMemberResponseModel response) {
+                    familyMemberResponseModel = response;
+                }
+
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
+                    familyMemberResponseModel = null;
+                }
+            });
         }
-    }
-
-    public FamilyMemberResponseModel getServerResponse(String url){
-        if(apiExecuter == null)
-            apiExecuter = RestApiExecuter.getInstance();
-
-        apiExecuter.getServerResponse(url, new ServiceCallBack<FamilyMemberResponseModel>(FamilyMemberResponseModel.class) {
-            @Override
-            public void onSuccess(FamilyMemberResponseModel response) {
-                familyMemberResponseModel = response;
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-                familyMemberResponseModel = null;
-            }
-        });
-        return familyMemberResponseModel;
     }
 
     public enum ControlType {

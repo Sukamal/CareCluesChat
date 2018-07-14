@@ -164,7 +164,7 @@ public class RoomDataPresenter {
         };
     }
 
-    public  void getUpdatedRoomList(final int count){
+    public  void getActiveRoomList(final int count){
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -172,10 +172,13 @@ public class RoomDataPresenter {
                 try {
 //                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,count);
                     lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
+                    if(lastUpdatedRoomList.size() == 0){
+                        lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0,1);
+                    }
 
                     handler.sendEmptyMessage(FETCH_UPDATED_ROOM);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", "getUpdatedRoomList : "+e.toString());
+                    Log.e("DBERROR", "getActiveRoomList : "+e.toString());
                 }
 
             }

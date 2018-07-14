@@ -53,20 +53,28 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
 
 
     private ServerMessageModel parseMessage(String msg){
+        msg = msg.replaceAll("\\\\","");
         ServerMessageModel messageModel = null;
         boolean isJson = false;
         JSONObject jsonObject = null;
         if(msg != null && msg.trim().length() > 0){
-            try {
-                jsonObject = new JSONObject(msg);
+
+            if(msg.startsWith("{")){
                 isJson = true;
-            } catch (JSONException e) {
+            }else{
                 isJson = false;
             }
 
             if(isJson){
                 Gson gson = new Gson();
-                messageModel = gson.fromJson(jsonObject.toString(),ServerMessageModel.class);
+                messageModel = gson.fromJson(msg,ServerMessageModel.class);
+//                try {
+//                    jsonObject = new JSONObject(msg);
+//
+//                } catch (JSONException e) {
+//
+//                }
+
             }else{
                 messageModel = new ServerMessageModel();
                 messageModel.content = msg;

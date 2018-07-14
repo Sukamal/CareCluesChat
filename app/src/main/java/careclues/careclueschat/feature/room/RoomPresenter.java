@@ -168,7 +168,7 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onFetchSubscription(List<SubscriptionEntity> entities) {
         view.displayToastMessage("Fetching Subscriptions");
-        roomDataPresenter.getUpdatedRoomList(10);
+        roomDataPresenter.getActiveRoomList(10);
     }
 
     @Override
@@ -280,6 +280,13 @@ public class RoomPresenter implements RoomContract.presenter,
             public void run() {
                 try {
                     lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
+
+                    if(lastUpdatedRoomList.size() == 0){
+                        lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0,10);
+
+                    }
+
+
                     subsCribeRoomMessageEvent(lastUpdatedRoomList);
                     populateAdapterData(lastUpdatedRoomList, LOAD_ROOM_DATA);
                 } catch (Throwable e) {
@@ -311,22 +318,25 @@ public class RoomPresenter implements RoomContract.presenter,
                                 adapterModel.updatedAt = entity.updatedAt;
                             }
 
-                            for (RoomMemberEntity memberEntity : memberEntities) {
-                                RoomMemberModel memberModel = ModelEntityTypeConverter.roomMemberEntityToModel(memberEntity);
-                                if (memberEntity.userName.equalsIgnoreCase("api_admin") || memberEntity.userName.equalsIgnoreCase("bot-la2zewmltd") || memberEntity.userName.equalsIgnoreCase(((CareCluesChatApplication) application).getUserName())) {
-                                    adapterModel.name = "New-Consultant";
-                                } else {
-                                    adapterModel.name = memberEntity.name;
-                                    adapterModel.userName = memberEntity.userName;
-                                    break;
+                            if(memberEntities != null ){
+                                for (RoomMemberEntity memberEntity : memberEntities) {
+                                    RoomMemberModel memberModel = ModelEntityTypeConverter.roomMemberEntityToModel(memberEntity);
+                                    if (memberEntity.userName.equalsIgnoreCase("api_admin") || memberEntity.userName.equalsIgnoreCase("bot-la2zewmltd") || memberEntity.userName.equalsIgnoreCase(((CareCluesChatApplication) application).getUserName())) {
+                                        adapterModel.name = "New-Consultant";
+                                    } else {
+                                        adapterModel.name = memberEntity.name;
+                                        adapterModel.userName = memberEntity.userName;
+                                        break;
+                                    }
                                 }
                             }
+
 
                             if (entity.readOnly == false) {
                                 adapterModel.status = application.getResources().getString(R.string.tc_status_ongoing);
                                 ;
                             } else {
-                                if (adapterModel.name.equals("New-Consultant")) {
+                                if (adapterModel.name != null && adapterModel.name.equals("New-Consultant")) {
 
                                     String msgType = "";
 

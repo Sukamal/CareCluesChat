@@ -58,6 +58,12 @@
         android:layout_width="match_parent"
         android:scrollbarSize="2dp"
         android:layout_height="match_parent"
-        android:layout_above="@id/ll_input_layout"/>
+        android:layout_above="@id/ll_input_layout"
+        android:layout_below="@id/nxt"/>
+    <Button
+        android:id="@+id/nxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next MSG"/>
 
 </RelativeLayout>

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,6 +116,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
     @Override
     public void displayChatList(List<ChatMessageModel> list) {
+        testmsglist = list;
         displyChatList(list);
     }
 
@@ -218,20 +220,20 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
     @Override
     public void onInputType(ServerMessageModel messageModel) {
-        if(messageModel != null){
-            switch (messageModel.control){
-                case "text":
-                    populateInput(true);
-                    break;
-                case "primarySymptomSelect":
-                    populateInput(false);
-
-                    break;
-                default:
-                    populateInput(false);
-                    break;
-            }
-        }
+//        if(messageModel != null){
+//            switch (messageModel.control){
+//                case "text":
+//                    populateInput(true);
+//                    break;
+//                case "primarySymptomSelect":
+//                    populateInput(false);
+//
+//                    break;
+//                default:
+//                    populateInput(false);
+//                    break;
+//            }
+//        }
     }
 
 
@@ -336,5 +338,13 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
             Toast.makeText(getContext(), selectedAnswers, Toast.LENGTH_SHORT).show();
 
         }
+    }
+
+    List<ChatMessageModel> testmsglist;
+    int count = 0;
+    @OnClick(R.id.nxt)
+    public void nextMessage(){
+        Log.v("NEXT MSG : ",testmsglist.get(count).text);
+        count++;
     }
 }
