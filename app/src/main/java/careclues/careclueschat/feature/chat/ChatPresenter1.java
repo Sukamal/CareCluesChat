@@ -16,10 +16,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
-import careclues.careclueschat.model.LinkModel;
 import careclues.careclueschat.model.RoomUserModel;
-import careclues.careclueschat.model.ServerResponseModel;
+import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
@@ -187,18 +187,18 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-//    @Override
-    public void onMessage(String roomId, CcMessage message) {
-
-        Log.e("Message"," On Message : "+ message.id + " " +message.toString());
-
-//        insertIntoDB(message);
-        List<ChatMessageModel> list = new ArrayList<>();
-        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id,message.msg,new Date(/*message.updatedAt*/),message.user.id);
-        list.add(chatMessageModel);
-        view.displayMoreChatList(list);
-
-    }
+////    @Override
+//    public void onMessage(String roomId, CcMessage message) {
+//
+//        Log.e("Message"," On Message : "+ message.id + " " +message.toString());
+//
+////        insertIntoDB(message);
+//        List<ChatMessageModel> list = new ArrayList<>();
+//        ChatMessageModel chatMessageModel = new ChatMessageModel(message.id,message.msg,new Date(/*message.updatedAt*/),message.user.id);
+//        list.add(chatMessageModel);
+//        view.displayMoreChatList(list);
+//
+//    }
 
 //    @Override
 //    public void onTyping(String roomId, String user, Boolean istyping) {
@@ -270,9 +270,45 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
+    private void enableInputControlOptions(ServerMessageModel messageModel){
+        if(messageModel != null){
+            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
+                getFamilyMember();
+            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
+                getHealthTopic();
+            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
+                getPrimarySymptom();
+            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
+                getSymptoms();
+            }
+        }
+
+    }
+
+
+
+    private void getFamilyMember(){
+
+    }
+
+    private void getHealthTopic(){
+
+    }
+
+    private void getPrimarySymptom(){
+
+    }
+
+    private void getSymptoms(){
+
+    }
+
+
+
+
     private RestApiExecuter apiExecuter;
     private UserProfileResponseModel userProfileModel = null;
-    private ServerResponseModel serverResponseModel = null;
+    private FamilyMemberResponseModel familyMemberResponseModel = null;
 
     public UserProfileResponseModel getUserProfile(String userId){
         apiExecuter = RestApiExecuter.getInstance();
@@ -298,22 +334,41 @@ public class ChatPresenter1 implements ChatContract.presenter {
         }
     }
 
-    public ServerResponseModel getServerResponse(String url){
+    public FamilyMemberResponseModel getServerResponse(String url){
         if(apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-        apiExecuter.getServerResponse(url, new ServiceCallBack<ServerResponseModel>(ServerResponseModel.class) {
+        apiExecuter.getServerResponse(url, new ServiceCallBack<FamilyMemberResponseModel>(FamilyMemberResponseModel.class) {
             @Override
-            public void onSuccess(ServerResponseModel response) {
-                serverResponseModel = response;
+            public void onSuccess(FamilyMemberResponseModel response) {
+                familyMemberResponseModel = response;
             }
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
-                serverResponseModel = null;
+                familyMemberResponseModel = null;
             }
         });
-        return serverResponseModel;
+        return familyMemberResponseModel;
+    }
+
+    public enum ControlType {
+        CONTROL_FAMILY_MEMBER_SELECT("familyMemberSelect"),
+        CONTROL_TEXT("text"),
+        CONTROL_HEALTH_TOPIC_SELECT("healthTopicSelect"),
+        CONTROL_PRIMARY_SYMPTOM_SELECT("primarySymptomSelect"),
+        CONTROL_SYMPTOM_SELECT("symptomSelect"),
+        CONTROL_SELECT("select");
+
+        private String control;
+
+        ControlType(String template) {
+            this.control = template;
+        }
+
+        public String get() {
+            return control;
+        }
     }
 
 

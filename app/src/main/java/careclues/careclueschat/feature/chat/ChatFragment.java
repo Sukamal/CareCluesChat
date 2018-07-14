@@ -216,6 +216,26 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
     }
 
+    @Override
+    public void onInputType(ServerMessageModel messageModel) {
+        if(messageModel != null){
+            switch (messageModel.control){
+                case "text":
+                    populateInput(true);
+                    break;
+                case "primarySymptomSelect":
+                    populateInput(false);
+
+                    break;
+                default:
+                    populateInput(false);
+                    break;
+            }
+        }
+    }
+
+
+
     private void loadAnswers(List<ChatAnsModel> answers){
         selectedAnswerList = new ArrayList<>();
         initAnsRecycleView();
@@ -271,23 +291,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         return answers;
     }
 
-    @Override
-    public void onInputType(ServerMessageModel messageModel) {
-        if(messageModel != null){
-            switch (messageModel.control){
-                case "text":
-                    populateInput(true);
-                    break;
-                case "primarySymptomSelect":
-                    populateInput(false);
 
-                    break;
-                default:
-                    populateInput(false);
-                    break;
-            }
-        }
-    }
 
     private void populateInput(boolean istext){
         if(istext){

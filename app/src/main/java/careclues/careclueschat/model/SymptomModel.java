@@ -5,14 +5,19 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ServerResponseModel {
-    @SerializedName("meta")
+/**
+ * Created by SukamalD on 7/14/2018.
+ */
+
+public class SymptomModel {
+
+    @SerializedName("id")
     @Expose
-    public MetaModel meta;
-    @SerializedName("data")
+    private Integer id;
+    @SerializedName("name")
     @Expose
-    public List<DataModel> data;
+    private String name;
     @SerializedName("links")
     @Expose
-    public List<LinkModel> pagelinks;
+    private List<LinkModel> links = null;
 }

@@ -2,6 +2,10 @@ package careclues.careclueschat.feature.chat.chatmodel;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
+import careclues.careclueschat.model.SymptomModel;
+
 public class ServerMessageModel {
 
     @SerializedName("id")
@@ -15,5 +19,11 @@ public class ServerMessageModel {
 
     @SerializedName("patient")
     public PatientModel patientModel;
+    @SerializedName("category")
+    public CategoryModel categoryModel;
+    @SerializedName("symptom")
+    public SymptomModel symptomModel;
+    @SerializedName("options")
+    public List<String> options;
 
 }
