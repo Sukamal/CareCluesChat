@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/chatbg">
 
     <LinearLayout
         android:id="@+id/ll_input_layout"
@@ -14,6 +15,7 @@
         android:layout_alignParentBottom="true">
 
         <RelativeLayout
+            android:id="@+id/rlAnswer_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageButton
@@ -34,8 +36,13 @@
 
         </RelativeLayout>
 
+        <careclues.careclueschat.views.FamilyMemberView
+            android:id="@+id/view_familymember"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <careclues.careclueschat.views.MessageInputView
-            android:id="@+id/mi_messageinput"
+            android:id="@+id/view_messageinput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

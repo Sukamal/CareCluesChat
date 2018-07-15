@@ -6,6 +6,7 @@ import java.util.List;
 
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.common.CommonViewInterface;
+import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.PostsModel;
 import careclues.careclueschat.network.ServiceCallBack;
 
@@ -18,6 +19,7 @@ public interface ChatContract {
         public void displayMoreChatList(List<ChatMessageModel> list);
         public void displyTypingStatus(String message);
         public void onConnectionFaild(int errorType);
+        public void displayFamilyMember(List<DataModel> data);
     }
 
     interface presenter {

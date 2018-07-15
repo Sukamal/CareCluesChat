@@ -13,4 +13,6 @@ public class PatientModel {
     public String gender;
     @SerializedName("link")
     public String lLink;
+
+    public String displayName;
 }

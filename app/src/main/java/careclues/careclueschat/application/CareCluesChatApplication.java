@@ -11,6 +11,7 @@ import com.rocketchat.core.RocketChatClient;
 
 import java.util.Date;
 
+import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.storage.database.ChatDatabase;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
@@ -30,6 +31,7 @@ public class CareCluesChatApplication extends Application {
     //test
 
     private CcRocketChatClient chatClient;
+    public static UserProfileResponseModel userProfile;
 
 
     public String token;

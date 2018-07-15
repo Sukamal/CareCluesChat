@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,8 +30,10 @@ import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.feature.room.RoomMainActivity;
+import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.views.FamilyMemberView;
 import careclues.careclueschat.views.MessageInputView;
 
 public class ChatFragment extends BaseFragment implements ChatContract.view,RoomMainActivity.performChatFragmentAction,
@@ -52,7 +56,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     RecyclerView rvChatHistory;
     @BindView(R.id.et_message)
     EditText etMessage;
-    @BindView(R.id.mi_messageinput)
+    @BindView(R.id.view_messageinput)
     MessageInputView inputView;
     @BindView(R.id.rvAnswers)
     RecyclerView rvAnswers;
@@ -60,6 +64,14 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     ImageButton ibSubmitAns;
     @BindView(R.id.bottom_sheet)
     public FrameLayout bottomSheet;
+    @BindView(R.id.ll_input_layout)
+    public LinearLayout llInputLayout;
+    @BindView(R.id.view_familymember)
+    public FamilyMemberView viewFamilymember;
+    @BindView(R.id.rlAnswer_container)
+    public RelativeLayout rlAnswerContainer;
+
+
 
     private View view;
 
@@ -145,6 +157,12 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     }
 
     @Override
+    public void displayFamilyMember(List<DataModel> data) {
+        viewFamilymember.addMembers(data);
+        dispayTemplet("familymember");
+    }
+
+    @Override
     public void displayToastMessage(String message) {
 
     }
@@ -220,9 +238,10 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
     @Override
     public void onInputType(ServerMessageModel messageModel) {
-//        if(messageModel != null){
+        if(messageModel != null){
 //            switch (messageModel.control){
 //                case "text":
+//
 //                    populateInput(true);
 //                    break;
 //                case "primarySymptomSelect":
@@ -233,7 +252,28 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 //                    populateInput(false);
 //                    break;
 //            }
+
+            presenter.enableInputControlOptions(messageModel);
+
+        }
+    }
+
+
+    private void dispayTemplet(String type){
+//        for(int i=0; i < llInputLayout.getChildCount(); i++){
+//            llInputLayout.getChildAt(i).setVisibility(View.GONE);
 //        }
+        inputView.setVisibility(View.GONE);
+        viewFamilymember.setVisibility(View.GONE);
+        rlAnswerContainer.setVisibility(View.GONE);
+
+        if(type.equals("text")){
+            inputView.setVisibility(View.VISIBLE);
+        }else if(type.equals("familymember")){
+            viewFamilymember.setVisibility(View.VISIBLE);
+        }else if(type.equals("qsans")){
+            rlAnswerContainer.setVisibility(View.VISIBLE);
+        }
     }
 
 

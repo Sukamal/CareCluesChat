@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#d41c5c</color>
     <color name="colorAccent">#FF4081</color>
 
+
+
     <!-- TEST CHAT-->
     <color name="cornflower_blue">#6274e2</color>
     <color name="cornflower_blue_dark">#303F9F</color>
@@ -28,6 +30,9 @@
     <color name="color_hint_text">#848484</color>
     <color name="color_text">#545454</color>
     <color name="color_header_text">#333333</color>
+
+    <color name="color_pink">#dd6c95</color>
+    <color name="color_green">#dcf8c6</color>
 
     <!-- TEST CHAT END-->
 

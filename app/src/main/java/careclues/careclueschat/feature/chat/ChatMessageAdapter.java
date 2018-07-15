@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -116,9 +117,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout cvLeft;
+        RelativeLayout cvLeft;
         TextView tvLeft;
-        LinearLayout cvRight;
+        RelativeLayout  cvRight;
         TextView tvRight;
         TextView tvDate;
 
@@ -127,9 +128,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            cvLeft = (LinearLayout) itemView.findViewById(R.id.card_view_left);
+            cvLeft = (RelativeLayout ) itemView.findViewById(R.id.card_view_left);
             tvLeft = (TextView) itemView.findViewById(R.id.tv_left);
-            cvRight = (LinearLayout) itemView.findViewById(R.id.card_view_right);
+            cvRight = (RelativeLayout ) itemView.findViewById(R.id.card_view_right);
             tvRight = (TextView) itemView.findViewById(R.id.tv_right);
             tvDate = (TextView) itemView.findViewById(R.id.tv_date);
         }

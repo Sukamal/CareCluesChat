@@ -57,6 +57,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         getLoginUserDetails(userId);
+        getUserProfile(userId);
 
 
     }
@@ -270,25 +271,44 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-    private void enableInputControlOptions(ServerMessageModel messageModel){
-        if(messageModel != null){
-            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
-                getFamilyMember();
-            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
-                getHealthTopic();
-            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
-                getPrimarySymptom();
-            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
-                getSymptoms();
-            }
-        }
+    public void enableInputControlOptions(ServerMessageModel messageModel){
+//        if(messageModel != null){
+//            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
+//                getFamilyMember();
+//            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
+//                getHealthTopic();
+//            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
+//                getPrimarySymptom();
+//            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
+//                getSymptoms();
+//            }
+//        }
+
+        getFamilyMember();
 
     }
 
 
 
     private void getFamilyMember(){
+        if(userProfileModel != null){
+            String url = userProfileModel.data.getLink("dependants");
+            if(apiExecuter == null)
+                apiExecuter = RestApiExecuter.getInstance();
 
+            apiExecuter.getServerResponse(url, new ServiceCallBack<FamilyMemberResponseModel>(FamilyMemberResponseModel.class) {
+                @Override
+                public void onSuccess(FamilyMemberResponseModel response) {
+                    familyMemberResponseModel = response;
+                    view.displayFamilyMember(familyMemberResponseModel.data);
+                }
+
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
+                    familyMemberResponseModel = null;
+                }
+            });
+        }
     }
 
     private void getHealthTopic(){
@@ -317,7 +337,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
             @Override
             public void onSuccess(UserProfileResponseModel response) {
                 userProfileModel = response;
-                getUserFamilyMember();
+                CareCluesChatApplication.userProfile = userProfileModel;
+//                getUserFamilyMember();
             }
 
             @Override
@@ -328,25 +349,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
         return userProfileModel;
     }
 
-    public void getUserFamilyMember(){
-        if(userProfileModel != null){
-            String url = userProfileModel.data.getLink("dependants");
-            if(apiExecuter == null)
-                apiExecuter = RestApiExecuter.getInstance();
-
-            apiExecuter.getServerResponse(url, new ServiceCallBack<FamilyMemberResponseModel>(FamilyMemberResponseModel.class) {
-                @Override
-                public void onSuccess(FamilyMemberResponseModel response) {
-                    familyMemberResponseModel = response;
-                }
-
-                @Override
-                public void onFailure(List<NetworkError> errorList) {
-                    familyMemberResponseModel = null;
-                }
-            });
-        }
-    }
 
     public enum ControlType {
         CONTROL_FAMILY_MEMBER_SELECT("familyMemberSelect"),
