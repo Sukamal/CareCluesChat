@@ -22,6 +22,9 @@ public interface ServerApiInterface {
     @GET("patients/{user_id}")
     Call<ResponseBody> getUserProfile(@Path("user_id") String userId);
 
+    @GET("health_topics?text_consultation_availability=true")
+    Call<ResponseBody> getHealthTopic();
+
     @GET
     public Call<ResponseBody> getServerResponse(@Url String url);
 

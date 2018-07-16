@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +77,7 @@ public class FamilyMemberView extends RelativeLayout {
             patientModel.first_name = CareCluesChatApplication.userProfile.data.firstName;
             patientModel.last_name = CareCluesChatApplication.userProfile.data.lastName;
             patientModel.gender = CareCluesChatApplication.userProfile.data.gender;
+            patientModel.self = true;
             patientModel.lLink = CareCluesChatApplication.userProfile.data.getLink("text_consultations");
         }
 
@@ -85,6 +91,7 @@ public class FamilyMemberView extends RelativeLayout {
             patientModel.first_name = dataModel.firstName;
             patientModel.last_name = dataModel.lastName;
             patientModel.gender = dataModel.gender;
+            patientModel.self = false;
             patientModel.lLink = dataModel.getLink("text_consultations");
             patientList.add(patientModel);
         }
@@ -102,6 +109,15 @@ public class FamilyMemberView extends RelativeLayout {
     private void displayFamilyMember(){
         chatFamilyMemberAdapter = new ChatFamilyMemberAdapter(context,patientList);
         rvFamillyMember.setAdapter(chatFamilyMemberAdapter);
+        chatFamilyMemberAdapter.setItemClickListener(new OnAdapterItemClickListener() {
+            @Override
+            public void onItemClick(Object value) {
+                PatientModel patientModel = (PatientModel) value;
+                patientModel.displayName = null;
+                String jsonObject = new Gson().toJson(patientModel);
+                Log.v("PATIENT : ",jsonObject);
+            }
+        });
     }
 
 

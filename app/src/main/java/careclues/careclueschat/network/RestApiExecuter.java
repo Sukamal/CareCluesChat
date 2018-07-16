@@ -152,4 +152,9 @@ public class RestApiExecuter {
         Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).getServerResponse(url);
         execute(call,serviceCallBack);
     }
+
+    public <T> void getHealthTopics(ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).getHealthTopic();
+        execute(call,serviceCallBack);
+    }
 }

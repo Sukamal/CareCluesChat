@@ -31,8 +31,10 @@ import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.views.AnswerView;
 import careclues.careclueschat.views.FamilyMemberView;
 import careclues.careclueschat.views.MessageInputView;
 
@@ -44,13 +46,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     private ChatPresenter1 presenter;
     private LinearLayoutManager layoutManager;
     private ChatMessageAdapter messageAdapter;
-    private LinearLayoutManager layoutManagerAns;
-    private ChatAnsAdapter chatAnsAdapter;
-    private List<String> selectedAnswerList;
-    private boolean isMultiSelectAns = true;
-
-
-
 
     @BindView(R.id.rvChatHistory)
     RecyclerView rvChatHistory;
@@ -62,16 +57,12 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     RecyclerView rvAnswers;
     @BindView(R.id.ib_submit_ans)
     ImageButton ibSubmitAns;
-    @BindView(R.id.bottom_sheet)
-    public FrameLayout bottomSheet;
     @BindView(R.id.ll_input_layout)
     public LinearLayout llInputLayout;
     @BindView(R.id.view_familymember)
     public FamilyMemberView viewFamilymember;
-    @BindView(R.id.rlAnswer_container)
-    public RelativeLayout rlAnswerContainer;
-
-
+    @BindView(R.id.view_answer)
+    public AnswerView view_answer;
 
     private View view;
 
@@ -115,12 +106,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         rvChatHistory.setLayoutManager(layoutManager);
     }
 
-    private void initAnsRecycleView() {
-        layoutManagerAns = new LinearLayoutManager(getActivity());
-        layoutManagerAns.setOrientation(LinearLayoutManager.HORIZONTAL);
-        rvAnswers.setLayoutManager(layoutManagerAns);
-    }
-
     @Override
     public void displyNextScreen() {
 
@@ -160,6 +145,16 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     public void displayFamilyMember(List<DataModel> data) {
         viewFamilymember.addMembers(data);
         dispayTemplet("familymember");
+    }
+
+    @Override
+    public void displayHealthTopic(List<HealthTopicModel> data) {
+        List<ChatAnsModel> ansList = new ArrayList<>();
+        for(HealthTopicModel topicModel : data){
+            ansList.add(new ChatAnsModel(topicModel.name,false));
+        }
+        view_answer.setAnswerList(ansList,true);
+        dispayTemplet("qsans");
     }
 
     @Override
@@ -245,20 +240,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @Override
     public void onInputType(ServerMessageModel messageModel) {
         if(messageModel != null){
-//            switch (messageModel.control){
-//                case "text":
-//
-//                    populateInput(true);
-//                    break;
-//                case "primarySymptomSelect":
-//                    populateInput(false);
-//
-//                    break;
-//                default:
-//                    populateInput(false);
-//                    break;
-//            }
-
             presenter.enableInputControlOptions(messageModel);
 
         }
@@ -275,111 +256,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         }else if(type.equals("familymember")){
             viewFamilymember.setVisibility(View.VISIBLE);
         }else if(type.equals("qsans")){
-            rlAnswerContainer.setVisibility(View.VISIBLE);
-        }
-    }
-
-
-
-    private void loadAnswers(List<ChatAnsModel> answers){
-        selectedAnswerList = new ArrayList<>();
-        initAnsRecycleView();
-        if(isMultiSelectAns){
-            ibSubmitAns.setVisibility(View.VISIBLE);
-            ibSubmitAns.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    displaySelectedAnswers();
-                }
-            });
-        }
-        if(answers != null){
-            chatAnsAdapter = new ChatAnsAdapter(getActivity(),answers,isMultiSelectAns);
-            rvAnswers.setAdapter(chatAnsAdapter);
-            chatAnsAdapter.setItemClickListener(new OnAdapterItemClickListener() {
-                @Override
-                public void onItemClick(Object value) {
-                    ChatAnsModel ansModel = (ChatAnsModel) value;
-                    if(ansModel.answer.equals("Load More")){
-                        displayMoreAnswer(isMultiSelectAns);
-                    }else{
-                        if(ansModel.isSelected){
-                            selectedAnswerList.add(ansModel.answer);
-                        }else{
-                            selectedAnswerList.remove(ansModel.answer);
-                        }
-
-                        if(!isMultiSelectAns){
-                            displaySelectedAnswers();
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    private List<ChatAnsModel> populateTestAnsList(){
-        List<ChatAnsModel> answers = new ArrayList<>();
-
-        answers.add(new ChatAnsModel("Yes",false));
-        answers.add(new ChatAnsModel("No",false));
-        answers.add(new ChatAnsModel("Answer 1",false));
-        answers.add(new ChatAnsModel("Answer 222222222",false));
-        answers.add(new ChatAnsModel("Answer 3",false));
-        answers.add(new ChatAnsModel("Answer 4222222222222222222",false));
-        answers.add(new ChatAnsModel("Ans 5",false));
-        answers.add(new ChatAnsModel("Answer 6",false));
-        answers.add(new ChatAnsModel("Answer 7345gdf dfgd",false));
-        answers.add(new ChatAnsModel("Load More",false));
-
-
-        return answers;
-    }
-
-
-
-    private void populateInput(boolean istext){
-        if(istext){
-            inputView.setVisibility(View.VISIBLE);
-            rvAnswers.setVisibility(View.GONE);
-        }else {
-            inputView.setVisibility(View.GONE);
-            rvAnswers.setVisibility(View.VISIBLE);
-            loadAnswers(populateTestAnsList());
-//            displayMoreAnswer(false);
-
-        }
-    }
-
-    private void displayMoreAnswer(boolean isMultiSelect){
-        bottomSheet.setVisibility(View.VISIBLE);
-        bottomSheet.removeAllViews();
-        MoreAnswerCustomView answerView = new MoreAnswerCustomView(getActivity());
-        answerView.displayAnswerList(populateTestAnsList(),isMultiSelect);
-        answerView.setAnswerSelectedListner(new MoreAnswerCustomView.AnswerSelectedListner() {
-            @Override
-            public void onAnswerSelected(List<String> answers) {
-                bottomSheet.setVisibility(View.GONE);
-                selectedAnswerList = answers;
-                displaySelectedAnswers();
-
-            }
-        });
-        bottomSheet.addView(answerView);
-    }
-
-    private void displaySelectedAnswers(){
-        String selectedAnswers = "";
-        if(selectedAnswerList != null){
-            for(String ans : selectedAnswerList){
-                if(selectedAnswers != null && selectedAnswers.length()>0){
-                    selectedAnswers = selectedAnswers + "\n";
-                }
-                selectedAnswers = selectedAnswers + ans;
-            }
-
-            Toast.makeText(getContext(), selectedAnswers, Toast.LENGTH_SHORT).show();
-
+            view_answer.setVisibility(View.VISIBLE);
         }
     }
 

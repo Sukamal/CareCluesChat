@@ -14,28 +14,6 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true">
 
-        <RelativeLayout
-            android:id="@+id/rlAnswer_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-            <ImageButton
-                android:id="@+id/ib_submit_ans"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_send"
-                android:background="@drawable/selector_message_send"/>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rvAnswers"
-                android:layout_width="match_parent"
-                android:scrollbarSize="2dp"
-                android:layout_toLeftOf="@id/ib_submit_ans"
-                android:layout_height="wrap_content"/>
-
-        </RelativeLayout>
 
         <careclues.careclueschat.views.FamilyMemberView
             android:id="@+id/view_familymember"
@@ -48,15 +26,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"/>
-
-        <FrameLayout
-            android:id="@+id/bottom_sheet"
-            app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        <careclues.careclueschat.views.AnswerView
+            android:id="@+id/view_answer"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:visibility="gone">
-
-        </FrameLayout>
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

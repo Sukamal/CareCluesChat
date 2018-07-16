@@ -13,32 +13,32 @@ public class HealthTopicModel {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    public Integer id;
     @SerializedName("name")
     @Expose
-    private String name;
+    public String name;
     @SerializedName("for_male")
     @Expose
-    private Boolean forMale;
+    public Boolean forMale;
     @SerializedName("for_female")
     @Expose
-    private Boolean forFemale;
+    public Boolean forFemale;
     @SerializedName("phone_consultation_availability")
     @Expose
-    private Boolean phoneConsultationAvailability;
+    public Boolean phoneConsultationAvailability;
     @SerializedName("text_consultation_availability")
     @Expose
-    private Boolean textConsultationAvailability;
+    public Boolean textConsultationAvailability;
     @SerializedName("home_consultation_availability")
     @Expose
-    private Boolean homeConsultationAvailability;
+    public Boolean homeConsultationAvailability;
     @SerializedName("common")
     @Expose
-    private Boolean common;
+    public Boolean common;
     @SerializedName("alternate_medicine")
     @Expose
-    private Boolean alternateMedicine;
+    public Boolean alternateMedicine;
     @SerializedName("links")
     @Expose
-    private List<LinkModel> links = null;
+    public List<LinkModel> links = null;
 }

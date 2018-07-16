@@ -5,14 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class SymptomResponseModel {
-    @SerializedName("meta")
-    @Expose
-    public MetaModel meta;
+public class SymptomResponseModel extends ServerResponseBaseModel{
     @SerializedName("data")
     @Expose
     public List<SymptomModel> data;
-    @SerializedName("links")
-    @Expose
-    public List<LinkModel> pagelinks;
 }

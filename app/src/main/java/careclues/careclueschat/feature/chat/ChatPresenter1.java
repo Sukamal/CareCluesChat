@@ -18,6 +18,8 @@ import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
+import careclues.careclueschat.model.HealthTopicModel;
+import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
@@ -46,7 +48,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     private CcRocketChatClient api;
     private CcChatRoom chatRoom;
-    private UserProfileResponseModel userProfileModel = null;
+    private UserProfileResponseModel userProfileModel;
+    private HealthTopicResponseModel healthTopicResponseModel;
 
 
 
@@ -277,7 +280,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     public void enableInputControlOptions(ServerMessageModel messageModel){
-//        if(messageModel != null){
+        if(messageModel != null){
 //            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
 //                getFamilyMember();
 //            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
@@ -287,11 +290,15 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
 //                getSymptoms();
 //            }
-//        }
+//            else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
+//                displayTextInput();
+//            }else{
+//                displayTextInput();
+//            }
 
-//        getFamilyMember();
-        displayTextInput();
-
+//            getFamilyMember();
+            getHealthTopic();
+        }
     }
 
 
@@ -322,6 +329,24 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     private void getHealthTopic(){
+
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.getHealthTopics(new ServiceCallBack<HealthTopicResponseModel>(HealthTopicResponseModel.class) {
+            @Override
+            public void onSuccess(HealthTopicResponseModel response) {
+                healthTopicResponseModel = response;
+                view.displayHealthTopic(healthTopicResponseModel.data);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                familyMemberResponseModel = null;
+            }
+        });
+
+
 
     }
 

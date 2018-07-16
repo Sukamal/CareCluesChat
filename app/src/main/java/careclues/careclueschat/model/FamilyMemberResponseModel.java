@@ -5,14 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class FamilyMemberResponseModel {
-    @SerializedName("meta")
-    @Expose
-    public MetaModel meta;
+public class FamilyMemberResponseModel extends ServerResponseBaseModel{
     @SerializedName("data")
     @Expose
     public List<DataModel> data;
-    @SerializedName("links")
-    @Expose
-    public List<LinkModel> pagelinks;
 }
