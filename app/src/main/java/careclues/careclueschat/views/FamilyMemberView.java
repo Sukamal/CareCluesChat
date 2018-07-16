@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -126,26 +127,16 @@ public class FamilyMemberView extends RelativeLayout {
         @Override
         public ChatFamilyMemberAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.list_row_ans, parent, false);
+                    .inflate(R.layout.list_row_familly_member, parent, false);
             ChatFamilyMemberAdapter.MyViewHolder viewHolder = new ChatFamilyMemberAdapter.MyViewHolder(view);
             return viewHolder;
         }
 
         @Override
         public void onBindViewHolder(@NonNull ChatFamilyMemberAdapter.MyViewHolder holder, final int position) {
-            final PatientModel ansModel = memberList.get(position);
+            final PatientModel patientModel = memberList.get(position);
             holder.position = position;
-
-            holder.llAnsItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(itemClickListener != null){
-                        itemClickListener.onItemClick(ansModel);
-                    }
-                }
-            });
-
-
+            holder.tvMemberName.setText(patientModel.displayName);
         }
 
         @Override
@@ -154,14 +145,24 @@ public class FamilyMemberView extends RelativeLayout {
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView tvAns;
+
+            ImageView ivMember;
+            TextView tvMemberName;
             int position;
-            LinearLayout llAnsItem;
 
             public MyViewHolder(View itemView) {
                 super(itemView);
-                llAnsItem = (LinearLayout) itemView.findViewById(R.id.ll_ans_item);
-                tvAns = (TextView) itemView.findViewById(R.id.tv_ans);
+                ivMember = (ImageView) itemView.findViewById(R.id.ivMember);
+                tvMemberName = (TextView) itemView.findViewById(R.id.tvMemberName);
+
+                itemView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(itemClickListener != null){
+                            itemClickListener.onItemClick(memberList.get(position));
+                        }
+                    }
+                });
 
             }
         }

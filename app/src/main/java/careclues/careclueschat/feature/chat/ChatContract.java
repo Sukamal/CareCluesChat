@@ -20,6 +20,7 @@ public interface ChatContract {
         public void displyTypingStatus(String message);
         public void onConnectionFaild(int errorType);
         public void displayFamilyMember(List<DataModel> data);
+        public void displayTextInput();
     }
 
     interface presenter {

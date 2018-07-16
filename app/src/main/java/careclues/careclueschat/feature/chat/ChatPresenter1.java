@@ -289,11 +289,15 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //            }
 //        }
 
-        getFamilyMember();
+//        getFamilyMember();
+        displayTextInput();
 
     }
 
 
+    private void displayTextInput(){
+        view.displayTextInput();
+    }
 
     private void getFamilyMember(){
         if(userProfileModel != null){
@@ -315,6 +319,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
             });
         }
     }
+
 
     private void getHealthTopic(){
 

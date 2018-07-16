@@ -163,6 +163,12 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     }
 
     @Override
+    public void displayTextInput() {
+        dispayTemplet("text");
+
+    }
+
+    @Override
     public void displayToastMessage(String message) {
 
     }
