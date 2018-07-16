@@ -46,6 +46,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     private CcRocketChatClient api;
     private CcChatRoom chatRoom;
+    private UserProfileResponseModel userProfileModel = null;
+
 
 
 
@@ -57,8 +59,11 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         getLoginUserDetails(userId);
-        getUserProfile(userId);
-
+        if(CareCluesChatApplication.userProfile != null){
+            userProfileModel = CareCluesChatApplication.userProfile;
+        }else{
+            userProfileModel =  getUserProfile(userId);
+        }
 
     }
 
@@ -327,9 +332,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     private RestApiExecuter apiExecuter;
-    private UserProfileResponseModel userProfileModel = null;
     private FamilyMemberResponseModel familyMemberResponseModel = null;
-
     public UserProfileResponseModel getUserProfile(String userId){
         apiExecuter = RestApiExecuter.getInstance();
 
@@ -338,7 +341,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
             public void onSuccess(UserProfileResponseModel response) {
                 userProfileModel = response;
                 CareCluesChatApplication.userProfile = userProfileModel;
-//                getUserFamilyMember();
             }
 
             @Override
@@ -348,6 +350,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
         return userProfileModel;
     }
+
 
 
     public enum ControlType {

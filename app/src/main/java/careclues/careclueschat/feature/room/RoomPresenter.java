@@ -19,6 +19,7 @@ import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.model.RoomMemberModel;
 import careclues.careclueschat.model.SetTopicResponseModel;
+import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
@@ -209,6 +210,7 @@ public class RoomPresenter implements RoomContract.presenter,
             public void onSuccess(LoginResponse response) {
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(), response.getData().getAuthToken());
                 getLoginUserDetails(response.getData().getUserId());
+                getUserProfile(response.getData().getUserId());
                 handler.sendEmptyMessage(LOG_IN_SUCCESS);
             }
 
@@ -469,5 +471,24 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onTyping(String roomId, String user, Boolean istyping) {
         view.onUserTyping(roomId, user, istyping);
+    }
+
+    private UserProfileResponseModel userProfileModel = null;
+    public UserProfileResponseModel getUserProfile(String userId){
+        apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.getUserProfile(userId, new ServiceCallBack<UserProfileResponseModel>(UserProfileResponseModel.class) {
+            @Override
+            public void onSuccess(UserProfileResponseModel response) {
+                userProfileModel = response;
+                CareCluesChatApplication.userProfile = userProfileModel;
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                userProfileModel = null;
+            }
+        });
+        return userProfileModel;
     }
 }

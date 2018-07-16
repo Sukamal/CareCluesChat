@@ -260,12 +260,9 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
 
     private void dispayTemplet(String type){
-//        for(int i=0; i < llInputLayout.getChildCount(); i++){
-//            llInputLayout.getChildAt(i).setVisibility(View.GONE);
-//        }
-        inputView.setVisibility(View.GONE);
-        viewFamilymember.setVisibility(View.GONE);
-        rlAnswerContainer.setVisibility(View.GONE);
+        for(int i=0; i < llInputLayout.getChildCount(); i++){
+            llInputLayout.getChildAt(i).setVisibility(View.GONE);
+        }
 
         if(type.equals("text")){
             inputView.setVisibility(View.VISIBLE);
