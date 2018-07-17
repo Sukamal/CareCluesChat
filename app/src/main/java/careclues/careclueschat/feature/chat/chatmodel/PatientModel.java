@@ -15,7 +15,9 @@ public class PatientModel {
     public String gender;
     @SerializedName("link")
     public String lLink;
+    @SerializedName("age")
+    public int age;
 
-    @Ignore
+//    @Ignore
     public String displayName;
 }

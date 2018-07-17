@@ -19,11 +19,17 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.feature.chat.AnswerSelectionListner;
 import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.model.DataModel;
@@ -39,7 +45,7 @@ public class FamilyMemberView extends RelativeLayout {
     private Context context;
     private List<PatientModel> patientList;
     private ChatFamilyMemberAdapter chatFamilyMemberAdapter;
-
+    private AnswerSelectionListner answerSelectionListner;
 
 
     public FamilyMemberView(Context context) {
@@ -53,6 +59,10 @@ public class FamilyMemberView extends RelativeLayout {
     public FamilyMemberView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
+    }
+
+    public void setAnsSelectionListner(AnswerSelectionListner listner){
+        this.answerSelectionListner = listner;
     }
 
     private void initView(Context context){
@@ -93,6 +103,11 @@ public class FamilyMemberView extends RelativeLayout {
             patientModel.gender = dataModel.gender;
             patientModel.self = false;
             patientModel.lLink = dataModel.getLink("text_consultations");
+            try {
+                patientModel.age = getAge(dataModel.dateOfBirth);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             patientList.add(patientModel);
         }
     }
@@ -106,6 +121,37 @@ public class FamilyMemberView extends RelativeLayout {
         displayFamilyMember();
     }
 
+    public static int getAge(String dateofbirth) throws Exception {
+
+        int age = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar dob = Calendar.getInstance();
+        dob.setTime(sdf.parse(dateofbirth));
+
+        Calendar today = Calendar.getInstance();
+
+        int curYear = today.get(Calendar.YEAR);
+        int dobYear = dob.get(Calendar.YEAR);
+
+        age = curYear - dobYear;
+
+        // if dob is month or day is behind today's month or day
+        // reduce age by 1
+        int curMonth = today.get(Calendar.MONTH);
+        int dobMonth = dob.get(Calendar.MONTH);
+        if (dobMonth > curMonth) { // this year can't be counted!
+            age--;
+        } else if (dobMonth == curMonth) { // same month? check for day
+            int curDay = today.get(Calendar.DAY_OF_MONTH);
+            int dobDay = dob.get(Calendar.DAY_OF_MONTH);
+            if (dobDay > curDay) { // this year can't be counted!
+                age--;
+            }
+        }
+
+        return age;
+    }
+
     private void displayFamilyMember(){
         chatFamilyMemberAdapter = new ChatFamilyMemberAdapter(context,patientList);
         rvFamillyMember.setAdapter(chatFamilyMemberAdapter);
@@ -113,9 +159,9 @@ public class FamilyMemberView extends RelativeLayout {
             @Override
             public void onItemClick(Object value) {
                 PatientModel patientModel = (PatientModel) value;
-                patientModel.displayName = null;
-                String jsonObject = new Gson().toJson(patientModel);
-                Log.v("PATIENT : ",jsonObject);
+                if(answerSelectionListner != null){
+                    answerSelectionListner.onPatientSelected(patientModel);
+                }
             }
         });
     }

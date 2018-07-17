@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +28,15 @@ import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
+import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.HealthTopicModel;
+import careclues.careclueschat.model.SymptomModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.views.AnswerView;
@@ -39,7 +44,8 @@ import careclues.careclueschat.views.FamilyMemberView;
 import careclues.careclueschat.views.MessageInputView;
 
 public class ChatFragment extends BaseFragment implements ChatContract.view,RoomMainActivity.performChatFragmentAction,
-        ChatMessageAdapter.InputTypeListner{
+        ChatMessageAdapter.InputTypeListner,
+        AnswerSelectionListner{
 
     private String roomId;
     private String userId;
@@ -63,6 +69,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     public FamilyMemberView viewFamilymember;
     @BindView(R.id.view_answer)
     public AnswerView view_answer;
+    private ChatMessageModel lastMessage;
 
     private View view;
 
@@ -144,6 +151,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @Override
     public void displayFamilyMember(List<DataModel> data) {
         viewFamilymember.addMembers(data);
+        viewFamilymember.setAnsSelectionListner(this);
         dispayTemplet("familymember");
     }
 
@@ -158,9 +166,23 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     }
 
     @Override
+    public void displaySymptomp(List<SymptomModel> data) {
+        List<ChatAnsModel> ansList = new ArrayList<>();
+        for(SymptomModel symptom : data){
+            ansList.add(new ChatAnsModel(symptom.name,false));
+        }
+        view_answer.setAnswerList(ansList,true);
+        dispayTemplet("qsans");
+    }
+
+    @Override
     public void displayTextInput() {
         dispayTemplet("text");
+    }
 
+    @Override
+    public void displayNothing() {
+        dispayTemplet("na");
     }
 
     @Override
@@ -265,6 +287,37 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @OnClick(R.id.nxt)
     public void nextMessage(){
         Log.v("NEXT MSG : ",testmsglist.get(count).text);
+        lastMessage = testmsglist.get(count);
+        onInputType(testmsglist.get(count).messageModel);
         count++;
     }
+
+
+    @Override
+    public void onPatientSelected(PatientModel patientModel) {
+        String replyMsgId = lastMessage.messageModel.id;
+        String content = (patientModel.self)?"I am consulting for myself":"I am consulting for my " + patientModel.displayName;
+        patientModel.displayName = null;
+        populetSendMessage(replyMsgId,content,patientModel);
+    }
+
+
+    private void populetSendMessage(String replyMsgId,String content,PatientModel patientModel){
+        ReplyMessageModel replyMessageModel = new ReplyMessageModel();
+
+        replyMessageModel.type = "reply";
+        if(replyMsgId != null)
+            replyMessageModel.replyToQuestionId = replyMsgId;
+        if(content != null)
+            replyMessageModel.content = content;
+        if(patientModel != null)
+            replyMessageModel.patient = patientModel;
+
+
+        String jsonObject = new Gson().toJson(replyMessageModel);
+        Log.v("PATIENT : ",jsonObject);
+
+
+    }
+
 }

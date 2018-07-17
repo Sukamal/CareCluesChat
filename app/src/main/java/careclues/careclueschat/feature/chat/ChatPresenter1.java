@@ -22,6 +22,7 @@ import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
+import careclues.careclueschat.model.SymptomResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
@@ -50,7 +51,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     private CcChatRoom chatRoom;
     private UserProfileResponseModel userProfileModel;
     private HealthTopicResponseModel healthTopicResponseModel;
-
+    private SymptomResponseModel symptomResponseModel;
 
 
 
@@ -280,27 +281,29 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     public void enableInputControlOptions(ServerMessageModel messageModel){
-        if(messageModel != null){
-//            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
-//                getFamilyMember();
-//            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
-//                getHealthTopic();
-//            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
-//                getPrimarySymptom();
-//            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
-//                getSymptoms();
-//            }
-//            else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
-//                displayTextInput();
-//            }else{
-//                displayTextInput();
-//            }
-
-//            getFamilyMember();
-            getHealthTopic();
+        if(messageModel != null && messageModel.control != null){
+            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
+                getFamilyMember();
+            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
+                getHealthTopic();
+            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
+                getPrimarySymptom();
+            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
+                getSymptoms();
+            }
+            else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
+                displayTextInput();
+            }else{
+                displayTextInput();
+            }
+        }else{
+            displayBlank();
         }
     }
 
+    private void displayBlank(){
+        view.displayNothing();
+    }
 
     private void displayTextInput(){
         view.displayTextInput();
@@ -329,6 +332,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     private void getHealthTopic(){
+        String url = userProfileModel.data.getLink("dependants");
 
         if(apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
@@ -352,10 +356,41 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     private void getPrimarySymptom(){
 
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        String url = "https://tickleapi.careclues.com/api/v1/health_topics/63/symptoms";
+        apiExecuter.getServerResponse(url, new ServiceCallBack<SymptomResponseModel>(SymptomResponseModel.class) {
+            @Override
+            public void onSuccess(SymptomResponseModel response) {
+                symptomResponseModel = response;
+                view.displaySymptomp(symptomResponseModel.data);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                symptomResponseModel = null;
+            }
+        });
     }
 
     private void getSymptoms(){
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
 
+        String url = "https://tickleapi.careclues.com/api/v1/health_topics/63/symptoms?exclude[id]=2";
+        apiExecuter.getServerResponse(url, new ServiceCallBack<SymptomResponseModel>(SymptomResponseModel.class) {
+            @Override
+            public void onSuccess(SymptomResponseModel response) {
+                symptomResponseModel = response;
+                view.displaySymptomp(symptomResponseModel.data);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                symptomResponseModel = null;
+            }
+        });
     }
 
 

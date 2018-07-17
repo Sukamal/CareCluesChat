@@ -13,11 +13,11 @@ public class SymptomModel {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    public Integer id;
     @SerializedName("name")
     @Expose
-    private String name;
+    public String name;
     @SerializedName("links")
     @Expose
-    private List<LinkModel> links = null;
+    public List<LinkModel> links = null;
 }

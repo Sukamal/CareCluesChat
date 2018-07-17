@@ -9,6 +9,7 @@ import careclues.careclueschat.feature.common.CommonViewInterface;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.PostsModel;
+import careclues.careclueschat.model.SymptomModel;
 import careclues.careclueschat.network.ServiceCallBack;
 
 public interface ChatContract {
@@ -22,6 +23,8 @@ public interface ChatContract {
         public void onConnectionFaild(int errorType);
         public void displayFamilyMember(List<DataModel> data);
         public void displayHealthTopic(List<HealthTopicModel> data);
+        public void displaySymptomp(List<SymptomModel> data);
+        public void displayNothing();
         public void displayTextInput();
     }
 
