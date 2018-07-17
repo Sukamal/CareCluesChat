@@ -12,15 +12,18 @@ public class AppConstant {
 
 //    public static final String USER_NAME = "sukamal-1035";
 //    public static final String PASSWORD = "EskSolYUXYobtDhLPEvTwxd";
-//    public static final String USER_NAME = "sachu-985";
-//    public static final String PASSWORD = "XVQuexlHYvphcWYgtyLZLtf";
-    public static final String USER_NAME = "dipa-1291";
-    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
+    public static final String USER_NAME = "sachu-985";
+    public static final String PASSWORD = "XVQuexlHYvphcWYgtyLZLtf";
+//    public static final String USER_NAME = "dipa-1291";
+//    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
 
     public static final String SOCKET_URL = "wss://ticklechat.careclues.com/websocket";
-
-
     public static long ADD_DISPLAY_THRESHOLD = 60000 * 1;
+
+    public static String getUserId(){
+        String[] user = AppConstant.USER_NAME.split("-");
+        return  user[1];
+    }
 
     public enum Preferences {
         IS_LOADED,

@@ -70,7 +70,6 @@ public class FamilyMemberView extends RelativeLayout {
         inflate(context, R.layout.view_family_member,this);
         rvFamillyMember = (RecyclerView) findViewById(R.id.rvFamillyMember);
         initAnsRecycleView();
-        createSelfObject();
     }
 
     private void initAnsRecycleView() {
@@ -113,6 +112,7 @@ public class FamilyMemberView extends RelativeLayout {
     }
 
     public void addMembers(List<DataModel> dataModels){
+        createSelfObject();
         if(dataModels != null && dataModels.size() > 0){
             for(DataModel dataModel : dataModels){
                 addMember(dataModel);

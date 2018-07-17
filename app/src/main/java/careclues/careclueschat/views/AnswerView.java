@@ -24,11 +24,15 @@ import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.feature.chat.AnswerSelectionListner;
 import careclues.careclueschat.feature.chat.ChatAnsAdapter;
+import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.HealthTopicModel;
+import careclues.careclueschat.model.SymptomModel;
 
 /**
  * Created by SukamalD on 7/15/2018.
@@ -47,8 +51,10 @@ public class AnswerView extends RelativeLayout {
     private List<ChatAnsModel> lessAnsList;
     private ChatAnsAdapter chatAnsAdapter;
     private ChatAnsAdapter moreChatAnsAdapter;
-    private List<String> selectedAnswerList;
+    private List<ChatAnsModel> selectedAnswerList;
     private boolean isMultiSelect;
+    private AnswerSelectionListner answerSelectionListner;
+    private ChatPresenter1.ControlType controlType;
 
 
 
@@ -65,9 +71,18 @@ public class AnswerView extends RelativeLayout {
         initView(context);
     }
 
-    public void setAnswerList(List<ChatAnsModel> answers, boolean isMultiSelect){
+    public void setAnsSelectionListner(AnswerSelectionListner listner){
+        this.answerSelectionListner = listner;
+    }
+
+    public void removeAllListner(){
+        this.answerSelectionListner = null;
+    }
+
+    public void setAnswerList(List<ChatAnsModel> answers, ChatPresenter1.ControlType type,  boolean isMultiSelect){
         this.answers = answers;
         this.isMultiSelect = isMultiSelect;
+        this.controlType = type;
 
         if(answers.size() > 5){
             lessAnsList = new ArrayList<>();
@@ -81,6 +96,12 @@ public class AnswerView extends RelativeLayout {
         }
         displayAnsList();
 
+    }
+
+    private void resetlist(){
+        this.answers = null;
+        this.lessAnsList = null;
+        this.selectedAnswerList = null;
     }
 
     private void initView(Context context){
@@ -136,9 +157,9 @@ public class AnswerView extends RelativeLayout {
                     displayMoreAnsList();
                 }else{
                     if(ansModel.isSelected){
-                        selectedAnswerList.add(ansModel.answer);
+                        selectedAnswerList.add(ansModel);
                     }else{
-                        selectedAnswerList.remove(ansModel.answer);
+                        selectedAnswerList.remove(ansModel);
                     }
                 }
             }
@@ -153,9 +174,9 @@ public class AnswerView extends RelativeLayout {
             public void onItemClick(Object value) {
                 ChatAnsModel ansModel = (ChatAnsModel) value;
                 if(ansModel.isSelected){
-                    selectedAnswerList.add(ansModel.answer);
+                    selectedAnswerList.add(ansModel);
                 }else{
-                    selectedAnswerList.remove(ansModel.answer);
+                    selectedAnswerList.remove(ansModel);
                 }
             }
         });
@@ -165,14 +186,22 @@ public class AnswerView extends RelativeLayout {
     private void displaySelectedAnswers(){
         String selectedAnswers = "";
         if(selectedAnswerList != null){
-            for(String ans : selectedAnswerList){
+            for(ChatAnsModel ans : selectedAnswerList){
                 if(selectedAnswers != null && selectedAnswers.length()>0){
                     selectedAnswers = selectedAnswers + "\n";
                 }
-                selectedAnswers = selectedAnswers + ans;
+                selectedAnswers = selectedAnswers + ans.answer;
+            }
+            Toast.makeText(getContext(), selectedAnswers, Toast.LENGTH_SHORT).show();
+
+            if(controlType == ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT){
+                answerSelectionListner.onHealthTopicSelected((HealthTopicModel) selectedAnswerList.get(0).ansObject);
+            }else if(controlType == ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT){
+                answerSelectionListner.onSymptomSelected((SymptomModel) selectedAnswerList.get(0).ansObject);
+            }else if(controlType == ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT){
+                answerSelectionListner.onSymptomSelected((SymptomModel) selectedAnswerList.get(0).ansObject);
             }
 
-            Toast.makeText(getContext(), selectedAnswers, Toast.LENGTH_SHORT).show();
 
         }
     }

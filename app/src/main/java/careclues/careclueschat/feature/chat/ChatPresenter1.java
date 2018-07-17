@@ -18,7 +18,6 @@ import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
-import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
@@ -29,6 +28,7 @@ import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
+import careclues.careclueschat.util.AppConstant;
 import careclues.rocketchat.CcChatRoom;
 import careclues.rocketchat.CcRocketChatClient;
 import careclues.rocketchat.callback.CcMessageCallback;
@@ -66,7 +66,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
         if(CareCluesChatApplication.userProfile != null){
             userProfileModel = CareCluesChatApplication.userProfile;
         }else{
-            userProfileModel =  getUserProfile(userId);
+            userProfileModel =  getUserProfile(AppConstant.getUserId());
         }
 
     }
@@ -287,9 +287,9 @@ public class ChatPresenter1 implements ChatContract.presenter {
             }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
                 getHealthTopic();
             }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
-                getPrimarySymptom();
+                getPrimarySymptom(messageModel.categoryModel.link);
             }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
-                getSymptoms();
+                getSymptoms(messageModel.categoryModel.link,messageModel.symptomModel.id);
             }
             else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
                 displayTextInput();
@@ -332,8 +332,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     private void getHealthTopic(){
-        String url = userProfileModel.data.getLink("dependants");
-
         if(apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
@@ -354,17 +352,17 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     }
 
-    private void getPrimarySymptom(){
+    private void getPrimarySymptom(String urlLink){
 
         if(apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-        String url = "https://tickleapi.careclues.com/api/v1/health_topics/63/symptoms";
+        String url = urlLink + "/symptoms";
         apiExecuter.getServerResponse(url, new ServiceCallBack<SymptomResponseModel>(SymptomResponseModel.class) {
             @Override
             public void onSuccess(SymptomResponseModel response) {
                 symptomResponseModel = response;
-                view.displaySymptomp(symptomResponseModel.data);
+                view.displayPrimarySymptom(symptomResponseModel.data);
             }
 
             @Override
@@ -374,16 +372,21 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
     }
 
-    private void getSymptoms(){
+    private void getSymptoms(String urlLink,int id){
         if(apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-        String url = "https://tickleapi.careclues.com/api/v1/health_topics/63/symptoms?exclude[id]=2";
+        String url = urlLink;
+        if(id != 0){
+            url = url + "/symptoms?exclude[id]="+id;
+
+        }
+
         apiExecuter.getServerResponse(url, new ServiceCallBack<SymptomResponseModel>(SymptomResponseModel.class) {
             @Override
             public void onSuccess(SymptomResponseModel response) {
                 symptomResponseModel = response;
-                view.displaySymptomp(symptomResponseModel.data);
+                view.displaySymptom(symptomResponseModel.data);
             }
 
             @Override

@@ -210,7 +210,7 @@ public class RoomPresenter implements RoomContract.presenter,
             public void onSuccess(LoginResponse response) {
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(), response.getData().getAuthToken());
                 getLoginUserDetails(response.getData().getUserId());
-                getUserProfile("1291");
+                getUserProfile(AppConstant.getUserId());
                 handler.sendEmptyMessage(LOG_IN_SUCCESS);
             }
 

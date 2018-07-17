@@ -69,9 +69,6 @@ public class DataModel {
     public String relationship;
 
 
-
-
-
     public String getLink(String key){
         String retVal = null;
         if(links != null){

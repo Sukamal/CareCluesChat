@@ -23,7 +23,8 @@ public interface ChatContract {
         public void onConnectionFaild(int errorType);
         public void displayFamilyMember(List<DataModel> data);
         public void displayHealthTopic(List<HealthTopicModel> data);
-        public void displaySymptomp(List<SymptomModel> data);
+        public void displayPrimarySymptom(List<SymptomModel> data);
+        public void displaySymptom(List<SymptomModel> data);
         public void displayNothing();
         public void displayTextInput();
     }

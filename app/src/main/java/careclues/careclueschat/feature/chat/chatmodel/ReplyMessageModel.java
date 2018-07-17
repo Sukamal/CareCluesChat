@@ -3,6 +3,9 @@ package careclues.careclueschat.feature.chat.chatmodel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import careclues.careclueschat.model.HealthTopicModel;
+import careclues.careclueschat.model.SymptomModel;
+
 public class ReplyMessageModel {
     @SerializedName("replyToQuestionId")
     @Expose
@@ -16,4 +19,12 @@ public class ReplyMessageModel {
     @SerializedName("patient")
     @Expose
     public PatientModel patient;
+    @SerializedName("category")
+    @Expose
+    public CategoryModel categoryModel;
+    @SerializedName("symptom")
+    @Expose
+    public SymptomModel symptomModel;
+
+
 }
