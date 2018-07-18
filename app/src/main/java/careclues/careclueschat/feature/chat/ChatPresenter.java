@@ -220,6 +220,11 @@ public class ChatPresenter implements ChatContract.presenter,
     }
 
     @Override
+    public void sendMessageViaApi(String msg) {
+
+    }
+
+    @Override
     public void uploadFile(File file,String desc) {
 //        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
 //            @Override

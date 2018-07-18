@@ -14,4 +14,7 @@ public class MessageResponseModel {
     public List<MessageModel> messages = null;
     @SerializedName("success")
     public Boolean success;
+
+    @SerializedName("message")
+    public MessageModel message = null;
 }

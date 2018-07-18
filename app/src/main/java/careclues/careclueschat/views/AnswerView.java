@@ -75,11 +75,14 @@ public class AnswerView extends RelativeLayout {
         this.answerSelectionListner = listner;
     }
 
+
     public void removeAllListner(){
         this.answerSelectionListner = null;
     }
 
     public void setAnswerList(List<ChatAnsModel> answers, ChatPresenter1.ControlType type,  boolean isMultiSelect){
+
+//        resetlist();
         this.answers = answers;
         this.isMultiSelect = isMultiSelect;
         this.controlType = type;
@@ -102,6 +105,8 @@ public class AnswerView extends RelativeLayout {
         this.answers = null;
         this.lessAnsList = null;
         this.selectedAnswerList = null;
+        selectedAnswerList = new ArrayList<>();
+
     }
 
     private void initView(Context context){
@@ -200,6 +205,8 @@ public class AnswerView extends RelativeLayout {
                 answerSelectionListner.onSymptomSelected((SymptomModel) selectedAnswerList.get(0).ansObject);
             }else if(controlType == ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT){
                 answerSelectionListner.onSymptomSelected((SymptomModel) selectedAnswerList.get(0).ansObject);
+            }else if(controlType == ChatPresenter1.ControlType.CONTROL_SELECT){
+                answerSelectionListner.onOptionSelected((String)selectedAnswerList.get(0).ansObject);
             }
 
 

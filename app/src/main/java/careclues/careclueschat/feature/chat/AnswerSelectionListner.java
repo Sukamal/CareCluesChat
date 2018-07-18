@@ -11,5 +11,7 @@ public interface AnswerSelectionListner {
     public void onPatientSelected(PatientModel patientModel);
     public void onHealthTopicSelected(HealthTopicModel healthTopicModel);
     public void onSymptomSelected(SymptomModel symptomModel);
+    public void onOptionSelected(String option);
+    public void onSimpleTextSelected(String msg);
 }
 

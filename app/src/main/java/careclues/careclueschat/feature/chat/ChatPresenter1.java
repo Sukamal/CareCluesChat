@@ -19,6 +19,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.HealthTopicResponseModel;
+import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.SymptomResponseModel;
@@ -31,6 +32,7 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.util.AppConstant;
 import careclues.rocketchat.CcChatRoom;
 import careclues.rocketchat.CcRocketChatClient;
+import careclues.rocketchat.CcUtils;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.common.CcRocketChatException;
 import careclues.rocketchat.models.CcBaseRoom;
@@ -133,6 +135,23 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
 
 //        getUserProfile("985");
+    }
+
+    @Override
+    public void sendMessageViaApi(String msg) {
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+        apiExecuter.sendNewMessage(CcUtils.shortUUID(),roomId,msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+            @Override
+            public void onSuccess(MessageResponseModel response) {
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
     }
 
     @Override
@@ -290,6 +309,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 getPrimarySymptom(messageModel.categoryModel.link);
             }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
                 getSymptoms(messageModel.categoryModel.link,messageModel.symptomModel.id);
+            }else if(messageModel.control.equals(ControlType.CONTROL_SELECT.get())){
+                view.displayOptions(messageModel.options);
             }
             else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
                 displayTextInput();
@@ -395,8 +416,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
             }
         });
     }
-
-
 
 
     private RestApiExecuter apiExecuter;

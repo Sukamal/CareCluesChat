@@ -25,6 +25,7 @@ public interface ChatContract {
         public void displayHealthTopic(List<HealthTopicModel> data);
         public void displayPrimarySymptom(List<SymptomModel> data);
         public void displaySymptom(List<SymptomModel> data);
+        public void displayOptions(List<String> data);
         public void displayNothing();
         public void displayTextInput();
     }
@@ -32,6 +33,7 @@ public interface ChatContract {
     interface presenter {
         public void loadData(int count);
         public void sendMessage(String msg);
+        public void sendMessageViaApi(String msg);
         public void uploadFile(File file,String desc);
         public void reconnectToServer();
         public void disconnectToServer();

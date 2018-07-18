@@ -30,6 +30,7 @@ import java.util.List;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.chat.AnswerSelectionListner;
+import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.model.DataModel;
@@ -64,6 +65,7 @@ public class FamilyMemberView extends RelativeLayout {
     public void setAnsSelectionListner(AnswerSelectionListner listner){
         this.answerSelectionListner = listner;
     }
+
 
     private void initView(Context context){
         this.context = context;

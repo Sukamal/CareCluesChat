@@ -9,7 +9,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import butterknife.OnClick;
 import careclues.careclueschat.R;
+import careclues.careclueschat.feature.chat.AnswerSelectionListner;
+import careclues.careclueschat.feature.chat.ChatPresenter1;
 
 public class MessageInputView extends RelativeLayout implements View.OnClickListener,TextWatcher{
 
@@ -17,6 +20,8 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
     private EditText etMessage;
     private CharSequence input;
     private ImageButton ibAttachement;
+    private AnswerSelectionListner answerSelectionListner;
+
 
     public MessageInputView(Context context) {
         super(context);
@@ -33,6 +38,9 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
         initView(context);
     }
 
+    public void setAnsSelectionListner(AnswerSelectionListner listner){
+        this.answerSelectionListner = listner;
+    }
 
     private void initView(Context context){
 
@@ -63,8 +71,9 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
 
     }
 
-    @Override
     public void onClick(View v) {
-
+        if(answerSelectionListner != null){
+            answerSelectionListner.onSimpleTextSelected(etMessage.getText().toString());
+        }
     }
 }
