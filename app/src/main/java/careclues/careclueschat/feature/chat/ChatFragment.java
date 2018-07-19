@@ -342,6 +342,14 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         onInputType(testmsglist.get(count).messageModel);
         count++;
     }
+    @OnClick(R.id.prev)
+    public void prevMessage(){
+        count--;
+        Log.v("NEXT MSG : ",testmsglist.get(count).text);
+        lastMessage = testmsglist.get(count);
+        onInputType(testmsglist.get(count).messageModel);
+
+    }
 
 
     @Override
@@ -407,7 +415,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
 
         String jsonObject = new Gson().toJson(replyMessageModel);
         Log.v("NEW_MESSAGE : ",jsonObject);
-//        presenter.sendMessageViaApi(jsonObject);
+        presenter.sendMessageViaApi(jsonObject);
 
 
     }

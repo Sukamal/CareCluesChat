@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -47,6 +48,7 @@ public class FamilyMemberView extends RelativeLayout {
     private List<PatientModel> patientList;
     private ChatFamilyMemberAdapter chatFamilyMemberAdapter;
     private AnswerSelectionListner answerSelectionListner;
+    private LinearLayout llNewMember;
 
 
     public FamilyMemberView(Context context) {
@@ -71,7 +73,18 @@ public class FamilyMemberView extends RelativeLayout {
         this.context = context;
         inflate(context, R.layout.view_family_member,this);
         rvFamillyMember = (RecyclerView) findViewById(R.id.rvFamillyMember);
+        llNewMember = (LinearLayout) findViewById(R.id.llNewMember);
+        initClickListner();
         initAnsRecycleView();
+    }
+    
+    private void initClickListner(){
+        llNewMember.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Add New Member", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initAnsRecycleView() {
