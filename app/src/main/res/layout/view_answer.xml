@@ -3,6 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <android.support.v7.widget.SearchView
+        android:id="@+id/sv_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v7.widget.SearchView>
+
+    <RelativeLayout
+        android:layout_below="@id/sv_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+
     <ImageButton
         android:id="@+id/ib_submit_ans"
         android:layout_width="wrap_content"
@@ -36,5 +48,5 @@
         android:layout_toLeftOf="@id/ib_submit_ans"
         android:scrollbarSize="2dp" />
 
-
+    </RelativeLayout>
 </RelativeLayout>

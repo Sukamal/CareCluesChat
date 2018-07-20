@@ -73,11 +73,11 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
 
-    compile "com.squareup.picasso:picasso:2.4.0"
-    compile 'com.mikhaellopez:circularimageview:3.0.2'
+    implementation "com.squareup.picasso:picasso:2.4.0"
+    implementation 'com.mikhaellopez:circularimageview:3.0.2'
+    implementation 'com.github.stfalcon:chatkit:0.2.2'
 
-
-
-
-    compile 'com.github.stfalcon:chatkit:0.2.2'
+    implementation 'com.hbb20:ccp:2.2.2'
+    implementation 'com.weiwangcn.betterspinner:library-material:1.1.0'
+    implementation "com.mobsandgeeks:android-saripaar:2.0.3"
 }

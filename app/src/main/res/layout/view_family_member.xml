@@ -1,36 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="horizontal"-->
+    <!--android:padding="@dimen/margin_10">-->
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/llNewMember"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--android:background="@drawable/rounded_corner_border"-->
+        <!--android:layout_marginRight="@dimen/margin_10">-->
+
+        <!--<ImageView-->
+            <!--android:layout_width="35dp"-->
+            <!--android:layout_height="35dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:src="@drawable/user"/>-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:text="New" />-->
+
+    <!--</LinearLayout>-->
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/rvFamillyMember"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:scrollbarSize="2dp"-->
+        <!--android:layout_toLeftOf="@id/ib_submit_ans"-->
+        <!--android:layout_height="wrap_content"/>-->
+
+<!--</LinearLayout>-->
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:padding="@dimen/margin_10">
 
+    <!-- <include layout="@layout/activity_add_family_member"
+         android:id="@+id/ll_add_new_member"/>
+ -->
     <LinearLayout
-        android:id="@+id/llNewMember"
-        android:layout_width="wrap_content"
+        android:id="@+id/ll_view_member"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/rounded_corner_border"
-        android:layout_marginRight="@dimen/margin_10">
+        android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="center"
-            android:src="@drawable/user"/>
-
-        <TextView
+        <LinearLayout
+            android:id="@+id/llNewMember"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="New" />
+            android:layout_marginRight="@dimen/margin_10"
+            android:background="@drawable/rounded_corner_border"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:src="@drawable/user" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="New" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvFamillyMember"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/ib_submit_ans"
+            android:scrollbarSize="2dp" />
 
     </LinearLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvFamillyMember"
-        android:layout_width="match_parent"
-        android:scrollbarSize="2dp"
-        android:layout_toLeftOf="@id/ib_submit_ans"
-        android:layout_height="wrap_content"/>
-
-</LinearLayout>
+</RelativeLayout>

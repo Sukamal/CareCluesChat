@@ -85,12 +85,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             holder.tvLeft.setText(chatMessageModel.messageModel.content);
         }
 
-//        if(position == (messageList.size()-1)){
-//            if(inputTypeListner != null) {
-//                inputTypeListner.onInputType(chatMessageModel.messageModel);
+        if(position == (messageList.size()-1)){
+            if(inputTypeListner != null) {
+                inputTypeListner.onInputType(chatMessageModel.messageModel);
 //                Toast.makeText(context, "LAST type is : " + chatMessageModel.messageModel.type, Toast.LENGTH_SHORT).show();
-//            }
-//        }
+            }
+        }
     }
 
     @Override

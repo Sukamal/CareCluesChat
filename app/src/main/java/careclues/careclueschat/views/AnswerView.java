@@ -1,36 +1,25 @@
 package careclues.careclueschat.views;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import careclues.careclueschat.R;
-import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.chat.AnswerSelectionListner;
 import careclues.careclueschat.feature.chat.ChatAnsAdapter;
 import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
-import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
-import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.SymptomModel;
 
@@ -55,6 +44,7 @@ public class AnswerView extends RelativeLayout {
     private boolean isMultiSelect;
     private AnswerSelectionListner answerSelectionListner;
     private ChatPresenter1.ControlType controlType;
+    private SearchView svSearch;
 
 
 
@@ -82,7 +72,7 @@ public class AnswerView extends RelativeLayout {
 
     public void setAnswerList(List<ChatAnsModel> answers, ChatPresenter1.ControlType type,  boolean isMultiSelect){
 
-//        resetlist();
+        resetlist();
         this.answers = answers;
         this.isMultiSelect = isMultiSelect;
         this.controlType = type;
@@ -115,30 +105,45 @@ public class AnswerView extends RelativeLayout {
         rvAnswers = (RecyclerView) findViewById(R.id.rvAnswers);
         rvMoreAnswers = (RecyclerView) findViewById(R.id.rvMoreAnswers);
         ibSubmitAns = (ImageButton) findViewById(R.id.ib_submit_ans);
+        svSearch = (SearchView) findViewById(R.id.sv_search);
         selectedAnswerList = new ArrayList<>();
-        initClickListner();
+        initListner();
         initAnsRecycleView();
         initMoreAnsRecycleView();
         //        setAnswerList(populateTestAnsList(),true);
 
     }
 
-    private void initClickListner(){
+    private void initListner(){
         ibSubmitAns.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 displaySelectedAnswers();
             }
         });
+        svSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                moreChatAnsAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
     }
 
     private void initAnsRecycleView() {
+        svSearch.setVisibility(GONE);
         layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         rvAnswers.setLayoutManager(layoutManager);
     }
 
     private void initMoreAnsRecycleView() {
+        svSearch.setVisibility(VISIBLE);
         layoutManagermore = new LinearLayoutManager(context);
         layoutManagermore.setOrientation(LinearLayoutManager.VERTICAL);
         rvMoreAnswers.setLayoutManager(layoutManagermore);

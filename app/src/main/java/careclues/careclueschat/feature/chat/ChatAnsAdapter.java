@@ -6,9 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import careclues.careclueschat.R;
@@ -19,9 +22,11 @@ import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
  * Created by SukamalD on 6/15/2018.
  */
 
-public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHolder> {
+public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHolder> implements Filterable{
 
     private List<ChatAnsModel> ansList;
+    private List<ChatAnsModel> mFilteredList;
+
     private Context context;
     private boolean isMultiSelect;
     private OnAdapterItemClickListener itemClickListener;
@@ -29,6 +34,7 @@ public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHo
     public ChatAnsAdapter(Context context, List<ChatAnsModel> ansList, boolean isMultiSelect){
         this.context = context;
         this.ansList = ansList ;
+        this.mFilteredList = ansList;
         this.isMultiSelect = isMultiSelect;
 
     }
@@ -48,7 +54,7 @@ public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
-        final ChatAnsModel ansModel = ansList.get(position);
+        final ChatAnsModel ansModel = mFilteredList.get(position);
         String ans = ansModel.answer;
         holder.position = position;
 
@@ -58,7 +64,7 @@ public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHo
                 if(isMultiSelect){
                     ansModel.isSelected = !ansModel.isSelected;
                 }else{
-                    for(ChatAnsModel ansModel1 : ansList){
+                    for(ChatAnsModel ansModel1 : mFilteredList){
                         ansModel1.isSelected = false;
                     }
                     ansModel.isSelected = !ansModel.isSelected;
@@ -81,7 +87,38 @@ public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        return ansList.size();
+        return mFilteredList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return  new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    mFilteredList = ansList;
+                }else{
+                    List<ChatAnsModel> filterList = new ArrayList<>();
+                    for(ChatAnsModel ansModel : ansList){
+                        if (ansModel.answer.toLowerCase().contains(charString)) {
+                            filterList.add(ansModel);
+                        }
+                    }
+                    mFilteredList = filterList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mFilteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                mFilteredList = (ArrayList<ChatAnsModel>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

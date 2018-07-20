@@ -74,7 +74,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     public FamilyMemberView viewFamilymember;
     @BindView(R.id.view_answer)
     public AnswerView view_answer;
-    private ChatMessageModel lastMessage;
+//    private ChatMessageModel lastMessage;
+    private ServerMessageModel lastMessage;
 
     private View view;
 
@@ -311,6 +312,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @Override
     public void onInputType(ServerMessageModel messageModel) {
         if(messageModel != null){
+            lastMessage = messageModel;
             presenter.enableInputControlOptions(messageModel);
 
         }
@@ -338,31 +340,31 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     @OnClick(R.id.nxt)
     public void nextMessage(){
         Log.v("NEXT MSG : ",testmsglist.get(count).text);
-        lastMessage = testmsglist.get(count);
-        onInputType(testmsglist.get(count).messageModel);
+        lastMessage = testmsglist.get(count).messageModel;
+        onInputType(lastMessage);
         count++;
     }
     @OnClick(R.id.prev)
     public void prevMessage(){
         count--;
         Log.v("NEXT MSG : ",testmsglist.get(count).text);
-        lastMessage = testmsglist.get(count);
-        onInputType(testmsglist.get(count).messageModel);
+        lastMessage = testmsglist.get(count).messageModel;
+        onInputType(lastMessage);
 
     }
 
 
     @Override
     public void onPatientSelected(PatientModel patientModel) {
-        String replyMsgId = lastMessage.messageModel.id;
+        String replyMsgId = lastMessage.id;
         String content = (patientModel.self)?"I am consulting for myself":"I am consulting for my " + patientModel.displayName;
         patientModel.displayName = null;
-        populetSendMessage(replyMsgId,content,patientModel,lastMessage.messageModel.categoryModel,lastMessage.messageModel.symptomModel);
+        populetSendMessage(replyMsgId,content,patientModel,lastMessage.categoryModel,lastMessage.symptomModel);
     }
 
     @Override
     public void onHealthTopicSelected(HealthTopicModel healthTopicModel) {
-        String replyMsgId = lastMessage.messageModel.id;
+        String replyMsgId = lastMessage.id;
         String content = "My problem is "+ healthTopicModel.name;
 
         CategoryModel categoryModel = new CategoryModel();
@@ -370,29 +372,29 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         categoryModel.alternate_medicine = healthTopicModel.alternateMedicine;
         categoryModel.link = healthTopicModel.getLink("self");
 
-        populetSendMessage(replyMsgId,content,lastMessage.messageModel.patientModel,categoryModel,lastMessage.messageModel.symptomModel);
+        populetSendMessage(replyMsgId,content,lastMessage.patientModel,categoryModel,lastMessage.symptomModel);
 
     }
 
     @Override
     public void onSymptomSelected(SymptomModel symptomModel) {
-        String replyMsgId = lastMessage.messageModel.id;
+        String replyMsgId = lastMessage.id;
         String content = symptomModel.name;
-        populetSendMessage(replyMsgId,content,lastMessage.messageModel.patientModel,lastMessage.messageModel.categoryModel,symptomModel);
+        populetSendMessage(replyMsgId,content,lastMessage.patientModel,lastMessage.categoryModel,symptomModel);
     }
 
     @Override
     public void onOptionSelected(String option) {
-        String replyMsgId = lastMessage.messageModel.id;
+        String replyMsgId = lastMessage.id;
         String content = option;
-        populetSendMessage(replyMsgId,content,lastMessage.messageModel.patientModel,lastMessage.messageModel.categoryModel,lastMessage.messageModel.symptomModel);
+        populetSendMessage(replyMsgId,content,lastMessage.patientModel,lastMessage.categoryModel,lastMessage.symptomModel);
     }
 
     @Override
     public void onSimpleTextSelected(String msg) {
-        String replyMsgId = lastMessage.messageModel.id;
+        String replyMsgId = lastMessage.id;
         String content = msg;
-        populetSendMessage(replyMsgId,content,lastMessage.messageModel.patientModel,lastMessage.messageModel.categoryModel,lastMessage.messageModel.symptomModel);
+        populetSendMessage(replyMsgId,content,lastMessage.patientModel,lastMessage.categoryModel,lastMessage.symptomModel);
     }
 
 

@@ -3,6 +3,7 @@ package careclues.careclueschat.views;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -49,6 +50,8 @@ public class FamilyMemberView extends RelativeLayout {
     private ChatFamilyMemberAdapter chatFamilyMemberAdapter;
     private AnswerSelectionListner answerSelectionListner;
     private LinearLayout llNewMember;
+    private ConstraintLayout llAddNewMember;
+    private LinearLayout llViewMember;
 
 
     public FamilyMemberView(Context context) {
@@ -74,6 +77,9 @@ public class FamilyMemberView extends RelativeLayout {
         inflate(context, R.layout.view_family_member,this);
         rvFamillyMember = (RecyclerView) findViewById(R.id.rvFamillyMember);
         llNewMember = (LinearLayout) findViewById(R.id.llNewMember);
+//        llAddNewMember = (ConstraintLayout) findViewById(R.id.ll_add_new_member);
+//        llViewMember = (LinearLayout) findViewById(R.id.ll_view_member);
+
         initClickListner();
         initAnsRecycleView();
     }
@@ -82,6 +88,7 @@ public class FamilyMemberView extends RelativeLayout {
         llNewMember.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+//                llAddNewMember.setVisibility(VISIBLE);
                 Toast.makeText(getContext(), "Add New Member", Toast.LENGTH_SHORT).show();
             }
         });
