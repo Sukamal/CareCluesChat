@@ -1,6 +1,8 @@
 package careclues.careclueschat.network;
 
 import careclues.careclueschat.model.CreateRoomRequest;
+import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LoginRequest;
 import careclues.careclueschat.model.SendMassageRequest;
 import careclues.careclueschat.model.SetTopicRequest;
@@ -27,5 +29,11 @@ public interface ServerApiInterface {
 
     @GET
     public Call<ResponseBody> getServerResponse(@Url String url);
+
+    @POST
+    public Call<ResponseBody> createFamilyMember(@Url String url, @Body DataModel body );
+
+    @POST
+    public Call<ResponseBody> caddUserLanguage(@Url String url, @Body LanguageModel body );
 
 }

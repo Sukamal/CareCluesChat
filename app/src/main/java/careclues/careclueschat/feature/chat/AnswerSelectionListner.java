@@ -13,5 +13,6 @@ public interface AnswerSelectionListner {
     public void onSymptomSelected(SymptomModel symptomModel);
     public void onOptionSelected(String option);
     public void onSimpleTextSelected(String msg);
+    public void onLanguageSelected(String option);
 }
 

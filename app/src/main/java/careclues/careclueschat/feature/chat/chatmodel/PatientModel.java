@@ -17,6 +17,10 @@ public class PatientModel {
     public String lLink;
     @SerializedName("age")
     public int age;
+    @SerializedName("languagePreferredExists")
+    public Boolean languagePreferredExists;
+
+
 
 //    @Ignore
     public String displayName;

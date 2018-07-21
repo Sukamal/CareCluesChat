@@ -21,6 +21,7 @@ import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.model.HealthTopicModel;
+import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.SymptomModel;
 
 /**
@@ -129,7 +130,10 @@ public class AnswerView extends RelativeLayout {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                moreChatAnsAdapter.getFilter().filter(newText);
+                if(moreChatAnsAdapter != null){
+                    moreChatAnsAdapter.getFilter().filter(newText);
+
+                }
                 return true;
             }
         });
@@ -212,7 +216,10 @@ public class AnswerView extends RelativeLayout {
                 answerSelectionListner.onSymptomSelected((SymptomModel) selectedAnswerList.get(0).ansObject);
             }else if(controlType == ChatPresenter1.ControlType.CONTROL_SELECT){
                 answerSelectionListner.onOptionSelected((String)selectedAnswerList.get(0).ansObject);
+            }else if(controlType == ChatPresenter1.ControlType.CONTROL_SELECT_LANGUAGE){
+                answerSelectionListner.onLanguageSelected(((LanguageModel)selectedAnswerList.get(0).ansObject).name);
             }
+
 
 
         }

@@ -1,57 +1,99 @@
 package careclues.careclueschat.views;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
+import com.hbb20.CountryCodePicker;
+import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Period;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.feature.addnewmember.AddMemberContract;
+import careclues.careclueschat.feature.addnewmember.AddMemberPresenter;
 import careclues.careclueschat.feature.chat.AnswerSelectionListner;
-import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.RelationshipModel;
+import careclues.careclueschat.network.RestApiExecuter;
+import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.AppDialog;
+import careclues.careclueschat.util.AppUtil;
 
 /**
  * Created by SukamalD on 7/15/2018.
  */
 
-public class FamilyMemberView extends RelativeLayout {
+public class FamilyMemberView extends RelativeLayout implements AddMemberContract.view{
+
+    @BindView(R.id.rvFamillyMember)
+    RecyclerView rvFamillyMember;
+    @BindView(R.id.llNewMember)
+    LinearLayout llNewMember;
+    @BindView(R.id.ll_add_new_member)
+    ConstraintLayout llAddNewMember;
+    @BindView(R.id.ll_view_member)
+    LinearLayout llViewMember;
+    @BindView(R.id.relation_ship)
+    MaterialBetterSpinner relationShip;
+    @BindView(R.id.first_name)
+    TextInputEditText firstName;
+    @BindView(R.id.last_name)
+    TextInputEditText lastName;
+    @BindView(R.id.ccp)
+    CountryCodePicker countryCodePicker;
+    @BindView(R.id.mobile_number)
+    TextInputEditText mobileNumber;
+    @BindView(R.id.email)
+    TextInputEditText email;
+    @BindView(R.id.blood_group)
+    MaterialBetterSpinner bloodGroup;
+    @BindView(R.id.save)
+    Button save;
+    @BindView(R.id.radioGroup)
+    RadioGroup genderGroup;
 
     private LinearLayoutManager layoutManager;
-    private RecyclerView rvFamillyMember;
     private Context context;
     private List<PatientModel> patientList;
     private ChatFamilyMemberAdapter chatFamilyMemberAdapter;
     private AnswerSelectionListner answerSelectionListner;
-    private LinearLayout llNewMember;
-    private ConstraintLayout llAddNewMember;
-    private LinearLayout llViewMember;
+
+    private ArrayAdapter<RelationshipModel> relationshipAdapter;
+    private List<RelationshipModel> relationshipModelList;
+    private int relationShipIndex = -1;
+    private RestApiExecuter apiExecuter;
+    private Activity activity;
+    private AppDialog appDialog;
+    private AddMemberPresenter addMemberPresenter;
+    private String roomId;
+
 
 
     public FamilyMemberView(Context context) {
@@ -72,14 +114,17 @@ public class FamilyMemberView extends RelativeLayout {
     }
 
 
+    public void setInitData(Activity activity,String roomId){
+        this.activity = activity;
+        this.roomId = roomId;
+        appDialog = new AppDialog();
+    }
+
+
     private void initView(Context context){
         this.context = context;
-        inflate(context, R.layout.view_family_member,this);
-        rvFamillyMember = (RecyclerView) findViewById(R.id.rvFamillyMember);
-        llNewMember = (LinearLayout) findViewById(R.id.llNewMember);
-//        llAddNewMember = (ConstraintLayout) findViewById(R.id.ll_add_new_member);
-//        llViewMember = (LinearLayout) findViewById(R.id.ll_view_member);
-
+        View view = inflate(context, R.layout.view_family_member,this);
+        ButterKnife.bind(this, view);
         initClickListner();
         initAnsRecycleView();
     }
@@ -88,10 +133,31 @@ public class FamilyMemberView extends RelativeLayout {
         llNewMember.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                llAddNewMember.setVisibility(VISIBLE);
-                Toast.makeText(getContext(), "Add New Member", Toast.LENGTH_SHORT).show();
+                llViewMember.setVisibility(GONE);
+                llAddNewMember.setVisibility(VISIBLE);
+                initAddNewMember();
+
             }
         });
+
+    }
+
+    private void initAddNewMember(){
+        addMemberPresenter = new AddMemberPresenter(this,roomId,activity.getApplication());
+        initBloodGroup();
+        initRelationship();
+        save.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validate()) {
+                    displayProgressBar();
+                    AppUtil.hideSoftKeyBoard(activity);
+                    addFamilyMember(view);
+                }
+
+            }
+        });
+
     }
 
     private void initAnsRecycleView() {
@@ -188,6 +254,32 @@ public class FamilyMemberView extends RelativeLayout {
         });
     }
 
+    @Override
+    public void displayToastMessage(String message) {
+
+    }
+
+    @Override
+    public void displayProgressBar() {
+        appDialog.showProgress(activity);
+
+    }
+
+    @Override
+    public void hideProgressBar() {
+        appDialog.dismissProgress();
+
+    }
+
+    @Override
+    public void displayNewMember(DataModel familyMember) {
+        llViewMember.setVisibility(VISIBLE);
+        llAddNewMember.setVisibility(GONE);
+        addMember(familyMember);
+        hideProgressBar();
+        chatFamilyMemberAdapter.notifyDataSetChanged();
+    }
+
 
     public class ChatFamilyMemberAdapter extends RecyclerView.Adapter<ChatFamilyMemberAdapter.MyViewHolder> {
 
@@ -252,6 +344,86 @@ public class FamilyMemberView extends RelativeLayout {
         }
 
     }
+
+    private void initBloodGroup(){
+        List<String> bloodGroups = Arrays.asList(getResources().getStringArray(R.array.blood_groups));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context,android.R.layout.simple_dropdown_item_1line, bloodGroups);
+        findViewById(R.id.blood_group);
+        bloodGroup.setAdapter(arrayAdapter);
+
+    }
+
+    private void initRelationship(){
+        relationshipModelList = AppConstant.getRelationship();
+        relationshipAdapter = new ArrayAdapter<RelationshipModel>(context,
+                android.R.layout.simple_dropdown_item_1line, relationshipModelList);
+
+        relationShip.setAdapter(relationshipAdapter);
+        relationShip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                relationShipIndex = i;
+            }
+        });
+    }
+
+    private boolean validate() {
+
+        boolean valid = true;
+
+        if (relationShipIndex == -1) {
+            relationShip.setError("Please select relation with you");
+            valid = false;
+        }
+
+        if (AppUtil.isEmpty(firstName)) {
+            valid = false;
+        }
+
+        if (AppUtil.isEmpty(lastName)) {
+            valid = false;
+        }
+
+        if (!AppUtil.isValidMobileNumber(mobileNumber)) {
+            valid = false;
+        }
+
+        if (!AppUtil.isEmpty(email)) {
+            if (!AppUtil.isValidEmail(email)) {
+                valid = false;
+            }
+        }
+
+        return valid;
+
+    }
+
+    private String getGender() {
+        int radioButtonID = genderGroup.getCheckedRadioButtonId();
+        switch (radioButtonID) {
+            case R.id.rd_male:
+                return "male";
+            case R.id.rd_female:
+                return "female";
+        }
+        return "male";
+    }
+
+    public void addFamilyMember(View view) {
+        DataModel familyMember = new DataModel();
+        familyMember.firstName = firstName.getText().toString().trim();
+        familyMember.lastName = lastName.getText().toString().trim();
+        familyMember.email = email.getText().toString().trim();
+        familyMember.mobileNumber = countryCodePicker.getSelectedCountryCodeWithPlus() + mobileNumber.getText().toString().trim();
+        familyMember.bloodGroup = bloodGroup.getText().toString().trim();
+        familyMember.gender = getGender();
+        familyMember.relationship = relationshipModelList.get(relationShipIndex).getKey();
+
+        addMemberPresenter.addNewMember(familyMember);
+
+    }
+
+
 
 
 }

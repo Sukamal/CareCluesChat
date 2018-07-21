@@ -11,19 +11,25 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
+import careclues.careclueschat.model.AddLanguageResponseModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.HealthTopicResponseModel;
+import careclues.careclueschat.model.LanguageModel;
+import careclues.careclueschat.model.LanguageResponseModel;
 import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.SymptomResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
+import careclues.careclueschat.network.ApiClient;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
@@ -54,6 +60,13 @@ public class ChatPresenter1 implements ChatContract.presenter {
     private UserProfileResponseModel userProfileModel;
     private HealthTopicResponseModel healthTopicResponseModel;
     private SymptomResponseModel symptomResponseModel;
+    private LanguageResponseModel languageResponseModel;
+    private RestApiExecuter apiExecuter;
+    private FamilyMemberResponseModel familyMemberResponseModel = null;
+
+    private Timer timer;
+    private List<String> addLanguageTasklist = new ArrayList<>();
+    private String languageUpdated;
 
 
 
@@ -195,6 +208,46 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
+
+    @Override
+    public void addLanguageApiCall(String languages) {
+        String[] languageList = languages.split(";");
+        String url = null;
+        if(userProfileModel != null){
+            url = userProfileModel.data.getLink("languages");
+        
+        if(languageList != null && languageList.length > 0){
+            for(int i= 0; i < languageList.length;i++){
+                LanguageModel languageModel = new LanguageModel();
+                languageModel.name = languageList[i];
+                addLanguageTasklist.add(languageList[i]);
+                    if(apiExecuter == null)
+                        apiExecuter = RestApiExecuter.getInstance();
+
+                    apiExecuter.addUserLanguage(url, languageModel, new ServiceCallBack<AddLanguageResponseModel>(AddLanguageResponseModel.class) {
+                        @Override
+                        public void onSuccess(AddLanguageResponseModel response) {
+                            addLanguageTasklist.remove(response.data.name);
+                            if(languageUpdated == null){
+                                languageUpdated = response.data.name;
+                            }else{
+                                languageUpdated = languageUpdated + "\n"+response.data.name;
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(List<NetworkError> errorList) {
+
+                        }
+                    });
+                }
+            checkTaskComplete();
+            }
+        }
+        
+    }
+
+
     private void getChatHistory(final String roomId, final int count){
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -311,8 +364,9 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 getSymptoms(messageModel.categoryModel.link,messageModel.symptomModel.id);
             }else if(messageModel.control.equals(ControlType.CONTROL_SELECT.get())){
                 view.displayOptions(messageModel.options);
-            }
-            else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
+            }else if(messageModel.control.equals(ControlType.CONTROL_SELECT_LANGUAGE.get())){
+                getLanguage();
+            } else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
                 displayTextInput();
             }else{
                 displayTextInput();
@@ -417,9 +471,28 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
     }
 
+    private void getLanguage(){
+        String urlLink = ApiClient.API_BASE_URL + "languages";
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
 
-    private RestApiExecuter apiExecuter;
-    private FamilyMemberResponseModel familyMemberResponseModel = null;
+
+        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<LanguageResponseModel>(LanguageResponseModel.class) {
+            @Override
+            public void onSuccess(LanguageResponseModel response) {
+                languageResponseModel = response;
+                view.displayLanguage(languageResponseModel.languages);
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                symptomResponseModel = null;
+            }
+        });
+    }
+
+
+
 
     public UserProfileResponseModel getUserProfile(String userId){
         apiExecuter = RestApiExecuter.getInstance();
@@ -447,7 +520,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
         CONTROL_HEALTH_TOPIC_SELECT("healthTopicSelect"),
         CONTROL_PRIMARY_SYMPTOM_SELECT("primarySymptomSelect"),
         CONTROL_SYMPTOM_SELECT("symptomSelect"),
-        CONTROL_SELECT("select");
+        CONTROL_SELECT("select"),
+        CONTROL_SELECT_LANGUAGE("languageSelect");
 
         private String control;
 
@@ -458,6 +532,25 @@ public class ChatPresenter1 implements ChatContract.presenter {
         public String get() {
             return control;
         }
+    }
+
+
+
+    class RemindTask extends TimerTask {
+        @Override
+        public void run() {
+            if(addLanguageTasklist.size() == 0 ){
+                timer.cancel();
+                view.onUpdateLanguageToServer(languageUpdated);
+            }else{
+                timer.schedule(new RemindTask(),100);
+            }
+        }
+    }
+
+    private void checkTaskComplete(){
+        timer = new Timer();
+        timer.schedule(new RemindTask(),100);
     }
 
 

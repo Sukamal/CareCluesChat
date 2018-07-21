@@ -14,10 +14,12 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Patterns;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -199,6 +201,35 @@ public class AppUtil {
         filePath = filePathUri.getPath();
 
         return filePath;
+    }
+
+    public static boolean isEmpty(EditText editText){
+        if(editText.getText().toString().isEmpty()){
+            editText.setError("Please enter some value");
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isValidEmail(EditText editText){
+        if(!Patterns.EMAIL_ADDRESS.matcher(editText.getText()).matches()){
+            editText.setError("Please enter valid email");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidMobileNumber(EditText editText){
+
+        if(!Patterns.PHONE.matcher(editText.getText()).matches()){
+            editText.setError("Please enter valid mobile number");
+            return false;
+        }
+
+        return true;
+
     }
 
 }

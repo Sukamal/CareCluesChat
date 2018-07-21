@@ -3,6 +3,7 @@ package careclues.careclueschat.feature.chat;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,10 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -32,11 +31,12 @@ import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
+import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.BaseFragment;
-import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.HealthTopicModel;
+import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.SymptomModel;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
@@ -78,6 +78,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     private ServerMessageModel lastMessage;
 
     private View view;
+
 
 
     public enum InputType{
@@ -163,6 +164,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     public void displayFamilyMember(List<DataModel> data) {
         viewFamilymember.addMembers(data);
         viewFamilymember.setAnsSelectionListner(this);
+        viewFamilymember.setInitData(getActivity(),roomId);
         dispayTemplet(TYPE_FAMILY_MEMBER);
     }
 
@@ -209,6 +211,20 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     }
 
     @Override
+    public void displayLanguage(List<LanguageModel> data) {
+        List<ChatAnsModel> ansList = new ArrayList<>();
+        for(LanguageModel model : data){
+            ChatAnsModel ansModel = new ChatAnsModel(model.name,false);
+            ansModel.ansObject = model;
+            ansList.add(ansModel);
+        }
+        view_answer.setAnswerList(ansList,ChatPresenter1.ControlType.CONTROL_SELECT_LANGUAGE,true);
+        view_answer.removeAllListner();
+        view_answer.setAnsSelectionListner(this);
+        dispayTemplet(TYPE_SELECT_ANSWERS);
+    }
+
+    @Override
     public void displayOptions(List<String> data) {
         List<ChatAnsModel> ansList = new ArrayList<>();
         for(String option : data){
@@ -227,6 +243,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         inputView.setAnsSelectionListner(this);
         dispayTemplet(TYPE_TEXT);
     }
+
+
 
     @Override
     public void displayNothing() {
@@ -259,12 +277,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         });
     }
 
-//    @OnClick(R.id.ib_submit)
-//    public void sendMessage(){
-//        presenter.sendMessage(etMessage.getText().toString());
-////        presenter.sendMessageViaApi(etMessage.getText().toString());
-//
-//    }
 
     @Override
     public void displyUserTyping(final String roomId, final String user, final Boolean istyping) {
@@ -395,6 +407,20 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
     public void onSimpleTextSelected(String msg) {
         String replyMsgId = lastMessage.id;
         String content = msg;
+        populetSendMessage(replyMsgId,content,lastMessage.patientModel,lastMessage.categoryModel,lastMessage.symptomModel);
+    }
+
+    @Override
+    public void onLanguageSelected(String option) {
+        //TODO add server call to post language
+        presenter.addLanguageApiCall(option);
+    }
+
+    @Override
+    public void onUpdateLanguageToServer(String languages) {
+        String replyMsgId = lastMessage.id;
+        String content = languages;
+        lastMessage.patientModel.languagePreferredExists = true;
         populetSendMessage(replyMsgId,content,lastMessage.patientModel,lastMessage.categoryModel,lastMessage.symptomModel);
     }
 

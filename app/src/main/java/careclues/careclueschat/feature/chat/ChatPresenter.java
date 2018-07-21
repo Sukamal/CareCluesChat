@@ -264,6 +264,11 @@ public class ChatPresenter implements ChatContract.presenter,
         deregisterSocket();
     }
 
+    @Override
+    public void addLanguageApiCall(String languages) {
+
+    }
+
     private void getChatHistory(final String roomId, final int count){
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override

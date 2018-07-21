@@ -1,5 +1,9 @@
 package careclues.careclueschat.util;
 
+import java.util.ArrayList;
+
+import careclues.careclueschat.model.RelationshipModel;
+
 /**
  * Created by SukamalD on 29-01-2018.
  */
@@ -44,6 +48,18 @@ public class AppConstant {
         int PICK_CAMERA_REQUEST = 104;
         int PICK_DOCUMENT_REQUEST = 105;
 
+
+    }
+
+    public static ArrayList<RelationshipModel> getRelationship(){
+
+        ArrayList<RelationshipModel> relationshipList = new ArrayList<>();
+        //Add countries
+
+        relationshipList.add(new RelationshipModel("great_grand_parent", "Great Grand Parent"));
+        relationshipList.add(new RelationshipModel("mother", "Mother"));
+
+        return relationshipList;
 
     }
 
