@@ -420,6 +420,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     private RestApiExecuter apiExecuter;
     private FamilyMemberResponseModel familyMemberResponseModel = null;
+
     public UserProfileResponseModel getUserProfile(String userId){
         apiExecuter = RestApiExecuter.getInstance();
 

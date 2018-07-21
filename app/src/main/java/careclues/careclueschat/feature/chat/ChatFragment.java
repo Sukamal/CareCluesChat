@@ -359,6 +359,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view,Room
         String replyMsgId = lastMessage.id;
         String content = (patientModel.self)?"I am consulting for myself":"I am consulting for my " + patientModel.displayName;
         patientModel.displayName = null;
+        patientModel.age = 23;
         populetSendMessage(replyMsgId,content,patientModel,lastMessage.categoryModel,lastMessage.symptomModel);
     }
 
