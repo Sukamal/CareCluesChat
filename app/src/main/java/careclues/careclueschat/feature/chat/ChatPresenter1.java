@@ -4,6 +4,7 @@ import android.app.Application;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.model.Message;
 
@@ -18,9 +19,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.AddLanguageResponseModel;
 import careclues.careclueschat.model.BaseUserModel;
+import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LanguageResponseModel;
@@ -28,6 +31,7 @@ import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.SymptomResponseModel;
+import careclues.careclueschat.model.TextConsultantResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.ApiClient;
 import careclues.careclueschat.network.NetworkError;
@@ -151,13 +155,22 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
     @Override
-    public void sendMessageViaApi(String msg) {
+    public void sendMessageViaApi(final ReplyMessageModel replyMessageModel, final String controlType) {
+        String msg = new Gson().toJson(replyMessageModel);
+        Log.v("NEW_MESSAGE : ", msg);
+
         if(apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
-        apiExecuter.sendNewMessage(CcUtils.shortUUID(),roomId,msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+            apiExecuter.sendNewMessage(CcUtils.shortUUID(),roomId,msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
+                if(controlType.equals(ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
 
+                    String url = replyMessageModel.patient.lLink;
+                    String categoryLink = replyMessageModel.categoryModel.link;
+                    String topicId = categoryLink.substring((categoryLink.lastIndexOf("/")) + 1);
+                    createTextConsultant(url,topicId,roomId);
+                }
             }
 
             @Override
@@ -245,6 +258,27 @@ public class ChatPresenter1 implements ChatContract.presenter {
             }
         }
         
+    }
+
+    @Override
+    public void createTextConsultant(String url, String topicId, String roomId) {
+        CreateTextConsultantModel healthTopicModel = new CreateTextConsultantModel();
+        healthTopicModel.health_topic_id = topicId;
+        healthTopicModel.chat_conversation_id = roomId;
+
+        if(apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+        apiExecuter.createTextConsultant(url, healthTopicModel, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
+            @Override
+            public void onSuccess(TextConsultantResponseModel response) {
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
     }
 
 

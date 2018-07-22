@@ -1,21 +1,31 @@
 package careclues.careclueschat.feature.room;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
 import careclues.careclueschat.R;
+import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
+import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomMainActivity extends BaseActivity implements RoomContract.view{
@@ -177,5 +187,7 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
         void displyUserTyping(String roomId, String user, Boolean istyping);
         void updateChatMessage(MessageEntity msg);
     }
+
+
 
 }

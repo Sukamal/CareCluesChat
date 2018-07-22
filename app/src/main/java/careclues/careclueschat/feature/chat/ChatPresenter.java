@@ -17,6 +17,7 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.network.RestApiExecuter;
@@ -220,9 +221,12 @@ public class ChatPresenter implements ChatContract.presenter,
     }
 
     @Override
-    public void sendMessageViaApi(String msg) {
+    public void sendMessageViaApi(ReplyMessageModel replyMessageModel, String controlType) {
 
     }
+
+
+
 
     @Override
     public void uploadFile(File file,String desc) {
@@ -266,6 +270,11 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void addLanguageApiCall(String languages) {
+
+    }
+
+    @Override
+    public void createTextConsultant(String url, String topicId, String roomId) {
 
     }
 
@@ -426,6 +435,10 @@ public class ChatPresenter implements ChatContract.presenter,
         return  messageEntity;
 
     }
+
+
+
+
 
 
 }

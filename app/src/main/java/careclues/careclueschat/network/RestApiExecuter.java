@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 
+import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LoginRequest;
@@ -166,7 +167,12 @@ public class RestApiExecuter {
     }
 
     public <T> void addUserLanguage(String url, LanguageModel dataModel, ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).caddUserLanguage(url,dataModel);
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).addUserLanguage(url,dataModel);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void createTextConsultant(String url, CreateTextConsultantModel dataModel, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).createTextConsultant(url,dataModel);
         execute(call,serviceCallBack);
     }
 }

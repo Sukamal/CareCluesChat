@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.List;
 
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
+import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.common.CommonViewInterface;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.HealthTopicModel;
@@ -36,10 +37,11 @@ public interface ChatContract {
     interface presenter {
         public void loadData(int count);
         public void sendMessage(String msg);
-        public void sendMessageViaApi(String msg);
+        public void sendMessageViaApi(ReplyMessageModel replyMessageModel, String controlType);
         public void uploadFile(File file,String desc);
         public void reconnectToServer();
         public void disconnectToServer();
         public void addLanguageApiCall(String languages);
+        public void createTextConsultant(String url, String topicId, String roomId);
     }
 }

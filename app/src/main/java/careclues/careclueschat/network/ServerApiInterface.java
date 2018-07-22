@@ -1,18 +1,14 @@
 package careclues.careclueschat.network;
 
-import careclues.careclueschat.model.CreateRoomRequest;
+import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.LanguageModel;
-import careclues.careclueschat.model.LoginRequest;
-import careclues.careclueschat.model.SendMassageRequest;
-import careclues.careclueschat.model.SetTopicRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 /**
@@ -34,6 +30,9 @@ public interface ServerApiInterface {
     public Call<ResponseBody> createFamilyMember(@Url String url, @Body DataModel body );
 
     @POST
-    public Call<ResponseBody> caddUserLanguage(@Url String url, @Body LanguageModel body );
+    public Call<ResponseBody> addUserLanguage(@Url String url, @Body LanguageModel body );
+
+    @POST
+    public Call<ResponseBody> createTextConsultant(@Url String url, @Body CreateTextConsultantModel body );
 
 }
