@@ -54,6 +54,8 @@ public class RestApiExecuter {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {
+
+                    response.errorBody();
                     serviceCallBack.onFailure(Arrays.asList(new NetworkError("","Api Error")));
                     return;
                 }

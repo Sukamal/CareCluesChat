@@ -73,8 +73,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     private String languageUpdated;
 
 
-
-    public ChatPresenter1(ChatContract.view view, String roomId, Application application){
+    public ChatPresenter1(ChatContract.view view, String roomId, Application application) {
         this.view = view;
         this.application = application;
         this.roomId = roomId;
@@ -82,19 +81,19 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         getLoginUserDetails(userId);
-        if(CareCluesChatApplication.userProfile != null){
+        if (CareCluesChatApplication.userProfile != null) {
             userProfileModel = CareCluesChatApplication.userProfile;
-        }else{
-            userProfileModel =  getUserProfile(AppConstant.getUserId());
+        } else {
+            userProfileModel = getUserProfile(AppConstant.getUserId());
         }
 
     }
 
-    private void getLoginUserDetails(final String userId){
+    private void getLoginUserDetails(final String userId) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                userDetails = ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().findById(userId);
+                userDetails = ((CareCluesChatApplication) application).getChatDatabase().roomMemberDao().findById(userId);
                 initWebSoket();
 
             }
@@ -102,10 +101,10 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-    private void initWebSoket(){
+    private void initWebSoket() {
         api = ((CareCluesChatApplication) application).getRocketChatClient();
         List<CcBaseRoom> rooms = new ArrayList<>();
-        CcBaseRoom  baseRoom = new CcBaseRoom() {
+        CcBaseRoom baseRoom = new CcBaseRoom() {
             @Nullable
             @Override
             public String name() {
@@ -127,14 +126,14 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     }
 
-    public void deregisterSocket(){
+    public void deregisterSocket() {
         chatRoom.unSubscribeAllEvents();
     }
 
 
     @Override
     public void loadData(int count) {
-        getChatHistory(roomId,count);
+        getChatHistory(roomId, count);
     }
 
     @Override
@@ -142,12 +141,12 @@ public class ChatPresenter1 implements ChatContract.presenter {
         chatRoom.sendMessage(msg.toString(), new CcMessageCallback.MessageAckCallback() {
             @Override
             public void onMessageAck(CcMessage message) {
-                Log.e("Message","Message Send : "+ message.id + " " +message.toString());
+                Log.e("Message", "Message Send : " + message.id + " " + message.toString());
             }
 
             @Override
             public void onError(CcRocketChatException error) {
-                Log.e("ERROR Sending Message: ",error.getMessage());
+                Log.e("ERROR Sending Message: ", error.getMessage());
             }
         });
 
@@ -159,17 +158,17 @@ public class ChatPresenter1 implements ChatContract.presenter {
         String msg = new Gson().toJson(replyMessageModel);
         Log.v("NEW_MESSAGE : ", msg);
 
-        if(apiExecuter == null)
+        if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
-            apiExecuter.sendNewMessage(CcUtils.shortUUID(),roomId,msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+        apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
-                if(controlType.equals(ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
+                if (controlType.equals(ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())) {
 
                     String url = replyMessageModel.patient.lLink;
                     String categoryLink = replyMessageModel.categoryModel.link;
                     String topicId = categoryLink.substring((categoryLink.lastIndexOf("/")) + 1);
-                    createTextConsultant(url,topicId,roomId);
+                    createTextConsultant(url, topicId, roomId);
                 }
             }
 
@@ -181,7 +180,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
     @Override
-    public void uploadFile(File file,String desc) {
+    public void uploadFile(File file, String desc) {
 //        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
 //            @Override
 //            public void onUploadStarted(String roomId, String fileName, String description) {
@@ -221,30 +220,29 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-
     @Override
     public void addLanguageApiCall(String languages) {
         String[] languageList = languages.split(";");
         String url = null;
-        if(userProfileModel != null){
+        if (userProfileModel != null) {
             url = userProfileModel.data.getLink("languages");
-        
-        if(languageList != null && languageList.length > 0){
-            for(int i= 0; i < languageList.length;i++){
-                LanguageModel languageModel = new LanguageModel();
-                languageModel.name = languageList[i];
-                addLanguageTasklist.add(languageList[i]);
-                    if(apiExecuter == null)
+
+            if (languageList != null && languageList.length > 0) {
+                for (int i = 0; i < languageList.length; i++) {
+                    LanguageModel languageModel = new LanguageModel();
+                    languageModel.name = languageList[i];
+                    addLanguageTasklist.add(languageList[i]);
+                    if (apiExecuter == null)
                         apiExecuter = RestApiExecuter.getInstance();
 
                     apiExecuter.addUserLanguage(url, languageModel, new ServiceCallBack<AddLanguageResponseModel>(AddLanguageResponseModel.class) {
                         @Override
                         public void onSuccess(AddLanguageResponseModel response) {
                             addLanguageTasklist.remove(response.data.name);
-                            if(languageUpdated == null){
+                            if (languageUpdated == null) {
                                 languageUpdated = response.data.name;
-                            }else{
-                                languageUpdated = languageUpdated + "\n"+response.data.name;
+                            } else {
+                                languageUpdated = languageUpdated + "\n" + response.data.name;
                             }
                         }
 
@@ -254,23 +252,25 @@ public class ChatPresenter1 implements ChatContract.presenter {
                         }
                     });
                 }
-            checkTaskComplete();
+                checkTaskComplete();
             }
         }
-        
+
     }
 
     @Override
     public void createTextConsultant(String url, String topicId, String roomId) {
         CreateTextConsultantModel healthTopicModel = new CreateTextConsultantModel();
-        healthTopicModel.health_topic_id = topicId;
+        healthTopicModel.health_topic_id = Integer.valueOf(topicId);
         healthTopicModel.chat_conversation_id = roomId;
 
-        if(apiExecuter == null)
+        if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
         apiExecuter.createTextConsultant(url, healthTopicModel, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
             @Override
             public void onSuccess(TextConsultantResponseModel response) {
+
+                Log.v("API","sucess");
 
             }
 
@@ -282,7 +282,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-    private void getChatHistory(final String roomId, final int count){
+    private void getChatHistory(final String roomId, final int count) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
@@ -295,7 +295,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
                     view.displayChatList(msgList);
 
                 } catch (Throwable e) {
-                    Log.e("ERROR", "Errorr!!!!"+e.toString());
+                    Log.e("ERROR", "Errorr!!!!" + e.toString());
                 }
 
             }
@@ -327,7 +327,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //        }
 //    }
 
-    private void insertIntoDB(Message message){
+    private void insertIntoDB(Message message) {
         final MessageEntity messageEntity = new MessageEntity();
         messageEntity.Id = message.id();
         messageEntity.rId = message.roomId();
@@ -342,8 +342,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
         messageEntity.alias = message.senderAlias();
         messageEntity.groupable = message.groupable();
         List<BaseUserModel> mentions = new ArrayList<>();
-        if(message.mentions() != null){
-            for(int i=0; i <message.mentions().size(); i++){
+        if (message.mentions() != null) {
+            for (int i = 0; i < message.mentions().size(); i++) {
                 BaseUserModel baseUserModel = new BaseUserModel();
                 baseUserModel.id = message.mentions().get(i).id();
                 baseUserModel.userName = message.mentions().get(i).username();
@@ -356,14 +356,14 @@ public class ChatPresenter1 implements ChatContract.presenter {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().messageDao().addMessage(messageEntity);
+                ((CareCluesChatApplication) application).getChatDatabase().messageDao().addMessage(messageEntity);
 
             }
         });
 
     }
 
-    private MessageEntity insertMessageIntoDB(String message){
+    private MessageEntity insertMessageIntoDB(String message) {
         final MessageEntity messageEntity = new MessageEntity();
 //        messageEntity.Id = AppUtil.generateUniquId();
         messageEntity.Id = Utils.shortUUID();
@@ -378,50 +378,50 @@ public class ChatPresenter1 implements ChatContract.presenter {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                ((CareCluesChatApplication)application).getChatDatabase().messageDao().addMessage(messageEntity);
+                ((CareCluesChatApplication) application).getChatDatabase().messageDao().addMessage(messageEntity);
             }
         });
-        return  messageEntity;
+        return messageEntity;
 
     }
 
 
-    public void enableInputControlOptions(ServerMessageModel messageModel){
-        if(messageModel != null && messageModel.control != null){
-            if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())){
+    public void enableInputControlOptions(ServerMessageModel messageModel) {
+        if (messageModel != null && messageModel.control != null) {
+            if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())) {
                 getFamilyMember();
-            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())){
+            } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())) {
                 getHealthTopic();
-            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())){
+            } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())) {
                 getPrimarySymptom(messageModel.categoryModel.link);
-            }else if(messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())){
-                getSymptoms(messageModel.categoryModel.link,messageModel.symptomModel.id);
-            }else if(messageModel.control.equals(ControlType.CONTROL_SELECT.get())){
+            } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())) {
+                getSymptoms(messageModel.categoryModel.link, messageModel.symptomModel.id);
+            } else if (messageModel.control.equals(ControlType.CONTROL_SELECT.get())) {
                 view.displayOptions(messageModel.options);
-            }else if(messageModel.control.equals(ControlType.CONTROL_SELECT_LANGUAGE.get())){
+            } else if (messageModel.control.equals(ControlType.CONTROL_SELECT_LANGUAGE.get())) {
                 getLanguage();
-            } else if(messageModel.control.equals(ControlType.CONTROL_TEXT.get())){
+            } else if (messageModel.control.equals(ControlType.CONTROL_TEXT.get())) {
                 displayTextInput();
-            }else{
+            } else {
                 displayTextInput();
             }
-        }else{
+        } else {
             displayBlank();
         }
     }
 
-    private void displayBlank(){
+    private void displayBlank() {
         view.displayNothing();
     }
 
-    private void displayTextInput(){
+    private void displayTextInput() {
         view.displayTextInput();
     }
 
-    private void getFamilyMember(){
-        if(userProfileModel != null){
+    private void getFamilyMember() {
+        if (userProfileModel != null) {
             String url = userProfileModel.data.getLink("dependants");
-            if(apiExecuter == null)
+            if (apiExecuter == null)
                 apiExecuter = RestApiExecuter.getInstance();
 
             apiExecuter.getServerResponse(url, new ServiceCallBack<FamilyMemberResponseModel>(FamilyMemberResponseModel.class) {
@@ -440,8 +440,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-    private void getHealthTopic(){
-        if(apiExecuter == null)
+    private void getHealthTopic() {
+        if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
         apiExecuter.getHealthTopics(new ServiceCallBack<HealthTopicResponseModel>(HealthTopicResponseModel.class) {
@@ -458,12 +458,11 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
 
 
-
     }
 
-    private void getPrimarySymptom(String urlLink){
+    private void getPrimarySymptom(String urlLink) {
 
-        if(apiExecuter == null)
+        if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
         String url = urlLink + "/symptoms";
@@ -481,13 +480,13 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
     }
 
-    private void getSymptoms(String urlLink,int id){
-        if(apiExecuter == null)
+    private void getSymptoms(String urlLink, int id) {
+        if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
         String url = urlLink;
-        if(id != 0){
-            url = url + "/symptoms?exclude[id]="+id;
+        if (id != 0) {
+            url = url + "/symptoms?exclude[id]=" + id;
 
         }
 
@@ -505,9 +504,9 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
     }
 
-    private void getLanguage(){
+    private void getLanguage() {
         String urlLink = ApiClient.API_BASE_URL + "languages";
-        if(apiExecuter == null)
+        if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
 
@@ -526,9 +525,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-
-
-    public UserProfileResponseModel getUserProfile(String userId){
+    public UserProfileResponseModel getUserProfile(String userId) {
         apiExecuter = RestApiExecuter.getInstance();
 
         apiExecuter.getUserProfile(userId, new ServiceCallBack<UserProfileResponseModel>(UserProfileResponseModel.class) {
@@ -545,7 +542,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
         return userProfileModel;
     }
-
 
 
     public enum ControlType {
@@ -569,22 +565,21 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-
     class RemindTask extends TimerTask {
         @Override
         public void run() {
-            if(addLanguageTasklist.size() == 0 ){
+            if (addLanguageTasklist.size() == 0) {
                 timer.cancel();
                 view.onUpdateLanguageToServer(languageUpdated);
-            }else{
-                timer.schedule(new RemindTask(),100);
+            } else {
+                timer.schedule(new RemindTask(), 100);
             }
         }
     }
 
-    private void checkTaskComplete(){
+    private void checkTaskComplete() {
         timer = new Timer();
-        timer.schedule(new RemindTask(),100);
+        timer.schedule(new RemindTask(), 100);
     }
 
 

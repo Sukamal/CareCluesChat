@@ -8,10 +8,10 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class CreateTextConsultantModel {
-    @SerializedName("health_topic_id ")
+    @SerializedName("health_topic_id")
     @Expose
-    public String health_topic_id ;
-    @SerializedName("chat_conversation_id ")
+    public int health_topic_id ;
+    @SerializedName("chat_conversation_id")
     @Expose
     public String chat_conversation_id ;
 //    @SerializedName("minimum_payable_amount")

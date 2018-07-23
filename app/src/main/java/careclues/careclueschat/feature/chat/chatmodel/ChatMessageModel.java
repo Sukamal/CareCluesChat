@@ -54,6 +54,11 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
 
     private ServerMessageModel parseMessage(String msg){
         msg = msg.replaceAll("\\\\","");
+        msg = msg.replaceAll("\"\\{","{");
+        msg = msg.replaceAll("\\}\"","}");
+
+
+
         ServerMessageModel messageModel = null;
         boolean isJson = false;
         JSONObject jsonObject = null;
