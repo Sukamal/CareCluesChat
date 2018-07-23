@@ -1,6 +1,10 @@
 package careclues.careclueschat.feature.chat;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -9,6 +13,12 @@ import com.rocketchat.common.utils.Utils;
 import com.rocketchat.core.model.Message;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -582,5 +592,80 @@ public class ChatPresenter1 implements ChatContract.presenter {
         timer.schedule(new RemindTask(), 100);
     }
 
+    public void writeFileOnInternalStorage(Context mcoContext,String sFileName, String sBody){
+
+        File file = new File(mcoContext.getFilesDir(),"mydir");
+        if(!file.exists()){
+            file.mkdir();
+        }
+
+        try{
+            File gpxfile = new File(file, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+    }
+
+    public  String saveToInternalStorage(Context mcoContext,String roomid,Bitmap bitmapImage){
+
+        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
+
+//        File directory = new File(mcoContext.getFilesDir(),"mydir");
+        if(!directory.exists()){
+            directory.mkdir();
+        }
+        String fname="Pic_"+ roomid + ".jpg";
+        File mypath = new File(directory,fname);
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
+
+    public void copy(File src,Context mcoContext,String roomid,String extention) throws IOException {
+        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
+//        File directory = new File(mcoContext.getFilesDir(),"mydir");
+        if(!directory.exists()){
+            directory.mkdir();
+        }
+        String fname= "Pic_"+ roomid + extention;
+        File dst = new File(directory,fname);
+
+        InputStream in = new FileInputStream(src);
+        try {
+            OutputStream out = new FileOutputStream(dst);
+            try {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            } finally {
+                out.close();
+            }
+        } finally {
+            in.close();
+        }
+    }
 
 }

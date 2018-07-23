@@ -127,7 +127,7 @@
     </RelativeLayout>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView2"
+        android:id="@+id/cardView_dr_card"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
@@ -146,7 +146,7 @@
 
 
             <com.mikhaellopez.circularimageview.CircularImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/imageView3"
+                android:id="@+id/iv_dr_image"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_centerVertical="true"
@@ -163,7 +163,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/tv_dr_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -176,12 +176,12 @@
                 android:text="Dr. Diwakar Sharma hhhhhh"
                 android:textColor="@color/colorPrimary"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/textView8"
-                app:layout_constraintStart_toEndOf="@+id/imageView3"
+                app:layout_constraintEnd_toStartOf="@+id/tv_fees"
+                app:layout_constraintStart_toEndOf="@+id/iv_dr_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/tv_dr_details"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -193,11 +193,11 @@ Psychiatrist, Addiction Psychiatrist, Neuropsychiatrist"
                 android:textColor="@color/black"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintStart_toStartOf="@+id/tv_dr_name"
+                app:layout_constraintTop_toBottomOf="@+id/tv_dr_name" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/tv_fees"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -209,7 +209,7 @@ Psychiatrist, Addiction Psychiatrist, Neuropsychiatrist"
                 tools:ignore="MissingConstraints" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btn_view"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginEnd="16dp"

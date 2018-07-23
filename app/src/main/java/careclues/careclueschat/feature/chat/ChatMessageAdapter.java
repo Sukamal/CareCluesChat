@@ -7,22 +7,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
-import careclues.careclueschat.feature.room.RoomAdapter;
-import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.util.DateFormatter;
 
 /**
@@ -78,11 +73,24 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         if(chatMessageModel.userId.equalsIgnoreCase(userId/*"sachu-985" "2eRbrjSZnsACYkRx4"*/)){
             holder.cvLeft.setVisibility(View.GONE);
             holder.cvRight.setVisibility(View.VISIBLE);
+            holder.cardViewDrCard.setVisibility(View.GONE);
             holder.tvRight.setText(chatMessageModel.messageModel.content);
         }else{
-            holder.cvLeft.setVisibility(View.VISIBLE);
-            holder.cvRight.setVisibility(View.GONE);
-            holder.tvLeft.setText(chatMessageModel.messageModel.content);
+
+            if(chatMessageModel.messageModel.type.equals("physicianCard")){
+                holder.cvLeft.setVisibility(View.GONE);
+                holder.cvRight.setVisibility(View.GONE);
+                holder.cardViewDrCard.setVisibility(View.VISIBLE);
+                holder.tv_dr_name.setText(chatMessageModel.messageModel.physicianName);
+                holder.tv_fees.setText("Rs."+chatMessageModel.messageModel.fee);
+
+
+            }else{
+                holder.cvLeft.setVisibility(View.VISIBLE);
+                holder.cvRight.setVisibility(View.GONE);
+                holder.cardViewDrCard.setVisibility(View.GONE);
+                holder.tvLeft.setText(chatMessageModel.messageModel.content);
+            }
         }
 
         if(position == (messageList.size()-1)){
@@ -122,6 +130,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         RelativeLayout  cvRight;
         TextView tvRight;
         TextView tvDate;
+        CardView cardViewDrCard;
+        ImageView iv_dr_image;
+        TextView tv_dr_name;
+        TextView tv_dr_details;
+        TextView tv_fees;
+        Button btn_view;
 
 
 
@@ -133,6 +147,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             cvRight = (RelativeLayout ) itemView.findViewById(R.id.card_view_right);
             tvRight = (TextView) itemView.findViewById(R.id.tv_right);
             tvDate = (TextView) itemView.findViewById(R.id.tv_date);
+            cardViewDrCard = (CardView) itemView.findViewById(R.id.cardView_dr_card);
+            iv_dr_image = (ImageView) itemView.findViewById(R.id.iv_dr_image);
+            tv_dr_name = (TextView) itemView.findViewById(R.id.tv_dr_name);
+            tv_dr_details = (TextView) itemView.findViewById(R.id.tv_dr_details);
+            tv_fees = (TextView) itemView.findViewById(R.id.tv_fees);
+            btn_view = (Button) itemView.findViewById(R.id.btn_view);
         }
     }
 

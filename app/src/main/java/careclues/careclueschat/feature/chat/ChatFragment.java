@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -89,6 +91,11 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public AnswerView view_answer;
     //    private ChatMessageModel lastMessage;
     private ServerMessageModel lastMessage;
+
+
+    @BindView(R.id.iv_test)
+    ImageView iv_test;
+
 
     private View view;
 
@@ -463,12 +470,21 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 Uri uri = data.getData();
                 String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
                 File file = new File(mImagePath);
+
+                Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
+                iv_test.setImageBitmap(bitmap);
+
+                presenter.copy(file,getActivity(),roomId,".jpg");
+
                 // TODO ---------- Upload Image
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (requestCode == AppConstant.RequestTag.PICK_CAMERA_REQUEST && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
+            presenter.saveToInternalStorage(getActivity(),roomId,photo);
+
+            iv_test.setImageBitmap(photo);
 //            String mImagePath = AppUtil.getAbsolutePathFromContentURI(ChatActivity.this, uri);
         } else if (requestCode == AppConstant.RequestTag.PICK_DOCUMENT_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
@@ -476,7 +492,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
                 File file = new File(mImagePath);
 //                presenter.uploadFile(file,"Test Upload File");
-
+                presenter.copy(file,getActivity(),roomId,".pdf");
                 // TODO ---------- Upload Image
             } catch (Exception e) {
                 e.printStackTrace();

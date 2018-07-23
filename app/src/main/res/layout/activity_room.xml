@@ -31,12 +31,12 @@ tools:context=".feature.room.RoomMainActivity">
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:src="@drawable/ic_cloud"
-            app:layout_constraintBottom_toTopOf="@+id/imageView3"
+            app:layout_constraintBottom_toTopOf="@+id/iv_dr_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/iv_dr_image"
             android:layout_width="50dp"
             android:layout_height="75dp"
             android:layout_centerInParent="true"
@@ -65,7 +65,7 @@ tools:context=".feature.room.RoomMainActivity">
             android:src="@drawable/ic_smartphone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+            app:layout_constraintTop_toBottomOf="@+id/iv_dr_image" />
 
         <TextView
             android:layout_width="match_parent"

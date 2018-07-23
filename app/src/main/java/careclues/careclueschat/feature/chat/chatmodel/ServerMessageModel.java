@@ -27,4 +27,18 @@ public class ServerMessageModel {
     @SerializedName("options")
     public List<String> options;
 
+    @SerializedName("health_topic")
+    public CategoryModel health_topic;
+    @SerializedName("text_consultation_link")
+    public String textConsultationLink;
+    @SerializedName("physician_link")
+    public String physicianLink;
+    @SerializedName("fee")
+    public double fee;
+    @SerializedName("physician_name")
+    public String physicianName;
+
+
+
+
 }
