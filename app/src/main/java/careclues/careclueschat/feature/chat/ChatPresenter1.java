@@ -38,6 +38,7 @@ import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LanguageResponseModel;
 import careclues.careclueschat.model.MessageResponseModel;
+import careclues.careclueschat.model.PhysicianResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.SymptomResponseModel;
@@ -667,5 +668,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
             in.close();
         }
     }
+
+
 
 }

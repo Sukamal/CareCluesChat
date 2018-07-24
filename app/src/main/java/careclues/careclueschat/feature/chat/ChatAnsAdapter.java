@@ -17,6 +17,10 @@ import java.util.List;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
+import careclues.careclueschat.model.PhysicianResponseModel;
+import careclues.careclueschat.network.NetworkError;
+import careclues.careclueschat.network.RestApiExecuter;
+import careclues.careclueschat.network.ServiceCallBack;
 
 /**
  * Created by SukamalD on 6/15/2018.
@@ -30,6 +34,7 @@ public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHo
     private Context context;
     private boolean isMultiSelect;
     private OnAdapterItemClickListener itemClickListener;
+
 
     public ChatAnsAdapter(Context context, List<ChatAnsModel> ansList, boolean isMultiSelect){
         this.context = context;
@@ -133,5 +138,7 @@ public class ChatAnsAdapter extends RecyclerView.Adapter<ChatAnsAdapter.MyViewHo
 
         }
     }
+
+
 
 }

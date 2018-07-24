@@ -1,6 +1,8 @@
 package careclues.careclueschat.feature.chat;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,12 +14,21 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
+import careclues.careclueschat.model.PhysicianResponseModel;
+import careclues.careclueschat.model.QualificationModel;
+import careclues.careclueschat.model.SpecializationModel;
+import careclues.careclueschat.network.NetworkError;
+import careclues.careclueschat.network.RestApiExecuter;
+import careclues.careclueschat.network.ServiceCallBack;
+import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.DateFormatter;
 
 /**
@@ -31,6 +42,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     private String userId;
     private DateFormatter.Formatter dateFormatter;
     private InputTypeListner inputTypeListner;
+    private RestApiExecuter apiExecuter;
+    private PhysicianResponseModel physicianResponseModel;
 
 
     public interface InputTypeListner{
@@ -78,11 +91,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         }else{
 
             if(chatMessageModel.messageModel.type.equals("physicianCard")){
-                holder.cvLeft.setVisibility(View.GONE);
-                holder.cvRight.setVisibility(View.GONE);
-                holder.cardViewDrCard.setVisibility(View.VISIBLE);
-                holder.tv_dr_name.setText(chatMessageModel.messageModel.physicianName);
-                holder.tv_fees.setText("Rs."+chatMessageModel.messageModel.fee);
+
+                if(physicianResponseModel == null){
+                    handleMessage(holder,chatMessageModel);
+                    getPhysicianDetails(chatMessageModel.messageModel.physicianLink);
+                }else{
+                    displayPhysicianCard(holder,chatMessageModel);
+                }
 
 
             }else{
@@ -133,7 +148,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         CardView cardViewDrCard;
         ImageView iv_dr_image;
         TextView tv_dr_name;
-        TextView tv_dr_details;
+        TextView tv_dr_details1;
+        TextView tv_dr_details2;
+        TextView tv_dr_details3;
         TextView tv_fees;
         Button btn_view;
 
@@ -150,7 +167,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             cardViewDrCard = (CardView) itemView.findViewById(R.id.cardView_dr_card);
             iv_dr_image = (ImageView) itemView.findViewById(R.id.iv_dr_image);
             tv_dr_name = (TextView) itemView.findViewById(R.id.tv_dr_name);
-            tv_dr_details = (TextView) itemView.findViewById(R.id.tv_dr_details);
+            tv_dr_details1 = (TextView) itemView.findViewById(R.id.tv_dr_details1);
+            tv_dr_details2 = (TextView) itemView.findViewById(R.id.tv_dr_details2);
+            tv_dr_details3 = (TextView) itemView.findViewById(R.id.tv_dr_details3);
             tv_fees = (TextView) itemView.findViewById(R.id.tv_fees);
             btn_view = (Button) itemView.findViewById(R.id.btn_view);
         }
@@ -192,4 +211,78 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         Date previousPositionDate = ((ChatMessageModel) messageList.get(position)).createdAt;
         return DateFormatter.isSameDay(dateToCompare, previousPositionDate);
     }
+
+    public void getPhysicianDetails(String url){
+        String urlLink = url + "?expand=specializations,qualifications,reviews_count,ratings";
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+
+        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<PhysicianResponseModel>(PhysicianResponseModel.class) {
+            @Override
+            public void onSuccess(PhysicianResponseModel response) {
+                physicianResponseModel =  response;
+                handler.sendEmptyMessage(PHYSICIAN_DETAILS_FETCHED);
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                physicianResponseModel = null;
+            }
+        });
+    }
+
+    private void displayPhysicianCard(MyViewHolder holder,ChatMessageModel chatMessageModel){
+        holder.cvLeft.setVisibility(View.GONE);
+        holder.cvRight.setVisibility(View.GONE);
+        holder.cardViewDrCard.setVisibility(View.VISIBLE);
+//        holder.tv_dr_name.setText("HH "+chatMessageModel.messageModel.physicianName);
+//        holder.tv_fees.setText("RRs."+chatMessageModel.messageModel.fee);
+        holder.tv_dr_name.setText(chatMessageModel.messageModel.physicianName);
+        holder.tv_fees.setText("Rs."+chatMessageModel.messageModel.fee);
+
+        Picasso.with(context)
+                .load(physicianResponseModel.data.getLink("profile_photo"))
+                .into(holder.iv_dr_image);
+
+        StringBuffer qualification = new StringBuffer();
+        for(QualificationModel qualificationModel : physicianResponseModel.data.qualifications){
+            qualification.append(qualificationModel.degree);
+            if(qualificationModel.specialty != null && qualificationModel.specialty.length() > 0){
+                qualification.append("(");
+                qualification.append(qualificationModel.specialty);
+                qualification.append("), ");
+            }
+        }
+
+        StringBuffer speciality = new StringBuffer();
+        for(SpecializationModel specializationModel : physicianResponseModel.data.specializations){
+            speciality.append(specializationModel.subspecialty);
+        }
+
+        holder.tv_dr_details1.setText(""+physicianResponseModel.data.yearsOfExperience + "Years of experience");
+        holder.tv_dr_details2.setText(qualification.toString());
+        holder.tv_dr_details3.setText(speciality.toString());
+
+
+    }
+
+    private Handler handler;
+    private final int PHYSICIAN_DETAILS_FETCHED = 101;
+
+    private void handleMessage(final MyViewHolder holder,final ChatMessageModel chatMessageModel) {
+        handler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(android.os.Message msg) {
+                switch (msg.what) {
+                    case PHYSICIAN_DETAILS_FETCHED:
+                        displayPhysicianCard(holder,chatMessageModel);
+                        break;
+
+                }
+            }
+        };
+    }
+
 }

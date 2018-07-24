@@ -138,7 +138,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/card_view_right"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -181,20 +181,46 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_dr_details"
+                android:id="@+id/tv_dr_details1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:text="MBBS (General Medicine), MD(Psychiatry)
-Psychiatrist, Addiction Psychiatrist, Neuropsychiatrist"
+                android:text="MBBS (General Medicine), MD(Psychiatry)"
                 android:textColor="@color/black"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tv_dr_name"
                 app:layout_constraintTop_toBottomOf="@+id/tv_dr_name" />
+
+            <TextView
+                android:id="@+id/tv_dr_details2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Psychiatrist, Addiction Psychiatrist"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tv_dr_details1"
+                app:layout_constraintTop_toBottomOf="@+id/tv_dr_details1" />
+
+            <TextView
+                android:id="@+id/tv_dr_details3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Neuropsychiatrist"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tv_dr_details2"
+                app:layout_constraintTop_toBottomOf="@+id/tv_dr_details2" />
 
             <TextView
                 android:id="@+id/tv_fees"
