@@ -14,5 +14,6 @@ public interface AnswerSelectionListner {
     public void onOptionSelected(String option);
     public void onSimpleTextSelected(String msg);
     public void onLanguageSelected(String option);
+    public void onPayButtonClick();
 }
 

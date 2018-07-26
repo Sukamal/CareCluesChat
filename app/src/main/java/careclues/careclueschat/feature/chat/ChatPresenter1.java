@@ -281,6 +281,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
             @Override
             public void onSuccess(TextConsultantResponseModel response) {
 
+//                TODO  save textconsaltation model
+                CareCluesChatApplication.textConsultantResponseModel = response;
                 Log.v("API","sucess");
 
             }
@@ -417,7 +419,12 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 displayTextInput();
             }
         } else {
-            displayBlank();
+            if(messageModel.type.equalsIgnoreCase("physicianCard")){
+                displayPayFees();
+            }else{
+                displayBlank();
+
+            }
         }
     }
 
@@ -427,6 +434,10 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     private void displayTextInput() {
         view.displayTextInput();
+    }
+
+    private void displayPayFees(){
+        view.displayPayFee();
     }
 
     private void getFamilyMember() {

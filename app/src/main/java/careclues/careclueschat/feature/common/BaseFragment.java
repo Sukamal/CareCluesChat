@@ -1,6 +1,8 @@
 package careclues.careclueschat.feature.common;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,16 +18,33 @@ public class BaseFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public void addFragment(Fragment fragment, Bundle bundle){
-        if(bundle != null){
-            fragment.setArguments(bundle);
-        }
-        if (getActivity() != null){
-            FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
-            fragmentTransaction.addToBackStack(fragment.getClass().getName());
-            fragmentTransaction.commit();
-        }
+
+    public void addFragment(final Fragment fragment, final boolean addtoBac, final Bundle bundle){
+
+
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(bundle != null){
+                    fragment.setArguments(bundle);
+                }
+
+                if (!getActivity().isFinishing() /*&& !isDestroyed()*/) {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                fragmentManager.popBackStackImmediate(fragment.getClass().getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
+                    if(addtoBac){
+                        fragmentTransaction.addToBackStack(fragment.getClass().getName());
+                    }
+//                fragmentTransaction.commitAllowingStateLoss();
+                    fragmentTransaction.commit();
+                }
+
+
+
+            }
+        });
     }
 
     public void popFragmentBackstack(String fragmentName, boolean isInclusive){
