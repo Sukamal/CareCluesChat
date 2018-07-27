@@ -14,5 +14,5 @@ public class LinkWalletValidateOtpRequest {
     public String state;
     @SerializedName("otp")
     @Expose
-    public int otp;
+    public String otp;
 }

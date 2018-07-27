@@ -3,6 +3,7 @@ package careclues.careclueschat.feature.paytm;
 import java.util.List;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.model.OtpResponseModel;
 import careclues.careclueschat.model.PaytmBalanceResponseModel;
 import careclues.careclueschat.model.PaytmWalletResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
@@ -22,6 +23,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
     private RestApiExecuter apiExecuter;
     private PaytmWalletResponseModel paytmWalletResponseModel;
     private PaytmBalanceResponseModel paytmBalanceResponseModel;
+    private OtpResponseModel otpResponseModel;
 
 
 
@@ -97,26 +99,17 @@ public class PaymentPresenter implements PaymentContract.presenter {
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-//        apiExecuter.getServerResponse(url, new ServiceCallBack<PaytmBalanceResponseModel>(PaytmBalanceResponseModel.class) {
-//            @Override
-//            public void onSuccess(PaytmBalanceResponseModel response) {
-//                paytmBalanceResponseModel = response;
-//                if(paytmBalanceResponseModel != null){
-//                    if(paytmBalanceResponseModel.data.status != null && paytmBalanceResponseModel.data.status.equalsIgnoreCase("ACTIVE")){
-//                        view.showPaytmBalance(paytmBalanceResponseModel.data.walletBalance);
-//                    }else{
-//                        view.showPaytmNotLinked();
-//                    }
-//                }else{
-//                    view.showPaytmNotLinked();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(List<NetworkError> errorList) {
-//                paytmBalanceResponseModel = null;
-//            }
-//        });
+        apiExecuter.getServerResponse(url, new ServiceCallBack<OtpResponseModel>(OtpResponseModel.class) {
+            @Override
+            public void onSuccess(OtpResponseModel response) {
+                otpResponseModel = response;
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                paytmBalanceResponseModel = null;
+            }
+        });
     }
 
     private void validateOtp(){
@@ -124,25 +117,25 @@ public class PaymentPresenter implements PaymentContract.presenter {
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-//        apiExecuter.getServerResponse(url, new ServiceCallBack<PaytmBalanceResponseModel>(PaytmBalanceResponseModel.class) {
-//            @Override
-//            public void onSuccess(PaytmBalanceResponseModel response) {
-//                paytmBalanceResponseModel = response;
-//                if(paytmBalanceResponseModel != null){
-//                    if(paytmBalanceResponseModel.data.status != null && paytmBalanceResponseModel.data.status.equalsIgnoreCase("ACTIVE")){
-//                        view.showPaytmBalance(paytmBalanceResponseModel.data.walletBalance);
-//                    }else{
-//                        view.showPaytmNotLinked();
-//                    }
-//                }else{
-//                    view.showPaytmNotLinked();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(List<NetworkError> errorList) {
-//                paytmBalanceResponseModel = null;
-//            }
-//        });
+        apiExecuter.getServerResponse(url, new ServiceCallBack<PaytmBalanceResponseModel>(PaytmBalanceResponseModel.class) {
+            @Override
+            public void onSuccess(PaytmBalanceResponseModel response) {
+                paytmBalanceResponseModel = response;
+                if(paytmBalanceResponseModel != null){
+                    if(paytmBalanceResponseModel.data.status != null && paytmBalanceResponseModel.data.status.equalsIgnoreCase("ACTIVE")){
+                        view.showPaytmBalance(paytmBalanceResponseModel.data.walletBalance);
+                    }else{
+                        view.showPaytmNotLinked();
+                    }
+                }else{
+                    view.showPaytmNotLinked();
+                }
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                paytmBalanceResponseModel = null;
+            }
+        });
     }
 }

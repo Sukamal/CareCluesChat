@@ -11,5 +11,5 @@ public class LinkWalletSendOtpRequest {
 
     @SerializedName("mobile_number")
     @Expose
-    public int mobileNo;
+    public String mobileNo;
 }
