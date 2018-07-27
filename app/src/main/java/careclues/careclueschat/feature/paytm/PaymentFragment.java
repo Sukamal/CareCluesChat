@@ -18,6 +18,7 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.model.UserProfileResponseModel;
+import careclues.careclueschat.util.AppDialog;
 
 /**
  * Created by SukamalD on 7/26/2018.
@@ -41,6 +42,15 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     EditText etOtp;
     @BindView(R.id.btnOtpSubmit)
     Button btnOtpSubmit;
+    @BindView(R.id.btnPay)
+    Button btnPay;
+
+    private double debitAmount = 200;
+
+    private int btnType;
+
+    private final int TYPE_PAY = 1;
+    private final int TYPE_ADD_MONEY = 2;
 
 
 
@@ -82,6 +92,8 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
         tvLinkWalet.setVisibility(View.VISIBLE);
         tvBalance.setVisibility(View.GONE);
         tvLinkWalet.setOnClickListener(this);
+        btnPay.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -89,6 +101,20 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
         tvLinkWalet.setVisibility(View.GONE);
         tvBalance.setVisibility(View.VISIBLE);
         tvBalance.setText("Rs."+ballance);
+
+        btnPay.setVisibility(View.VISIBLE);
+        btnPay.setOnClickListener(this);
+
+        if(debitAmount > ballance){
+            btnPay.setText("Add Money");
+            btnType = TYPE_ADD_MONEY;
+        }else{
+            btnPay.setText("Pay");
+            btnType = TYPE_PAY;
+
+        }
+
+
     }
 
     @Override
@@ -119,13 +145,36 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tvLinkWalet:
-                presenter.linkPaytmSendOtp();
-                listenToSms();
+                showLinkWalletDialog();
                 break;
             case R.id.btnOtpSubmit:
                 presenter.validateOtp(etOtp.getText().toString());
                 break;
+            case R.id.btnPay:
+                showLinkWalletDialog();
+                if(btnType == TYPE_PAY){
+
+                }else if(btnType == TYPE_ADD_MONEY){
+
+                }
+                break;
         }
+    }
+
+    private void showLinkWalletDialog(){
+        AppDialog appDialog = new AppDialog();
+        appDialog.showLinkWalletDialog(getActivity(), "", "", new AppDialog.DialogListener() {
+            @Override
+            public void OnPositivePress(Object val) {
+                presenter.linkPaytmSendOtp();
+                listenToSms();
+            }
+
+            @Override
+            public void OnNegativePress() {
+
+            }
+        });
     }
 
     private void listenToSms(){

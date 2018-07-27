@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -193,6 +194,50 @@ public class AppDialog {
 
                 }
             });
+        }
+
+    }
+
+
+    public void showLinkWalletDialog(final Activity context, String title, String msg, final DialogListener listener) {
+        if (!((Activity) context).isFinishing()) {
+            dialog = new Dialog(context);
+            dialog.setCancelable(false);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_link_wallet);
+
+            int diveWidth = AppUtil.getDeviceWidthHeight(context).x;
+            dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            EditText  etMobileNo = (EditText) dialog.findViewById(R.id.etMobileNo);
+            dialog.show();
+
+            TextView tvOk = (TextView) dialog.findViewById(R.id.tvOk);
+            tvOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if(listener != null){
+                        listener.OnPositivePress(null);
+                    }
+
+                }
+            });
+
+            TextView tvCancel =  (TextView) dialog.findViewById(R.id.tvCancel);
+            tvCancel.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if(listener != null){
+                        listener.OnNegativePress();
+                    }
+
+                }
+            });
+
         }
 
     }
