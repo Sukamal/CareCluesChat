@@ -1,8 +1,12 @@
 package careclues.careclueschat.network;
 
+import careclues.careclueschat.model.AddMoneyRequest;
 import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.LanguageModel;
+import careclues.careclueschat.model.LinkWalletSendOtpRequest;
+import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
+import careclues.careclueschat.model.UpdatePaymentModeRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -34,5 +38,17 @@ public interface ServerApiInterface {
 
     @POST
     public Call<ResponseBody> createTextConsultant(@Url String url, @Body CreateTextConsultantModel body );
+
+    @POST
+    public Call<ResponseBody> linkWalletSendOtp(@Url String url, @Body LinkWalletSendOtpRequest body );
+
+    @POST
+    public Call<ResponseBody> linkWalletValidateOtp(@Url String url, @Body LinkWalletValidateOtpRequest body );
+
+    @POST
+    public Call<ResponseBody> updatePaymentMode(@Url String url, @Body UpdatePaymentModeRequest body );
+
+    @POST
+    public Call<ResponseBody> addMoneyToWallet(@Url String url, @Body AddMoneyRequest body );
 
 }

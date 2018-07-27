@@ -45,6 +45,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.BaseFragment;
+import careclues.careclueschat.feature.paytm.PaymentFragment;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.HealthTopicModel;
@@ -56,10 +57,12 @@ import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.views.AnswerView;
 import careclues.careclueschat.views.FamilyMemberView;
+import careclues.careclueschat.views.MakePaymentView;
 import careclues.careclueschat.views.MessageInputView;
 
 import static android.app.Activity.RESULT_OK;
 import static careclues.careclueschat.feature.chat.ChatFragment.InputType.TYPE_FAMILY_MEMBER;
+import static careclues.careclueschat.feature.chat.ChatFragment.InputType.TYPE_PAY_FEES;
 import static careclues.careclueschat.feature.chat.ChatFragment.InputType.TYPE_SELECT_ANSWERS;
 import static careclues.careclueschat.feature.chat.ChatFragment.InputType.TYPE_TEXT;
 
@@ -89,10 +92,10 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public FamilyMemberView viewFamilymember;
     @BindView(R.id.view_answer)
     public AnswerView view_answer;
+    @BindView(R.id.view_pay_fee)
+    public MakePaymentView view_PayFee;
     //    private ChatMessageModel lastMessage;
     private ServerMessageModel lastMessage;
-
-
     @BindView(R.id.iv_test)
     ImageView iv_test;
 
@@ -103,7 +106,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public enum InputType {
         TYPE_TEXT,
         TYPE_FAMILY_MEMBER,
-        TYPE_SELECT_ANSWERS
+        TYPE_SELECT_ANSWERS,
+        TYPE_PAY_FEES
     }
 
 
@@ -264,6 +268,13 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         dispayTemplet(TYPE_TEXT);
     }
 
+    @Override
+    public void displayPayFee() {
+        view_PayFee.setAnsSelectionListner(this);
+        dispayTemplet(TYPE_PAY_FEES);
+
+    }
+
 
     @Override
     public void displayNothing() {
@@ -360,6 +371,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             viewFamilymember.setVisibility(View.VISIBLE);
         } else if (type == TYPE_SELECT_ANSWERS) {
             view_answer.setVisibility(View.VISIBLE);
+        }else if (type == TYPE_PAY_FEES) {
+            view_PayFee.setVisibility(View.VISIBLE);
         }
     }
 
@@ -432,6 +445,13 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void onLanguageSelected(String option) {
         //TODO add server call to post language
         presenter.addLanguageApiCall(option);
+    }
+
+    @Override
+    public void onPayButtonClick() {
+        Toast.makeText(getActivity(), "Click On Pay Button ChatFragment", Toast.LENGTH_SHORT).show();
+        Fragment fragment = new PaymentFragment();
+        addFragment(fragment,true,null);
     }
 
     @Override

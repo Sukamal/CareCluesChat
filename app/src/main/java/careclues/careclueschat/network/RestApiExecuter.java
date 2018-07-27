@@ -10,14 +10,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 
+import careclues.careclueschat.model.AddMoneyRequest;
 import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.LanguageModel;
+import careclues.careclueschat.model.LinkWalletSendOtpRequest;
+import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
 import careclues.careclueschat.model.LoginRequest;
 import careclues.careclueschat.model.AuthToken;
 import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
 import careclues.careclueschat.model.SetTopicRequest;
+import careclues.careclueschat.model.UpdatePaymentModeRequest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -175,6 +179,26 @@ public class RestApiExecuter {
 
     public <T> void createTextConsultant(String url, CreateTextConsultantModel dataModel, ServiceCallBack<T> serviceCallBack) {
         Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).createTextConsultant(url,dataModel);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void linkWalletSendOtp(String url, LinkWalletSendOtpRequest dataModel, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).linkWalletSendOtp(url,dataModel);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void linkWalletValidateOtp(String url, LinkWalletValidateOtpRequest dataModel, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).linkWalletValidateOtp(url,dataModel);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void updatePaymentMode(String url, UpdatePaymentModeRequest dataModel, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).updatePaymentMode(url,dataModel);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void addMoneyToWallet(String url, AddMoneyRequest dataModel, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).addMoneyToWallet(url,dataModel);
         execute(call,serviceCallBack);
     }
 }

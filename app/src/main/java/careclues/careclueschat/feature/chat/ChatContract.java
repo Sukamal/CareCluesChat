@@ -31,6 +31,7 @@ public interface ChatContract {
         public void displayOptions(List<String> data);
         public void displayNothing();
         public void displayTextInput();
+        public void displayPayFee();
         public void onUpdateLanguageToServer(String languages);
     }
 
