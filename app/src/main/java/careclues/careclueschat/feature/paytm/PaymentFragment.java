@@ -3,9 +3,13 @@ package careclues.careclueschat.feature.paytm;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -31,6 +35,13 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     TextView tvBalance;
 
 
+    @BindView(R.id.llValidateOtp)
+    LinearLayout llValidateOtp;
+    @BindView(R.id.etOtp)
+    EditText etOtp;
+    @BindView(R.id.btnOtpSubmit)
+    Button btnOtpSubmit;
+
 
 
 
@@ -47,6 +58,7 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
         presenter = new PaymentPresenter(this);
         userProfileModel = CareCluesChatApplication.userProfile;
         presenter.isPaytmLinked();
+
     }
 
     @Override
@@ -80,6 +92,25 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     }
 
     @Override
+    public void onOtpSend() {
+        llValidateOtp.setVisibility(View.VISIBLE);
+        btnOtpSubmit.setOnClickListener(PaymentFragment.this);
+    }
+
+    @Override
+    public void otpValidationSuccess() {
+        llValidateOtp.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void otpValidationFail() {
+        llValidateOtp.setVisibility(View.VISIBLE);
+        btnOtpSubmit.setText("Re Submit");
+
+    }
+
+    @Override
     public void displyNextScreen() {
 
     }
@@ -89,7 +120,20 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
         switch (view.getId()){
             case R.id.tvLinkWalet:
                 presenter.linkPaytmSendOtp();
+                listenToSms();
+                break;
+            case R.id.btnOtpSubmit:
+                presenter.validateOtp(etOtp.getText().toString());
                 break;
         }
+    }
+
+    private void listenToSms(){
+        SmsReceiver.bindListener(new SmsListener() {
+            @Override
+            public void messageReceived(String messageText) {
+                Log.d("Text",messageText);
+            }
+        });
     }
 }

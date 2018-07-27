@@ -3,10 +3,13 @@ package careclues.careclueschat.feature.paytm;
 import java.util.List;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.model.LinkWalletSendOtpRequest;
+import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
 import careclues.careclueschat.model.OtpResponseModel;
 import careclues.careclueschat.model.PaytmBalanceResponseModel;
 import careclues.careclueschat.model.PaytmWalletResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
+import careclues.careclueschat.model.ValidateOtpModel;
 import careclues.careclueschat.network.ApiClient;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
@@ -24,6 +27,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
     private PaytmWalletResponseModel paytmWalletResponseModel;
     private PaytmBalanceResponseModel paytmBalanceResponseModel;
     private OtpResponseModel otpResponseModel;
+    private ValidateOtpModel validateOtpModel;
 
 
 
@@ -99,42 +103,46 @@ public class PaymentPresenter implements PaymentContract.presenter {
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-        apiExecuter.getServerResponse(url, new ServiceCallBack<OtpResponseModel>(OtpResponseModel.class) {
+
+        LinkWalletSendOtpRequest linkWalletSendOtpRequest = new LinkWalletSendOtpRequest();
+        linkWalletSendOtpRequest.mobileNo = CareCluesChatApplication.userProfile.data.mobileNumber;
+
+        apiExecuter.linkWalletSendOtp(url,linkWalletSendOtpRequest, new ServiceCallBack<OtpResponseModel>(OtpResponseModel.class) {
             @Override
             public void onSuccess(OtpResponseModel response) {
                 otpResponseModel = response;
+                view.onOtpSend();
             }
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
-                paytmBalanceResponseModel = null;
+                otpResponseModel = null;
             }
         });
     }
 
-    private void validateOtp(){
+    @Override
+    public void validateOtp(String otp){
         String url = ApiClient.API_BASE_URL + "wallets/paytm/otp_validation";
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-        apiExecuter.getServerResponse(url, new ServiceCallBack<PaytmBalanceResponseModel>(PaytmBalanceResponseModel.class) {
+        LinkWalletValidateOtpRequest linkWalletValidateOtpRequest = new LinkWalletValidateOtpRequest();
+        linkWalletValidateOtpRequest.state = otpResponseModel.data.state;
+        linkWalletValidateOtpRequest.otp = otp;
+
+        apiExecuter.linkWalletValidateOtp(url,linkWalletValidateOtpRequest, new ServiceCallBack<ValidateOtpModel>(ValidateOtpModel.class) {
             @Override
-            public void onSuccess(PaytmBalanceResponseModel response) {
-                paytmBalanceResponseModel = response;
-                if(paytmBalanceResponseModel != null){
-                    if(paytmBalanceResponseModel.data.status != null && paytmBalanceResponseModel.data.status.equalsIgnoreCase("ACTIVE")){
-                        view.showPaytmBalance(paytmBalanceResponseModel.data.walletBalance);
-                    }else{
-                        view.showPaytmNotLinked();
-                    }
-                }else{
-                    view.showPaytmNotLinked();
-                }
+            public void onSuccess(ValidateOtpModel response) {
+                validateOtpModel = response;
+                view.otpValidationSuccess();
             }
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
-                paytmBalanceResponseModel = null;
+                validateOtpModel = null;
+                view.otpValidationFail();
+
             }
         });
     }

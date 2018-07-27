@@ -12,6 +12,10 @@ public interface PaymentContract {
 
         public void showPaytmNotLinked();
         public void showPaytmBalance(double ballance);
+        public void onOtpSend();
+        public void otpValidationSuccess();
+        public void otpValidationFail();
+
         public void displyNextScreen();
 
     }
@@ -21,5 +25,6 @@ public interface PaymentContract {
         public void fetchPaytmData();
         public void fetchPaytmBalance();
         public void linkPaytmSendOtp();
+        public void validateOtp(String otp);
     }
 }
