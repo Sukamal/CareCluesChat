@@ -100,7 +100,7 @@
                 android:layout_toLeftOf="@+id/tvLinkWalet"/>
 
 
-            <LinearLayout
+            <!--<LinearLayout
                 android:id="@+id/llValidateOtp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:text="Submit"/>
 
-            </LinearLayout>
+            </LinearLayout>-->
 
 
         </RelativeLayout>

@@ -37,6 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import careclues.careclueschat.R;
+import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.chat.chatmodel.CategoryModel;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
@@ -355,6 +356,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void onInputType(ServerMessageModel messageModel) {
         if (messageModel != null) {
             lastMessage = messageModel;
+            CareCluesChatApplication.messageModel = lastMessage;
             presenter.enableInputControlOptions(messageModel);
 
         }
@@ -384,6 +386,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void nextMessage() {
         Log.v("NEXT MSG : ", testmsglist.get(count).text);
         lastMessage = testmsglist.get(count).messageModel;
+        CareCluesChatApplication.messageModel = lastMessage;
         onInputType(lastMessage);
         count++;
     }
@@ -393,6 +396,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         count--;
         Log.v("NEXT MSG : ", testmsglist.get(count).text);
         lastMessage = testmsglist.get(count).messageModel;
+        CareCluesChatApplication.messageModel = lastMessage;
         onInputType(lastMessage);
 
     }

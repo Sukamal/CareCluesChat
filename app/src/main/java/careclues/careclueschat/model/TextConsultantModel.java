@@ -65,4 +65,17 @@ public class TextConsultantModel {
     @SerializedName("discount_amount")
     @Expose
     public String discountAmount;
+
+    public String getLink(String key){
+        String retVal = null;
+        if(links != null){
+            for(LinkModel linkModel : links){
+                if(linkModel.rel.equals(key)){
+                    retVal = linkModel.href;
+                    return retVal;
+                }
+            }
+        }
+        return retVal;
+    }
 }

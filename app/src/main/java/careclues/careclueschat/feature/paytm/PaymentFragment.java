@@ -3,6 +3,7 @@ package careclues.careclueschat.feature.paytm;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.util.AppDialog;
@@ -36,12 +38,6 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     TextView tvBalance;
 
 
-    @BindView(R.id.llValidateOtp)
-    LinearLayout llValidateOtp;
-    @BindView(R.id.etOtp)
-    EditText etOtp;
-    @BindView(R.id.btnOtpSubmit)
-    Button btnOtpSubmit;
     @BindView(R.id.btnPay)
     Button btnPay;
 
@@ -119,26 +115,25 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
 
     @Override
     public void onOtpSend() {
-        llValidateOtp.setVisibility(View.VISIBLE);
-        btnOtpSubmit.setOnClickListener(PaymentFragment.this);
+        showValidateOTPDialog();
     }
 
     @Override
     public void otpValidationSuccess() {
-        llValidateOtp.setVisibility(View.GONE);
 
     }
 
     @Override
     public void otpValidationFail() {
-        llValidateOtp.setVisibility(View.VISIBLE);
-        btnOtpSubmit.setText("Re Submit");
-
+        showValidateOTPDialog();
     }
 
     @Override
-    public void displyNextScreen() {
-
+    public void displyWebView(String path) {
+        Fragment fragment = new LoadWebPage();
+        Bundle bundle = new Bundle();
+        bundle.putString("path",path);
+        addFragment(fragment,true,bundle);
     }
 
     @Override
@@ -147,15 +142,12 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
             case R.id.tvLinkWalet:
                 showLinkWalletDialog();
                 break;
-            case R.id.btnOtpSubmit:
-                presenter.validateOtp(etOtp.getText().toString());
-                break;
             case R.id.btnPay:
-                showLinkWalletDialog();
+//                showLinkWalletDialog();
                 if(btnType == TYPE_PAY){
 
                 }else if(btnType == TYPE_ADD_MONEY){
-
+                    presenter.addMoney();
                 }
                 break;
         }
@@ -173,6 +165,21 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
             @Override
             public void OnNegativePress() {
 
+            }
+        });
+    }
+
+    private void showValidateOTPDialog(){
+        AppDialog appDialog = new AppDialog();
+        appDialog.showValidateOTPDialog(getActivity(), "", "", new AppDialog.DialogListener() {
+            @Override
+            public void OnPositivePress(Object val) {
+                presenter.validateOtp((String) val);
+            }
+
+            @Override
+            public void OnNegativePress() {
+                presenter.linkPaytmSendOtp();
             }
         });
     }

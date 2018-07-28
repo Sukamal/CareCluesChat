@@ -15,8 +15,7 @@ public interface PaymentContract {
         public void onOtpSend();
         public void otpValidationSuccess();
         public void otpValidationFail();
-
-        public void displyNextScreen();
+        public void displyWebView(String path);
 
     }
 
@@ -26,5 +25,7 @@ public interface PaymentContract {
         public void fetchPaytmBalance();
         public void linkPaytmSendOtp();
         public void validateOtp(String otp);
+        public void getTextConsultant();
+        public void addMoney();
     }
 }

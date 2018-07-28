@@ -1,19 +1,34 @@
 package careclues.careclueschat.feature.paytm;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Environment;
+import android.text.format.DateFormat;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
+import careclues.careclueschat.model.AddMoneyRequest;
 import careclues.careclueschat.model.LinkWalletSendOtpRequest;
 import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
 import careclues.careclueschat.model.OtpResponseModel;
 import careclues.careclueschat.model.PaytmBalanceResponseModel;
 import careclues.careclueschat.model.PaytmWalletResponseModel;
+import careclues.careclueschat.model.PhysicianResponseModel;
+import careclues.careclueschat.model.TextConsultantResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.model.ValidateOtpModel;
 import careclues.careclueschat.network.ApiClient;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by SukamalD on 7/26/2018.
@@ -28,6 +43,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
     private PaytmBalanceResponseModel paytmBalanceResponseModel;
     private OtpResponseModel otpResponseModel;
     private ValidateOtpModel validateOtpModel;
+    private TextConsultantResponseModel textConsultantResponseModel;
 
 
 
@@ -40,6 +56,8 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
     @Override
     public void isPaytmLinked() {
+        getTextConsultant();
+        fetchPaytmData();
         if(userProfileModel.data.getLink("paytm_wallet_balance") == null){
             view.showPaytmNotLinked();
         }else {
@@ -145,5 +163,83 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
             }
         });
+    }
+
+    @Override
+    public void getTextConsultant() {
+            String urlLink = CareCluesChatApplication.messageModel.textConsultationLink;
+            if (apiExecuter == null)
+                apiExecuter = RestApiExecuter.getInstance();
+
+
+            apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
+                @Override
+                public void onSuccess(TextConsultantResponseModel response) {
+                    textConsultantResponseModel =  response;
+
+
+                }
+
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
+                    textConsultantResponseModel = null;
+                }
+            });
+
+    }
+
+    @Override
+    public void addMoney() {
+        String urlLink = paytmWalletResponseModel.data.getLink("credits");
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        AddMoneyRequest addMoneyRequest = new AddMoneyRequest();
+
+
+        apiExecuter.addMoneyToWallet(urlLink,addMoneyRequest, new ServiceCallBack<String>(String.class) {
+            @Override
+            public void onSuccess(String response) {
+                String path = saveAsHtmlFile(response);
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+            }
+        });
+    }
+
+    public  String saveAsHtmlFile(String html){
+
+//        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
+//        if(!directory.exists()){
+//            directory.mkdirs();
+//        }
+//        String fileName = "paytm_"+DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString()+".html";
+//        File mypath = new File(directory,fileName);
+
+
+        String directory = Environment.getExternalStorageDirectory().getPath();
+        String fileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+        fileName = fileName + ".html";
+        File mypath = new File(directory, fileName);
+
+
+
+        try {
+            FileOutputStream out = new FileOutputStream(mypath);
+            byte[] data = html.getBytes();
+            out.write(data);
+            out.close();
+            view.displyWebView(mypath.getAbsolutePath());
+
+            Log.e(TAG, "File Save : " + mypath.getPath());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return mypath.getAbsolutePath();
     }
 }

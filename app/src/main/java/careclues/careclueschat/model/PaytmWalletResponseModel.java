@@ -7,4 +7,6 @@ public class PaytmWalletResponseModel extends ServerResponseBaseModel{
     @SerializedName("data")
     @Expose
     public PaytmWalletModel data;
+
+
 }

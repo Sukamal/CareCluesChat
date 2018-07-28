@@ -67,11 +67,16 @@ public class RestApiExecuter {
                 try {
                     String rawRespons = response.body().string();
                     Log.v("Response",rawRespons);
-                    JSONObject jsonObject = new JSONObject(rawRespons);
-                    Gson gson = new Gson();
-                    T resPonse = (T) gson.fromJson(jsonObject.toString(),serviceCallBack.getClassType());
-                    serviceCallBack.onSuccess(resPonse);
 
+                    if(serviceCallBack.getClassType() == String.class){
+                        T rawRes = (T) rawRespons;
+                        serviceCallBack.onSuccess(rawRes);
+                    }else{
+                        JSONObject jsonObject = new JSONObject(rawRespons);
+                        Gson gson = new Gson();
+                        T resPonse = (T) gson.fromJson(jsonObject.toString(),serviceCallBack.getClassType());
+                        serviceCallBack.onSuccess(resPonse);
+                    }
                 } catch (IOException e) {
                     serviceCallBack.onFailure(Arrays.asList(new NetworkError("","Api Error")));
                 } catch (JSONException e) {

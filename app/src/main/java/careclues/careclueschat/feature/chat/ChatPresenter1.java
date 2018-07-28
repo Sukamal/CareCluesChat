@@ -624,6 +624,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
         }
     }
 
+
+
     public  String saveToInternalStorage(Context mcoContext,String roomid,Bitmap bitmapImage){
 
         File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");

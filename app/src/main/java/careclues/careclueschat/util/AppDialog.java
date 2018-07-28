@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -227,6 +228,50 @@ public class AppDialog {
 
             TextView tvCancel =  (TextView) dialog.findViewById(R.id.tvCancel);
             tvCancel.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if(listener != null){
+                        listener.OnNegativePress();
+                    }
+
+                }
+            });
+
+        }
+
+    }
+
+    public void showValidateOTPDialog(final Activity context, String title, String msg, final DialogListener listener) {
+        if (!((Activity) context).isFinishing()) {
+            dialog = new Dialog(context);
+            dialog.setCancelable(false);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_validate_otp);
+
+            int diveWidth = AppUtil.getDeviceWidthHeight(context).x;
+            dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            final EditText  etOTP = (EditText) dialog.findViewById(R.id.etOTP);
+            TextView tvResendOtp = (TextView) dialog.findViewById(R.id.tvResendOtp);
+            Button btnValidate = (Button) dialog.findViewById(R.id.btnValidate);
+
+            dialog.show();
+
+            btnValidate.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if(listener != null){
+                        listener.OnPositivePress(etOTP.getText().toString());
+                    }
+
+                }
+            });
+
+            tvResendOtp.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
