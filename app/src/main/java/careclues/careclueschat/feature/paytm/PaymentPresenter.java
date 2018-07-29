@@ -1,5 +1,6 @@
 package careclues.careclueschat.feature.paytm;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
@@ -30,6 +31,7 @@ import careclues.careclueschat.network.ApiClient;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
+import careclues.careclueschat.util.AppConstant;
 
 import static android.content.ContentValues.TAG;
 
@@ -309,4 +311,6 @@ public class PaymentPresenter implements PaymentContract.presenter {
         }
         return mypath.getAbsolutePath();
     }
+
+
 }

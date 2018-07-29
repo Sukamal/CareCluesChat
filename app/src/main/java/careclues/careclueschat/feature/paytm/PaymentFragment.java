@@ -1,8 +1,11 @@
 package careclues.careclueschat.feature.paytm;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,7 +24,9 @@ import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.model.UserProfileResponseModel;
+import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppDialog;
+import careclues.careclueschat.util.AppUtil;
 
 /**
  * Created by SukamalD on 7/26/2018.
@@ -165,13 +171,22 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
                 presenter.updatePaymentMode(TNX_MODE_CARD);
                 break;
             case R.id.btnPay:
-//                showLinkWalletDialog();
-                if(btnType == TYPE_PAY){
-                    selectedMode = TNX_MODE_WALLET;
-                    presenter.updatePaymentMode(TNX_MODE_WALLET);
-                }else if(btnType == TYPE_ADD_MONEY){
-                    presenter.addMoney();
+
+                if (AppUtil.checkPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if(btnType == TYPE_PAY){
+                        selectedMode = TNX_MODE_WALLET;
+                        presenter.updatePaymentMode(TNX_MODE_WALLET);
+                    }else if(btnType == TYPE_ADD_MONEY){
+                        presenter.addMoney();
+                    }
+                } else {
+                    askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 }
+
+
+
+
+
                 break;
         }
     }
@@ -214,5 +229,34 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
                 Log.d("Text",messageText);
             }
         });
+    }
+
+
+
+    public void askPermission(String permission) {
+        switch (permission) {
+            case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, AppConstant.RequestTag.PERMISSION_REQUEST_CODE_STORAGE_REQUEST);
+                break;
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case AppConstant.RequestTag.PERMISSION_REQUEST_CODE_STORAGE_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(btnType == TYPE_PAY){
+                        selectedMode = TNX_MODE_WALLET;
+                        presenter.updatePaymentMode(TNX_MODE_WALLET);
+                    }else if(btnType == TYPE_ADD_MONEY){
+                        presenter.addMoney();
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "WRITE_EXTERNAL_STORAGE Permission Denied.", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
     }
 }
