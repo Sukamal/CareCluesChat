@@ -36,6 +36,8 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     TextView tvLinkWalet;
     @BindView(R.id.tvBalance)
     TextView tvBalance;
+    @BindView(R.id.tvCard)
+    TextView tvCard;
 
 
     @BindView(R.id.btnPay)
@@ -47,6 +49,11 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
 
     private final int TYPE_PAY = 1;
     private final int TYPE_ADD_MONEY = 2;
+
+    private final String TNX_MODE_WALLET = "paytm";
+    private final String TNX_MODE_CARD = "payment_gateway";
+
+    private String selectedMode;
 
 
 
@@ -137,15 +144,31 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     }
 
     @Override
+    public void onPaymentModeUpdated() {
+
+        if(selectedMode.equals(TNX_MODE_WALLET)){
+            presenter.payViaWallet();
+        }else if(selectedMode.equals(TNX_MODE_WALLET)){
+            presenter.payViaGateway();
+
+        }
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tvLinkWalet:
                 showLinkWalletDialog();
                 break;
+            case R.id.tvCard:
+                selectedMode = TNX_MODE_CARD;
+                presenter.updatePaymentMode(TNX_MODE_CARD);
+                break;
             case R.id.btnPay:
 //                showLinkWalletDialog();
                 if(btnType == TYPE_PAY){
-
+                    selectedMode = TNX_MODE_WALLET;
+                    presenter.updatePaymentMode(TNX_MODE_WALLET);
                 }else if(btnType == TYPE_ADD_MONEY){
                     presenter.addMoney();
                 }

@@ -14,6 +14,7 @@ import com.rocketchat.core.model.Message;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.AddLanguageResponseModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.CreateTextConsultantModel;
+import careclues.careclueschat.model.FileUploadRequest;
 import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LanguageResponseModel;
@@ -59,6 +61,8 @@ import careclues.rocketchat.common.CcRocketChatException;
 import careclues.rocketchat.models.CcBaseRoom;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcUser;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class ChatPresenter1 implements ChatContract.presenter {
 
@@ -218,6 +222,47 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //
 //            }
 //        });
+
+
+        String urlLink = CareCluesChatApplication.textConsultantResponseModel.data.getLink("documents");
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        byte[] fileByte = new byte[(int) file.length()];
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            fileInputStream.read(fileByte);
+            for (int i = 0; i < fileByte.length; i++) {
+                System.out.print((char)fileByte[i]);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File Not Found.");
+            e.printStackTrace();
+        }
+        catch (IOException e1) {
+            System.out.println("Error Reading The File.");
+            e1.printStackTrace();
+        }
+
+//        RequestBody body = RequestBody.create(MediaType.parse("application/octet-stream"), b);
+
+        FileUploadRequest uploadRequest = new FileUploadRequest();
+        uploadRequest.file = fileByte;
+
+        apiExecuter.uploadFile(urlLink,uploadRequest,new ServiceCallBack<String>(String.class) {
+            @Override
+            public void onSuccess(String response) {
+
+                String respon = response;
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+
+
     }
 
     @Override

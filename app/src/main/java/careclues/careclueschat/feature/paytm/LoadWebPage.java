@@ -37,7 +37,7 @@ public class LoadWebPage extends BaseFragment{
         view = inflater.inflate(R.layout.fragment_load_webpage, container, false);
         ButterKnife.bind(this, view);
         path = (String) getArguments().getString("path");
-        path = "file://"+ path;
+//        path = "file://"+ path;
         wvLoadPage = (WebView) view.findViewById(R.id.wvLoadPage);
         return view;
     }
@@ -52,39 +52,6 @@ public class LoadWebPage extends BaseFragment{
     }
 
     private void initView(){
-
-//        wvLoadPage.getSettings().setJavaScriptEnabled(true);
-//        wvLoadPage.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-//        wvLoadPage.getSettings().setBuiltInZoomControls(false);
-//        wvLoadPage.getSettings().setSupportZoom(true);
-//        wvLoadPage.getSettings().setUseWideViewPort(true);
-//        wvLoadPage.getSettings().setLoadWithOverviewMode(true);
-//        wvLoadPage.getSettings().setSupportMultipleWindows(true);
-////        wvLoadPage.setWebChromeClient(new WebChromeClient());
-////        wvLoadPage.setWebViewClient(new MyWebChromeClient());
-//
-//        File file = new File(path);
-//        wvLoadPage.loadUrl(path);
-
-
-//        wvLoadPage.setWebViewClient(new WebViewClient());
-//        wvLoadPage.getSettings().setJavaScriptEnabled(true);
-//        String folderPath = "file:android_asset/";
-//        String fileName = "sample.html";
-//        String file = folderPath + fileName;
-////        wvLoadPage.loadUrl("https://www.google.com");
-//
-//        String unencodedHtml =
-//                "<html><body>'%23' is the percent code for ‘#‘ </body></html>";
-//        String encodedHtml = Base64.encodeToString(unencodedHtml.getBytes(),
-//                Base64.NO_PADDING);
-//        wvLoadPage.loadData(encodedHtml, "text/html", "base64");
-//
-
-
-//        wvLoadPage.setWebViewClient(new WebViewClient());
-//        wvLoadPage.getSettings().setJavaScriptEnabled(true);
-//        wvLoadPage.loadUrl("https://www.google.com");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             wvLoadPage.getSettings().setSafeBrowsingEnabled(false);
@@ -108,7 +75,7 @@ public class LoadWebPage extends BaseFragment{
         wvLoadPage.post(new Runnable() {
             @Override
             public void run() {
-                wvLoadPage.loadUrl("http://www.teluguoneradio.com/rssHostDescr.php?hostId=147");
+                wvLoadPage.loadUrl("https://www.google.com");
             }
         });
     }

@@ -100,8 +100,8 @@
         android:id="@+id/prev"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintEnd_toStartOf="@+id/nxt"
+        android:text="Prev"
+        app:layout_constraintEnd_toStartOf="@+id/btnShow"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_test"
         app:layout_constraintTop_toTopOf="parent" />
@@ -110,10 +110,10 @@
         android:id="@+id/nxt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="Next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/prev"
+        app:layout_constraintStart_toEndOf="@+id/btnShow"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -159,10 +159,18 @@
             android:id="@+id/view_pay_fee"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"/>
+            android:visibility="visible" />
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ShowFragment"
+        app:layout_constraintEnd_toStartOf="@+id/nxt"
+        app:layout_constraintStart_toEndOf="@+id/prev"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

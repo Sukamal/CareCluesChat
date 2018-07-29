@@ -13,6 +13,7 @@ import java.util.Arrays;
 import careclues.careclueschat.model.AddMoneyRequest;
 import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.FileUploadRequest;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LinkWalletSendOtpRequest;
 import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
@@ -22,6 +23,7 @@ import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
 import careclues.careclueschat.model.SetTopicRequest;
 import careclues.careclueschat.model.UpdatePaymentModeRequest;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -204,6 +206,26 @@ public class RestApiExecuter {
 
     public <T> void addMoneyToWallet(String url, AddMoneyRequest dataModel, ServiceCallBack<T> serviceCallBack) {
         Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).addMoneyToWallet(url,dataModel);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void payViaWallet(String url,ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).payViaWallet(url);
+        execute(call,serviceCallBack);
+    }
+
+    public <T> void payViaGetway(String url, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).payViaGetway(url);
+        execute(call,serviceCallBack);
+    }
+
+//    public <T> void uploadFile(String url, RequestBody bytes, ServiceCallBack<T> serviceCallBack) {
+//        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url,bytes);
+//        execute(call,serviceCallBack);
+//    }
+
+    public <T> void uploadFile(String url, FileUploadRequest bytes, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url,bytes);
         execute(call,serviceCallBack);
     }
 }

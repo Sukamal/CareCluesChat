@@ -386,15 +386,12 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     @OnClick(R.id.nxt)
     public void nextMessage() {
         Log.v("NEXT MSG : ", testmsglist.get(count).text);
-//        lastMessage = testmsglist.get(count).messageModel;
-//        CareCluesChatApplication.messageModel = lastMessage;
-//        onInputType(lastMessage);
-//        count++;
+        lastMessage = testmsglist.get(count).messageModel;
+        CareCluesChatApplication.messageModel = lastMessage;
+        onInputType(lastMessage);
+        count++;
 
-        Fragment fragment = new LoadWebPage();
-        Bundle bundle = new Bundle();
-        bundle.putString("path","");
-        addFragment(fragment,true,bundle);
+
     }
 
     @OnClick(R.id.prev)
@@ -405,6 +402,14 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         CareCluesChatApplication.messageModel = lastMessage;
         onInputType(lastMessage);
 
+    }
+
+    @OnClick(R.id.btnShow)
+    public void showFragment(){
+        Fragment fragment = new LoadWebPage();
+        Bundle bundle = new Bundle();
+        bundle.putString("path","https://www.google.com");
+        addFragment(fragment,true,bundle);
     }
 
 

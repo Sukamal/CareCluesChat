@@ -3,14 +3,17 @@ package careclues.careclueschat.network;
 import careclues.careclueschat.model.AddMoneyRequest;
 import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.FileUploadRequest;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LinkWalletSendOtpRequest;
 import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
 import careclues.careclueschat.model.UpdatePaymentModeRequest;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
@@ -45,10 +48,21 @@ public interface ServerApiInterface {
     @POST
     public Call<ResponseBody> linkWalletValidateOtp(@Url String url, @Body LinkWalletValidateOtpRequest body );
 
-    @POST
+    @PATCH
     public Call<ResponseBody> updatePaymentMode(@Url String url, @Body UpdatePaymentModeRequest body );
 
     @POST
     public Call<ResponseBody> addMoneyToWallet(@Url String url, @Body AddMoneyRequest body );
 
+    @POST
+    public Call<ResponseBody> payViaWallet(@Url String url );
+
+    @POST
+    public Call<ResponseBody> payViaGetway(@Url String url);
+
+//    @POST
+//    public Call<ResponseBody> uploadFile(@Url String url,@Body RequestBody bytes);
+
+    @POST
+    public Call<ResponseBody> uploadFile(@Url String url, @Body FileUploadRequest body );
 }

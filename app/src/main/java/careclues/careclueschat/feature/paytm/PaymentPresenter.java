@@ -17,10 +17,13 @@ import careclues.careclueschat.model.AddMoneyRequest;
 import careclues.careclueschat.model.LinkWalletSendOtpRequest;
 import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
 import careclues.careclueschat.model.OtpResponseModel;
+import careclues.careclueschat.model.PaymentSuccessResponseModel;
 import careclues.careclueschat.model.PaytmBalanceResponseModel;
 import careclues.careclueschat.model.PaytmWalletResponseModel;
 import careclues.careclueschat.model.PhysicianResponseModel;
 import careclues.careclueschat.model.TextConsultantResponseModel;
+import careclues.careclueschat.model.UpdatePaymentModeRequest;
+import careclues.careclueschat.model.UpdatePaymentModeResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.model.ValidateOtpModel;
 import careclues.careclueschat.network.ApiClient;
@@ -44,6 +47,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
     private OtpResponseModel otpResponseModel;
     private ValidateOtpModel validateOtpModel;
     private TextConsultantResponseModel textConsultantResponseModel;
+    private PaymentSuccessResponseModel paymentSuccessResponseModel;
 
 
 
@@ -176,6 +180,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
                 @Override
                 public void onSuccess(TextConsultantResponseModel response) {
                     textConsultantResponseModel =  response;
+                    CareCluesChatApplication.textConsultantResponseModel = response;
 
 
                 }
@@ -195,12 +200,13 @@ public class PaymentPresenter implements PaymentContract.presenter {
             apiExecuter = RestApiExecuter.getInstance();
 
         AddMoneyRequest addMoneyRequest = new AddMoneyRequest();
+        addMoneyRequest.amount = 100;
 
 
         apiExecuter.addMoneyToWallet(urlLink,addMoneyRequest, new ServiceCallBack<String>(String.class) {
             @Override
             public void onSuccess(String response) {
-                String path = saveAsHtmlFile(response);
+                String path = saveAsHtmlFile(response,"AddMoney.html");
 
             }
 
@@ -210,24 +216,82 @@ public class PaymentPresenter implements PaymentContract.presenter {
         });
     }
 
-    public  String saveAsHtmlFile(String html){
+    @Override
+    public void payViaWallet() {
+        String urlLink = textConsultantResponseModel.data.getLink("debit_transactions");
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
 
-//        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
-//        if(!directory.exists()){
-//            directory.mkdirs();
-//        }
-//        String fileName = "paytm_"+DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString()+".html";
-//        File mypath = new File(directory,fileName);
+        apiExecuter.payViaWallet(urlLink, new ServiceCallBack<PaymentSuccessResponseModel>(PaymentSuccessResponseModel.class) {
+            @Override
+            public void onSuccess(PaymentSuccessResponseModel response) {
+                paymentSuccessResponseModel = response;
+            }
 
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                paymentSuccessResponseModel = null;
 
-        String directory = Environment.getExternalStorageDirectory().getPath();
-//        String fileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
-        String fileName = "PyatmAdd";
+            }
+        });
+    }
 
-        fileName = fileName + ".html";
-        File mypath = new File(directory, fileName);
-//        html = "<H>Hi THIS IS TEST</H>";
-//        view.displyWebView(mypath.getAbsolutePath());
+    @Override
+    public void payViaGateway() {
+        String urlLink = textConsultantResponseModel.data.getLink("payments");
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.payViaGetway(urlLink,new ServiceCallBack<String>(String.class) {
+            @Override
+            public void onSuccess(String response) {
+                String path = saveAsHtmlFile(response,"PayMoney.html");
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+    }
+
+    @Override
+    public void updatePaymentMode(String mode) {
+        String urlLink = CareCluesChatApplication.messageModel.textConsultationLink;
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+        UpdatePaymentModeRequest paymentModeRequest = new UpdatePaymentModeRequest();
+        paymentModeRequest.mode_of_payment = mode;
+
+        apiExecuter.updatePaymentMode(urlLink,paymentModeRequest, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
+            @Override
+            public void onSuccess(TextConsultantResponseModel response) {
+                textConsultantResponseModel = response;
+                CareCluesChatApplication.textConsultantResponseModel = response;
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                textConsultantResponseModel = null;
+
+            }
+        });
+    }
+
+    public  String saveAsHtmlFile(String html,String filename){
+
+        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
+        if(!directory.exists()){
+            directory.mkdirs();
+        }
+        File mypath = new File(directory,filename);
+
+//        String directory = Environment.getExternalStorageDirectory().getPath();
+////        String fileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+//        String fileName = "PyatmAdd";
+//
+//        fileName = fileName + ".html";
+//        File mypath = new File(directory, fileName);
 
 
         try {

@@ -230,32 +230,8 @@ public class ChatPresenter implements ChatContract.presenter,
 
     @Override
     public void uploadFile(File file,String desc) {
-//        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
-//            @Override
-//            public void onUploadStarted(String roomId, String fileName, String description) {
-//
-//            }
-//
-//            @Override
-//            public void onUploadProgress(int progress, String roomId, String fileName, String description) {
-//
-//            }
-//
-//            @Override
-//            public void onUploadComplete(int statusCode, FileDescriptor file, String roomId, String fileName, String description) {
-//
-//            }
-//
-//            @Override
-//            public void onUploadError(RocketChatException error, IOException e) {
-//
-//            }
-//
-//            @Override
-//            public void onSendFile(Message message, RocketChatException error) {
-//
-//            }
-//        });
+
+
     }
 
     @Override
