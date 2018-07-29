@@ -46,6 +46,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.BaseFragment;
+import careclues.careclueschat.feature.paytm.LoadWebPage;
 import careclues.careclueschat.feature.paytm.PaymentFragment;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
@@ -385,10 +386,15 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     @OnClick(R.id.nxt)
     public void nextMessage() {
         Log.v("NEXT MSG : ", testmsglist.get(count).text);
-        lastMessage = testmsglist.get(count).messageModel;
-        CareCluesChatApplication.messageModel = lastMessage;
-        onInputType(lastMessage);
-        count++;
+//        lastMessage = testmsglist.get(count).messageModel;
+//        CareCluesChatApplication.messageModel = lastMessage;
+//        onInputType(lastMessage);
+//        count++;
+
+        Fragment fragment = new LoadWebPage();
+        Bundle bundle = new Bundle();
+        bundle.putString("path","");
+        addFragment(fragment,true,bundle);
     }
 
     @OnClick(R.id.prev)

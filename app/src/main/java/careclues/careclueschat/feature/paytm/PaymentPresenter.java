@@ -221,10 +221,13 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
 
         String directory = Environment.getExternalStorageDirectory().getPath();
-        String fileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+//        String fileName = DateFormat.format("dd_MM_yyyy_hh_mm_ss", System.currentTimeMillis()).toString();
+        String fileName = "PyatmAdd";
+
         fileName = fileName + ".html";
         File mypath = new File(directory, fileName);
-
+//        html = "<H>Hi THIS IS TEST</H>";
+//        view.displyWebView(mypath.getAbsolutePath());
 
 
         try {
