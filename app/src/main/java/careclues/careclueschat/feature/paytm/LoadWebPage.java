@@ -1,10 +1,12 @@
 package careclues.careclueschat.feature.paytm;
 
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,7 @@ public class LoadWebPage extends BaseFragment{
         view = inflater.inflate(R.layout.fragment_load_webpage, container, false);
         ButterKnife.bind(this, view);
         path = (String) getArguments().getString("path");
-//        path = "file://"+ path;
+        path = "file://"+ path;
         wvLoadPage = (WebView) view.findViewById(R.id.wvLoadPage);
         return view;
     }
@@ -63,19 +65,41 @@ public class LoadWebPage extends BaseFragment{
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                System.out.println("shouldOverrideUrlLoading : " + url);
                 view.loadUrl(url);
 
                 return true;
             }
             @Override
             public void onPageFinished(WebView view, final String url) {
+                System.out.println("onPageFinished : " + url);
+
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                System.out.println("onPageStarted : " + url);
+
+                if(url.startsWith("https://tickleapi.careclues.com/api/v1")){
+                    getActivity().onBackPressed();
+                }
+
+
+            }
+
+            @Override
+            public void onPageCommitVisible(WebView view, String url) {
+                System.out.println("onPageCommitVisible : " + url);
+
             }
         });
 
         wvLoadPage.post(new Runnable() {
             @Override
             public void run() {
-                wvLoadPage.loadUrl("https://www.google.com");
+//                wvLoadPage.loadUrl("https://www.google.com");
+                wvLoadPage.loadUrl(path);
+
             }
         });
     }

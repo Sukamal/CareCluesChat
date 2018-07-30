@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -96,8 +97,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         getLoginUserDetails(userId);
-        if (CareCluesChatApplication.userProfile != null) {
-            userProfileModel = CareCluesChatApplication.userProfile;
+        if (AppConstant.userProfile != null) {
+            userProfileModel = AppConstant.userProfile;
         } else {
             userProfileModel = getUserProfile(AppConstant.getUserId());
         }
@@ -224,7 +225,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //        });
 
 
-        String urlLink = CareCluesChatApplication.textConsultantResponseModel.data.getLink("documents");
+        String urlLink = AppConstant.textConsultantResponseModel.data.getLink("documents");
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
@@ -232,9 +233,9 @@ public class ChatPresenter1 implements ChatContract.presenter {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             fileInputStream.read(fileByte);
-            for (int i = 0; i < fileByte.length; i++) {
-                System.out.print((char)fileByte[i]);
-            }
+//            for (int i = 0; i < fileByte.length; i++) {
+//                System.out.print((char)fileByte[i]);
+//            }
         } catch (FileNotFoundException e) {
             System.out.println("File Not Found.");
             e.printStackTrace();
@@ -262,6 +263,28 @@ public class ChatPresenter1 implements ChatContract.presenter {
             }
         });
 
+
+    }
+
+    public void getTextConsultant() {
+        String urlLink = AppConstant.messageModel.textConsultationLink;
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+
+        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
+            @Override
+            public void onSuccess(TextConsultantResponseModel response) {
+
+                AppConstant.textConsultantResponseModel = response;
+
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+            }
+        });
 
     }
 
@@ -327,7 +350,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
             public void onSuccess(TextConsultantResponseModel response) {
 
 //                TODO  save textconsaltation model
-                CareCluesChatApplication.textConsultantResponseModel = response;
+                AppConstant.textConsultantResponseModel = response;
                 Log.v("API","sucess");
 
             }
@@ -599,7 +622,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
             @Override
             public void onSuccess(UserProfileResponseModel response) {
                 userProfileModel = response;
-                CareCluesChatApplication.userProfile = userProfileModel;
+                AppConstant.userProfile = userProfileModel;
             }
 
             @Override
@@ -670,23 +693,35 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
 
-    public  String saveToInternalStorage(Context mcoContext,String roomid,Bitmap bitmapImage){
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
+    }
 
+    public  File saveToInternalStorage(Context mcoContext,String roomid,Bitmap bitmapImage){
+        Bitmap scaleImage = scaleDown(bitmapImage,600,false);
         File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
 
 //        File directory = new File(mcoContext.getFilesDir(),"mydir");
         if(!directory.exists()){
-            directory.mkdir();
+            directory.mkdirs();
         }
-        String fname="Pic_"+ roomid + ".jpg";
+        String fname="Pic_"+ String.valueOf(System.currentTimeMillis())  + ".jpg";
         File mypath = new File(directory,fname);
 
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(mypath);
             // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            scaleImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -696,35 +731,40 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 e.printStackTrace();
             }
         }
-        return directory.getAbsolutePath();
+        return mypath;
     }
 
 
-    public void copy(File src,Context mcoContext,String roomid,String extention) throws IOException {
+    public File copy(File src,Context mcoContext,String roomid,String extention) throws IOException {
+
         File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
 //        File directory = new File(mcoContext.getFilesDir(),"mydir");
         if(!directory.exists()){
-            directory.mkdir();
+            directory.mkdirs();
         }
-        String fname= "Pic_"+ roomid + extention;
+        String fname= "Doc_"+ roomid + extention;
         File dst = new File(directory,fname);
 
-        InputStream in = new FileInputStream(src);
+        FileInputStream fileInputStream = new FileInputStream(src);
+
+//        InputStream in = new FileInputStream(src);
         try {
             OutputStream out = new FileOutputStream(dst);
             try {
                 // Transfer bytes from in to out
                 byte[] buf = new byte[1024];
                 int len;
-                while ((len = in.read(buf)) > 0) {
+                while ((len = fileInputStream.read(buf)) > 0) {
                     out.write(buf, 0, len);
                 }
             } finally {
                 out.close();
             }
         } finally {
-            in.close();
+            fileInputStream.close();
         }
+
+        return dst;
     }
 
 

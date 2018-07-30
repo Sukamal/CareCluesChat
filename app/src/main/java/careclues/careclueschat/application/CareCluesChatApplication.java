@@ -33,12 +33,6 @@ public class CareCluesChatApplication extends Application {
     //test
 
     private CcRocketChatClient chatClient;
-    public static UserProfileResponseModel userProfile;
-    public static TextConsultantResponseModel textConsultantResponseModel;
-    public static ServerMessageModel messageModel;
-
-
-
     public String token;
     public String userId;
     public String userName;

@@ -2,7 +2,10 @@ package careclues.careclueschat.util;
 
 import java.util.ArrayList;
 
+import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.RelationshipModel;
+import careclues.careclueschat.model.TextConsultantResponseModel;
+import careclues.careclueschat.model.UserProfileResponseModel;
 
 /**
  * Created by SukamalD on 29-01-2018.
@@ -10,16 +13,20 @@ import careclues.careclueschat.model.RelationshipModel;
 
 public class AppConstant {
 
+    public static UserProfileResponseModel userProfile;
+    public static TextConsultantResponseModel textConsultantResponseModel;
+    public static ServerMessageModel messageModel;
+
     public static final String DATABASE_NAME = "com.careClues.chat.db";
     public static final int DATABASE_VERSION = 1;
     public static final String PREFERENCE_NAME = "com.careClues.chat.pref";
 
-//    public static final String USER_NAME = "sukamal-1035";
-//    public static final String PASSWORD = "EskSolYUXYobtDhLPEvTwxd";
+    public static final String USER_NAME = "sukamal-1035";
+    public static final String PASSWORD = "EskSolYUXYobtDhLPEvTwxd";
 //    public static final String USER_NAME = "sachu-985";
 //    public static final String PASSWORD = "XVQuexlHYvphcWYgtyLZLtf";
-    public static final String USER_NAME = "dipa-1291";
-    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
+//    public static final String USER_NAME = "dipa-1291";
+//    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
 
     public static final String SOCKET_URL = "wss://ticklechat.careclues.com/websocket";
     public static long ADD_DISPLAY_THRESHOLD = 60000 * 1;

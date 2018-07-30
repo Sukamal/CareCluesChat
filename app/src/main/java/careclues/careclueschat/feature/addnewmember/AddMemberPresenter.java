@@ -30,8 +30,8 @@ public class AddMemberPresenter implements AddMemberContract.presenter{
         this.view = view;
         this.roomId = roomId;
         this.application = application;
-        if(CareCluesChatApplication.userProfile != null){
-            userProfileModel = CareCluesChatApplication.userProfile;
+        if(AppConstant.userProfile != null){
+            userProfileModel = AppConstant.userProfile;
         }
     }
 

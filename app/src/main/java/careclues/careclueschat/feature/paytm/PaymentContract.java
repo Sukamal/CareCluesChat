@@ -28,7 +28,7 @@ public interface PaymentContract {
         public void validateOtp(String otp);
         public void getTextConsultant();
         public void updatePaymentMode(String mode);
-        public void addMoney();
+        public void addMoney(double amount);
         public void payViaWallet();
         public void payViaGateway();
     }

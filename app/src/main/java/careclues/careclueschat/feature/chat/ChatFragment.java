@@ -4,12 +4,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -357,7 +359,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void onInputType(ServerMessageModel messageModel) {
         if (messageModel != null) {
             lastMessage = messageModel;
-            CareCluesChatApplication.messageModel = lastMessage;
+            AppConstant.messageModel = lastMessage;
             presenter.enableInputControlOptions(messageModel);
 
         }
@@ -387,7 +389,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void nextMessage() {
         Log.v("NEXT MSG : ", testmsglist.get(count).text);
         lastMessage = testmsglist.get(count).messageModel;
-        CareCluesChatApplication.messageModel = lastMessage;
+        AppConstant.messageModel = lastMessage;
         onInputType(lastMessage);
         count++;
 
@@ -399,7 +401,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         count--;
         Log.v("NEXT MSG : ", testmsglist.get(count).text);
         lastMessage = testmsglist.get(count).messageModel;
-        CareCluesChatApplication.messageModel = lastMessage;
+        AppConstant.messageModel = lastMessage;
         onInputType(lastMessage);
 
     }
@@ -504,31 +506,61 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             try {
                 Uri uri = data.getData();
                 String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
-                File file = new File(mImagePath);
-
                 Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
                 iv_test.setImageBitmap(bitmap);
+                File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
+//                presenter.uploadFile(destFile,"Test Upload File");
 
-                presenter.copy(file,getActivity(),roomId,".jpg");
-
-                // TODO ---------- Upload Image
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (requestCode == AppConstant.RequestTag.PICK_CAMERA_REQUEST && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            presenter.saveToInternalStorage(getActivity(),roomId,photo);
-
+            File destFile = presenter.saveToInternalStorage(getActivity(),roomId,photo);
             iv_test.setImageBitmap(photo);
-//            String mImagePath = AppUtil.getAbsolutePathFromContentURI(ChatActivity.this, uri);
+//            presenter.uploadFile(destFile,"Test Upload File");
         } else if (requestCode == AppConstant.RequestTag.PICK_DOCUMENT_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
+
+//                String mImagePath = data.getData().getPath();
+////                Uri uri = data.getData();
+////                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
+//                File file = new File(mImagePath);
+//                File destFile = presenter.copy(file,getActivity(),roomId,mImagePath.substring(mImagePath.lastIndexOf(".")));
+////                presenter.uploadFile(destFile,"Test Upload File");
+
+
+
+
+
+
+
+
+
+                // Get the Uri of the selected file
                 Uri uri = data.getData();
-                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
-                File file = new File(mImagePath);
-//                presenter.uploadFile(file,"Test Upload File");
-                presenter.copy(file,getActivity(),roomId,".pdf");
-                // TODO ---------- Upload Image
+                String uriString = uri.toString();
+                File myFile = new File(uriString);
+                String path = myFile.getAbsolutePath();
+                String displayName = null;
+
+                if (uriString.startsWith("content://")) {
+                    Cursor cursor = null;
+                    try {
+                        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                } else if (uriString.startsWith("file://")) {
+                    displayName = myFile.getName();
+                }
+
+                File destFile = presenter.copy(myFile,getActivity(),roomId,".pdf");
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

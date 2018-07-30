@@ -481,7 +481,7 @@ public class RoomPresenter implements RoomContract.presenter,
             @Override
             public void onSuccess(UserProfileResponseModel response) {
                 userProfileModel = response;
-                CareCluesChatApplication.userProfile = userProfileModel;
+                AppConstant.userProfile = userProfileModel;
             }
 
             @Override

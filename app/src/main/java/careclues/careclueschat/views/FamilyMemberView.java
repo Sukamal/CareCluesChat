@@ -170,12 +170,12 @@ public class FamilyMemberView extends RelativeLayout implements AddMemberContrac
         patientList = new ArrayList<>();
         PatientModel patientModel = new PatientModel();
         patientModel.displayName = "Self";
-        if(CareCluesChatApplication.userProfile != null){
-            patientModel.first_name = CareCluesChatApplication.userProfile.data.firstName;
-            patientModel.last_name = CareCluesChatApplication.userProfile.data.lastName;
-            patientModel.gender = CareCluesChatApplication.userProfile.data.gender;
+        if(AppConstant.userProfile != null){
+            patientModel.first_name = AppConstant.userProfile.data.firstName;
+            patientModel.last_name = AppConstant.userProfile.data.lastName;
+            patientModel.gender = AppConstant.userProfile.data.gender;
             patientModel.self = true;
-            patientModel.lLink = CareCluesChatApplication.userProfile.data.getLink("text_consultations");
+            patientModel.lLink = AppConstant.userProfile.data.getLink("text_consultations");
         }
 
         patientList.add(patientModel);

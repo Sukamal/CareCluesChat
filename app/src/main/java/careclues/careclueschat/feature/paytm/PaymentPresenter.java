@@ -55,7 +55,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
     public PaymentPresenter(PaymentContract.view view){
         this.view = view;
-        userProfileModel = CareCluesChatApplication.userProfile;
+        userProfileModel = AppConstant.userProfile;
         apiExecuter = RestApiExecuter.getInstance();
 
     }
@@ -129,7 +129,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
 
         LinkWalletSendOtpRequest linkWalletSendOtpRequest = new LinkWalletSendOtpRequest();
-        linkWalletSendOtpRequest.mobileNo = CareCluesChatApplication.userProfile.data.mobileNumber;
+        linkWalletSendOtpRequest.mobileNo = AppConstant.userProfile.data.mobileNumber;
 
         apiExecuter.linkWalletSendOtp(url,linkWalletSendOtpRequest, new ServiceCallBack<OtpResponseModel>(OtpResponseModel.class) {
             @Override
@@ -173,7 +173,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
     @Override
     public void getTextConsultant() {
-            String urlLink = CareCluesChatApplication.messageModel.textConsultationLink;
+            String urlLink = AppConstant.messageModel.textConsultationLink;
             if (apiExecuter == null)
                 apiExecuter = RestApiExecuter.getInstance();
 
@@ -182,7 +182,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
                 @Override
                 public void onSuccess(TextConsultantResponseModel response) {
                     textConsultantResponseModel =  response;
-                    CareCluesChatApplication.textConsultantResponseModel = response;
+                    AppConstant.textConsultantResponseModel = response;
 
 
                 }
@@ -196,13 +196,13 @@ public class PaymentPresenter implements PaymentContract.presenter {
     }
 
     @Override
-    public void addMoney() {
+    public void addMoney(double amount) {
         String urlLink = paytmWalletResponseModel.data.getLink("credits");
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
         AddMoneyRequest addMoneyRequest = new AddMoneyRequest();
-        addMoneyRequest.amount = 100;
+        addMoneyRequest.amount = amount;
 
 
         apiExecuter.addMoneyToWallet(urlLink,addMoneyRequest, new ServiceCallBack<String>(String.class) {
@@ -259,7 +259,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
     @Override
     public void updatePaymentMode(String mode) {
-        String urlLink = CareCluesChatApplication.messageModel.textConsultationLink;
+        String urlLink = AppConstant.messageModel.textConsultationLink;
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
         UpdatePaymentModeRequest paymentModeRequest = new UpdatePaymentModeRequest();
@@ -269,7 +269,9 @@ public class PaymentPresenter implements PaymentContract.presenter {
             @Override
             public void onSuccess(TextConsultantResponseModel response) {
                 textConsultantResponseModel = response;
-                CareCluesChatApplication.textConsultantResponseModel = response;
+                AppConstant.textConsultantResponseModel = response;
+                view.onPaymentModeUpdated();
+
             }
 
             @Override

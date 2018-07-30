@@ -75,8 +75,9 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
 
     private void initView(){
         presenter = new PaymentPresenter(this);
-        userProfileModel = CareCluesChatApplication.userProfile;
+        userProfileModel = AppConstant.userProfile;
         presenter.isPaytmLinked();
+        tvCard.setOnClickListener(this);
 
     }
 
@@ -154,7 +155,7 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
 
         if(selectedMode.equals(TNX_MODE_WALLET)){
             presenter.payViaWallet();
-        }else if(selectedMode.equals(TNX_MODE_WALLET)){
+        }else if(selectedMode.equals(TNX_MODE_CARD)){
             presenter.payViaGateway();
 
         }
@@ -171,21 +172,18 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
                 presenter.updatePaymentMode(TNX_MODE_CARD);
                 break;
             case R.id.btnPay:
+                showAddAmountPDialog();
 
-                if (AppUtil.checkPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    if(btnType == TYPE_PAY){
-                        selectedMode = TNX_MODE_WALLET;
-                        presenter.updatePaymentMode(TNX_MODE_WALLET);
-                    }else if(btnType == TYPE_ADD_MONEY){
-                        presenter.addMoney();
-                    }
-                } else {
-                    askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                }
-
-
-
-
+//                if (AppUtil.checkPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                    if(btnType == TYPE_PAY){
+//                        selectedMode = TNX_MODE_WALLET;
+//                        presenter.updatePaymentMode(TNX_MODE_WALLET);
+//                    }else if(btnType == TYPE_ADD_MONEY){
+//                        showAddAmountPDialog();
+//                    }
+//                } else {
+//                    askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//                }
 
                 break;
         }
@@ -213,6 +211,23 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
             @Override
             public void OnPositivePress(Object val) {
                 presenter.validateOtp((String) val);
+            }
+
+            @Override
+            public void OnNegativePress() {
+                presenter.linkPaytmSendOtp();
+            }
+        });
+    }
+
+    private void showAddAmountPDialog(){
+        AppDialog appDialog = new AppDialog();
+        appDialog.showAddMoneyAmountDialog(getActivity(), "", "", new AppDialog.DialogListener() {
+            @Override
+            public void OnPositivePress(Object val) {
+
+                selectedMode = TNX_MODE_WALLET;
+                presenter.addMoney(Double.valueOf((String)val));
             }
 
             @Override
@@ -251,7 +266,7 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
                         selectedMode = TNX_MODE_WALLET;
                         presenter.updatePaymentMode(TNX_MODE_WALLET);
                     }else if(btnType == TYPE_ADD_MONEY){
-                        presenter.addMoney();
+                        showAddAmountPDialog();
                     }
                 } else {
                     Toast.makeText(getActivity(), "WRITE_EXTERNAL_STORAGE Permission Denied.", Toast.LENGTH_LONG).show();

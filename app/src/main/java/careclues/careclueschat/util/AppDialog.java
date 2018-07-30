@@ -253,7 +253,7 @@ public class AppDialog {
             int diveWidth = AppUtil.getDeviceWidthHeight(context).x;
             dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-            final EditText  etOTP = (EditText) dialog.findViewById(R.id.etOTP);
+            final EditText  etOTP = (EditText) dialog.findViewById(R.id.etAmount);
             TextView tvResendOtp = (TextView) dialog.findViewById(R.id.tvResendOtp);
             Button btnValidate = (Button) dialog.findViewById(R.id.btnValidate);
 
@@ -283,6 +283,37 @@ public class AppDialog {
                 }
             });
 
+        }
+
+    }
+
+
+    public void showAddMoneyAmountDialog(final Activity context, String title, String msg, final DialogListener listener) {
+        if (!((Activity) context).isFinishing()) {
+            dialog = new Dialog(context);
+            dialog.setCancelable(false);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_enter_amount);
+
+            int diveWidth = AppUtil.getDeviceWidthHeight(context).x;
+            dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            final EditText  etAmount = (EditText) dialog.findViewById(R.id.etAmount);
+            Button btnAdd = (Button) dialog.findViewById(R.id.btnAdd);
+
+            dialog.show();
+
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    dismissDialog(context);
+                    if(listener != null){
+                        listener.OnPositivePress(etAmount.getText().toString());
+                    }
+
+                }
+            });
         }
 
     }
