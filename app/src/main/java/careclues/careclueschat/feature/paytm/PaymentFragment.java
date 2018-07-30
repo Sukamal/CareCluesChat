@@ -152,7 +152,6 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
 
     @Override
     public void onPaymentModeUpdated() {
-
         if(selectedMode.equals(TNX_MODE_WALLET)){
             presenter.payViaWallet();
         }else if(selectedMode.equals(TNX_MODE_CARD)){
