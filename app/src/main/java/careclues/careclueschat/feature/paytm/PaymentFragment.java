@@ -157,7 +157,6 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
             presenter.payViaWallet();
         }else if(selectedMode.equals(TNX_MODE_CARD)){
             presenter.payViaGateway();
-
         }
     }
 
@@ -172,18 +171,18 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
                 presenter.updatePaymentMode(TNX_MODE_CARD);
                 break;
             case R.id.btnPay:
-                showAddAmountPDialog();
+//                showAddAmountPDialog();
 
-//                if (AppUtil.checkPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                    if(btnType == TYPE_PAY){
-//                        selectedMode = TNX_MODE_WALLET;
-//                        presenter.updatePaymentMode(TNX_MODE_WALLET);
-//                    }else if(btnType == TYPE_ADD_MONEY){
-//                        showAddAmountPDialog();
-//                    }
-//                } else {
-//                    askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//                }
+                if (AppUtil.checkPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    if(btnType == TYPE_PAY){
+                        selectedMode = TNX_MODE_WALLET;
+                        presenter.updatePaymentMode(TNX_MODE_WALLET);
+                    }else if(btnType == TYPE_ADD_MONEY){
+                        showAddAmountPDialog();
+                    }
+                } else {
+                    askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                }
 
                 break;
         }
