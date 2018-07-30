@@ -509,7 +509,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
                 iv_test.setImageBitmap(bitmap);
                 File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
-//                presenter.uploadFile(destFile,"Test Upload File");
+                presenter.uploadFile(destFile,"Test Upload File");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -518,7 +518,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             File destFile = presenter.saveToInternalStorage(getActivity(),roomId,photo);
             iv_test.setImageBitmap(photo);
-//            presenter.uploadFile(destFile,"Test Upload File");
+            presenter.uploadFile(destFile,"Test Upload File");
         } else if (requestCode == AppConstant.RequestTag.PICK_DOCUMENT_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
 

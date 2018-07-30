@@ -183,7 +183,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
                 public void onSuccess(TextConsultantResponseModel response) {
                     textConsultantResponseModel =  response;
                     AppConstant.textConsultantResponseModel = response;
-
+                    view.onFetchTextConsultant();
 
                 }
 
@@ -228,6 +228,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
             @Override
             public void onSuccess(PaymentSuccessResponseModel response) {
                 paymentSuccessResponseModel = response;
+                view.onSuccessWalletPayment();
             }
 
             @Override

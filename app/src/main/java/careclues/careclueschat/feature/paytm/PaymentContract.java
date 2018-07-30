@@ -3,6 +3,7 @@ package careclues.careclueschat.feature.paytm;
 import java.util.List;
 
 import careclues.careclueschat.feature.common.CommonViewInterface;
+import careclues.careclueschat.model.PaymentSuccessResponseModel;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
@@ -17,6 +18,8 @@ public interface PaymentContract {
         public void otpValidationFail();
         public void displyWebView(String path);
         public void onPaymentModeUpdated();
+        public void onFetchTextConsultant();
+        public void onSuccessWalletPayment();
 
     }
 

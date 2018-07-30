@@ -23,6 +23,7 @@ import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseFragment;
+import careclues.careclueschat.model.PaymentSuccessResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppDialog;
@@ -76,8 +77,13 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     private void initView(){
         presenter = new PaymentPresenter(this);
         userProfileModel = AppConstant.userProfile;
-        presenter.isPaytmLinked();
         tvCard.setOnClickListener(this);
+
+        if(AppConstant.isReturnfromPayment){
+            presenter.getTextConsultant();
+        }else{
+            presenter.isPaytmLinked();
+        }
 
     }
 
@@ -157,6 +163,22 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
         }else if(selectedMode.equals(TNX_MODE_CARD)){
             presenter.payViaGateway();
         }
+    }
+
+    @Override
+    public void onFetchTextConsultant() {
+        if(AppConstant.isReturnfromPayment){
+            if(AppConstant.textConsultantResponseModel.data.paid == true){
+                getActivity().finish();
+            }else{
+                presenter.isPaytmLinked();
+            }
+        }
+    }
+
+    @Override
+    public void onSuccessWalletPayment() {
+        getActivity().onBackPressed();
     }
 
     @Override

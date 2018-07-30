@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.feature.common.BaseFragment;
+import careclues.careclueschat.util.AppConstant;
 
 /**
  * Created by SukamalD on 7/28/2018.
@@ -81,6 +82,7 @@ public class LoadWebPage extends BaseFragment{
                 System.out.println("onPageStarted : " + url);
 
                 if(url.startsWith("https://tickleapi.careclues.com/api/v1")){
+                    AppConstant.isReturnfromPayment = true;
                     getActivity().onBackPressed();
                 }
 

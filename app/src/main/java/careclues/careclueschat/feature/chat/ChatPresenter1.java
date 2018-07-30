@@ -179,7 +179,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
         apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
-                if (controlType.equals(ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())) {
+                if (controlType != null && controlType.equals(ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())) {
 
                     String url = replyMessageModel.patient.lLink;
                     String categoryLink = replyMessageModel.categoryModel.link;
@@ -489,7 +489,9 @@ public class ChatPresenter1 implements ChatContract.presenter {
         } else {
             if(messageModel.type.equalsIgnoreCase("physicianCard")){
                 displayPayFees();
-            }else{
+            }else if(messageModel.type.equalsIgnoreCase("reply")){
+                displayTextInput();
+            } else{
                 displayBlank();
 
             }

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class PaymentSuccessResponseModel extends ServerResponseBaseModel{
     @SerializedName("data")
     @Expose
-    public String data;
+    public PaymentSuccessModel data;
 
 
 }
