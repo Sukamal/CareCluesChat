@@ -3,6 +3,7 @@ package careclues.careclueschat.network;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import careclues.careclueschat.util.AppConstant;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -12,10 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ApiClient {
-//    public static final String BASE_URL = "https://jsonplaceholder.typicode.com/";
-    public static final String CHAT_BASE_URL = "https://ticklechat.careclues.com/api/v1/";
-    public static final String API_BASE_URL = "https://tickleapi.careclues.com/api/v1/";
-//    patients/985/
 
     public static Retrofit chatRetrofit;
     public static Retrofit serverRetrofit;
@@ -36,7 +33,7 @@ public class ApiClient {
 
         if (chatRetrofit==null) {
             chatRetrofit = new Retrofit.Builder()
-                    .baseUrl(CHAT_BASE_URL)
+                    .baseUrl(AppConstant.CHAT_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();
@@ -58,7 +55,29 @@ public class ApiClient {
 
         if (serverRetrofit==null) {
             serverRetrofit = new Retrofit.Builder()
-                    .baseUrl(API_BASE_URL)
+                    .baseUrl(AppConstant.API_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(client)
+                    .build();
+        }
+        return serverRetrofit;
+    }
+
+    public static Retrofit getUploadFileRetrofit(){
+
+        client = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
+                .addInterceptor(new ServerHeaderFileUploadInterceptor())
+                .build();
+
+        gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .setLenient()
+                .create();
+
+        if (serverRetrofit==null) {
+            serverRetrofit = new Retrofit.Builder()
+                    .baseUrl(AppConstant.API_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();

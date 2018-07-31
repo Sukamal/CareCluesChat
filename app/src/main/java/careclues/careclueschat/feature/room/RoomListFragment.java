@@ -104,6 +104,7 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
             if(adapterModel.Id.equals(msg.rId)){
 //                adapterModel.updatedAt = msg.updatedAt;
                 adapterModel.updatedAt = new Date();
+                adapterModel.display = true;
                 break;
             }
         }

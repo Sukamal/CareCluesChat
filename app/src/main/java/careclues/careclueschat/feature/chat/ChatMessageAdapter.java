@@ -5,7 +5,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -44,6 +47,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     private InputTypeListner inputTypeListner;
     private RestApiExecuter apiExecuter;
     private PhysicianResponseModel physicianResponseModel;
+    private RecyclerView recyclerView;
+    public int lastVisibleItem, totalItemCount;
+
+
 
 
     public interface InputTypeListner{
@@ -54,12 +61,37 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         this.inputTypeListner = inputTypeListner;
     }
 
-    public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList,String userId){
+    public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList,String userId,RecyclerView recyclerView){
         this.context = context;
 //        Collections.sort(messageList);
         this.messageList = messageList ;
         this.userId = userId;
         dateFormatter = this;
+        this.recyclerView = recyclerView;
+
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
+                .getLayoutManager();
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItemCount = linearLayoutManager.getItemCount();
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                Log.e("Pos",String.valueOf(totalItemCount)+" / "+ String.valueOf(lastVisibleItem));
+
+                if (lastVisibleItem >= 5) {
+
+                    Log.e("REACHED","LOADMORE");
+
+                }
+            }
+        });
 
     }
 
@@ -75,7 +107,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ChatMessageModel chatMessageModel = messageList.get(position);
-
+        Log.e("msg",String.valueOf(position));
         Date previousDate = null;
         if(position > 0){
             previousDate = messageList.get(position -1).createdAt;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
 import careclues.careclueschat.model.RelationshipModel;
+import careclues.careclueschat.model.TextConsultantModel;
 import careclues.careclueschat.model.TextConsultantResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 
@@ -13,11 +14,9 @@ import careclues.careclueschat.model.UserProfileResponseModel;
 
 public class AppConstant {
 
-    public static UserProfileResponseModel userProfile;
-    public static TextConsultantResponseModel textConsultantResponseModel;
-    public static ServerMessageModel messageModel;
-    public static boolean isReturnfromPayment = false;
-
+    public static final String CHAT_BASE_URL = "https://ticklechat.careclues.com/api/v1/";
+    public static final String API_BASE_URL = "https://tickleapi.careclues.com/api/v1/";
+    public static final String SOCKET_URL = "wss://ticklechat.careclues.com/websocket";
     public static final String DATABASE_NAME = "com.careClues.chat.db";
     public static final int DATABASE_VERSION = 1;
     public static final String PREFERENCE_NAME = "com.careClues.chat.pref";
@@ -29,8 +28,16 @@ public class AppConstant {
 //    public static final String USER_NAME = "dipa-1291";
 //    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
 
-    public static final String SOCKET_URL = "wss://ticklechat.careclues.com/websocket";
     public static long ADD_DISPLAY_THRESHOLD = 60000 * 1;
+
+
+    public static UserProfileResponseModel userProfile;
+//    public static TextConsultantResponseModel textConsultantResponseModel;
+    public static TextConsultantModel textConsultantModel;
+    public static ServerMessageModel messageModel;
+    public static boolean isReturnfromPayment = false;
+
+
 
     public static String getUserId(){
         String[] user = AppConstant.USER_NAME.split("-");

@@ -19,7 +19,6 @@ public class ServerHeaderFileUploadInterceptor implements Interceptor {
         AuthToken authToken = AuthToken.getInstance();
         Request original = chain.request();
         Request request = original.newBuilder()
-//                .header("Content-Type", "application/json")
                 .header("Authorization", AppConstant.PASSWORD !=null ?AppConstant.PASSWORD:"")
                 .method(original.method(), original.body())
                 .build();

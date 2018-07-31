@@ -68,7 +68,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         initRecycleView();
         presenter = new ChatPresenter(this,roomId,getApplication());
-        presenter.loadData(50);
+        presenter.loadData(0,50);
     }
 
     @Override
@@ -221,7 +221,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messageAdapter = new ChatMessageAdapter(ChatActivity.this, list,userId);
+                messageAdapter = new ChatMessageAdapter(ChatActivity.this, list,userId,rvChatHistory);
                 rvChatHistory.setAdapter(messageAdapter);
 //                layoutManager.smoothScrollToPosition(rvChatHistory,null,messageAdapter.getItemCount());
             }

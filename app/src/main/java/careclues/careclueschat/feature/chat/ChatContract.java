@@ -33,10 +33,11 @@ public interface ChatContract {
         public void displayTextInput();
         public void displayPayFee();
         public void onUpdateLanguageToServer(String languages);
+
     }
 
     interface presenter {
-        public void loadData(int count);
+        public void loadData(int startcount,int endcount);
         public void sendMessage(String msg);
         public void sendMessageViaApi(ReplyMessageModel replyMessageModel, String controlType);
         public void uploadFile(File file,String desc);
@@ -44,5 +45,7 @@ public interface ChatContract {
         public void disconnectToServer();
         public void addLanguageApiCall(String languages);
         public void createTextConsultant(String url, String topicId, String roomId);
+        public void getTextConsultant(String roomId);
+
     }
 }

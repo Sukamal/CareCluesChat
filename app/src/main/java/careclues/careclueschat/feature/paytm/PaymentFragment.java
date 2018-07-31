@@ -168,7 +168,7 @@ public class PaymentFragment extends BaseFragment implements PaymentContract.vie
     @Override
     public void onFetchTextConsultant() {
         if(AppConstant.isReturnfromPayment){
-            if(AppConstant.textConsultantResponseModel.data.paid == true){
+            if(AppConstant.textConsultantModel.paid == true){
                 getActivity().finish();
             }else{
                 presenter.isPaytmLinked();

@@ -123,7 +123,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
     @Override
     public void linkPaytmSendOtp() {
-        String url = ApiClient.API_BASE_URL + "wallets/paytm/otp";
+        String url = AppConstant.API_BASE_URL + "wallets/paytm/otp";
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
@@ -147,7 +147,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
 
     @Override
     public void validateOtp(String otp){
-        String url = ApiClient.API_BASE_URL + "wallets/paytm/otp_validation";
+        String url = AppConstant.API_BASE_URL + "wallets/paytm/otp_validation";
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
@@ -182,7 +182,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
                 @Override
                 public void onSuccess(TextConsultantResponseModel response) {
                     textConsultantResponseModel =  response;
-                    AppConstant.textConsultantResponseModel = response;
+                    AppConstant.textConsultantModel = response.data;
                     view.onFetchTextConsultant();
 
                 }
@@ -270,7 +270,7 @@ public class PaymentPresenter implements PaymentContract.presenter {
             @Override
             public void onSuccess(TextConsultantResponseModel response) {
                 textConsultantResponseModel = response;
-                AppConstant.textConsultantResponseModel = response;
+                AppConstant.textConsultantModel = response.data;
                 view.onPaymentModeUpdated();
 
             }

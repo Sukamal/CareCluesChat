@@ -33,6 +33,7 @@ import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
+import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.model.AddLanguageResponseModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.CreateTextConsultantModel;
@@ -45,6 +46,7 @@ import careclues.careclueschat.model.PhysicianResponseModel;
 import careclues.careclueschat.model.RoomUserModel;
 import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.SymptomResponseModel;
+import careclues.careclueschat.model.TextConsultantListResponseModel;
 import careclues.careclueschat.model.TextConsultantResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.ApiClient;
@@ -74,6 +76,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
     private String roomId;
 
     private AtomicInteger integer;
+//    private RoomDataPresenter roomDataPresenter;
+
 
     private CcRocketChatClient api;
     private CcChatRoom chatRoom;
@@ -148,8 +152,9 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     @Override
-    public void loadData(int count) {
-        getChatHistory(roomId, count);
+    public void loadData(int startcount,int endcount) {
+        getChatHistory(roomId, startcount,endcount);
+        getTextConsultant(roomId);
     }
 
     @Override
@@ -225,13 +230,15 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //        });
 
 
-        String urlLink = AppConstant.textConsultantResponseModel.data.getLink("documents");
+        view.displayProgressBar();
+        String urlLink = AppConstant.textConsultantModel.getLink("documents");
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
         byte[] fileByte = new byte[(int) file.length()];
+        FileInputStream fileInputStream = null;
         try {
-            FileInputStream fileInputStream = new FileInputStream(file);
+            fileInputStream = new FileInputStream(file);
             fileInputStream.read(fileByte);
 //            for (int i = 0; i < fileByte.length; i++) {
 //                System.out.print((char)fileByte[i]);
@@ -248,13 +255,16 @@ public class ChatPresenter1 implements ChatContract.presenter {
 //        RequestBody body = RequestBody.create(MediaType.parse("application/octet-stream"), b);
 
         FileUploadRequest uploadRequest = new FileUploadRequest();
+//        uploadRequest.file = fileInputStream;
         uploadRequest.file = fileByte;
+
 
         apiExecuter.uploadFile(urlLink,uploadRequest,new ServiceCallBack<String>(String.class) {
             @Override
             public void onSuccess(String response) {
 
                 String respon = response;
+                view.hideProgressBar();
             }
 
             @Override
@@ -266,27 +276,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     }
 
-    public void getTextConsultant() {
-        String urlLink = AppConstant.messageModel.textConsultationLink;
-        if (apiExecuter == null)
-            apiExecuter = RestApiExecuter.getInstance();
-
-
-        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
-            @Override
-            public void onSuccess(TextConsultantResponseModel response) {
-
-                AppConstant.textConsultantResponseModel = response;
-
-
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-            }
-        });
-
-    }
 
     @Override
     public void reconnectToServer() {
@@ -349,8 +338,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
             @Override
             public void onSuccess(TextConsultantResponseModel response) {
 
-//                TODO  save textconsaltation model
-                AppConstant.textConsultantResponseModel = response;
+                AppConstant.textConsultantModel = response.data;
+
                 Log.v("API","sucess");
 
             }
@@ -362,13 +351,34 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
     }
 
+    @Override
+    public void getTextConsultant(String roomId) {
+        String urlLink = AppConstant.API_BASE_URL + "text_consultations?chat_conversation_id="+roomId;
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
 
-    private void getChatHistory(final String roomId, final int count) {
+
+        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantListResponseModel>(TextConsultantListResponseModel.class) {
+            @Override
+            public void onSuccess(TextConsultantListResponseModel response) {
+                AppConstant.textConsultantModel = response.data.get(0);
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+    }
+
+
+    private void getChatHistory(final String roomId,final int startcount, final int endcount) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(roomId, count);
+                    List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(roomId, startcount,endcount);
                     List<ChatMessageModel> msgList = new ArrayList<>();
                     for (MessageEntity entity : messageEntities) {
                         msgList.add(new ChatMessageModel(entity));
@@ -597,7 +607,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
     private void getLanguage() {
-        String urlLink = ApiClient.API_BASE_URL + "languages";
+        String urlLink = AppConstant.API_BASE_URL + "languages";
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
@@ -634,7 +644,6 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
         return userProfileModel;
     }
-
 
     public enum ControlType {
         CONTROL_FAMILY_MEMBER_SELECT("familyMemberSelect"),

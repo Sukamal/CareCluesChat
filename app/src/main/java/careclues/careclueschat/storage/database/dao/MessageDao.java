@@ -25,8 +25,8 @@ public interface MessageDao {
     @Query("SELECT * FROM message WHERE id = :Id")
     MessageEntity findById(String Id);
 
-    @Query("SELECT * FROM message where rId = :Id order by updatedAt asc limit :count")
-    List<MessageEntity> getChatMessage(String Id, int count);
+    @Query("SELECT * FROM message where rId = :Id order by updatedAt asc limit :startcount,:endcount")
+    List<MessageEntity> getChatMessage(String Id, int startcount,int endcount);
 
     @Query("SELECT * FROM message WHERE rId = :roomId and synced = 'false'")
     List<MessageEntity> getNotSyncedData(String roomId);

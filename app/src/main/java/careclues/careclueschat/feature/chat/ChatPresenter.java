@@ -191,8 +191,8 @@ public class ChatPresenter implements ChatContract.presenter,
 
 
     @Override
-    public void loadData(int count) {
-        getChatHistory(roomId,count);
+    public void loadData(int startcount,int endcount) {
+        getChatHistory(roomId,startcount,endcount);
     }
 
     @Override
@@ -254,12 +254,17 @@ public class ChatPresenter implements ChatContract.presenter,
 
     }
 
-    private void getChatHistory(final String roomId, final int count){
+    @Override
+    public void getTextConsultant(String roomId) {
+
+    }
+
+    private void getChatHistory(final String roomId, final int startcount,final int endcount){
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(roomId, count);
+                    List<MessageEntity> messageEntities = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getChatMessage(roomId, startcount,endcount);
                     List<ChatMessageModel> msgList = new ArrayList<>();
                     for (MessageEntity entity : messageEntities) {
                         msgList.add(new ChatMessageModel(entity));

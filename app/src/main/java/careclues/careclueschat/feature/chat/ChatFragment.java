@@ -79,6 +79,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     private ChatPresenter1 presenter;
     private LinearLayoutManager layoutManager;
     private ChatMessageAdapter messageAdapter;
+    private int startCount = 0;
+    private int endCount = 50;
 
     @BindView(R.id.rvChatHistory)
     RecyclerView rvChatHistory;
@@ -142,7 +144,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
 
     private void initView() {
         presenter = new ChatPresenter1(this, roomId, getActivity().getApplication());
-        presenter.loadData(50);
+        presenter.loadData(startCount,endCount);
     }
 
     private void initRecycleView() {
@@ -304,7 +306,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messageAdapter = new ChatMessageAdapter(getActivity(), list, userId);
+                messageAdapter = new ChatMessageAdapter(getActivity(), list, userId,rvChatHistory);
                 rvChatHistory.setAdapter(messageAdapter);
                 messageAdapter.setInputTypeListner(ChatFragment.this);
             }

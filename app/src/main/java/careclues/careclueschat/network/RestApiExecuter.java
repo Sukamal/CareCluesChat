@@ -225,7 +225,7 @@ public class RestApiExecuter {
 //    }
 
     public <T> void uploadFile(String url, FileUploadRequest bytes, ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url,bytes);
+        Call<ResponseBody> call = ApiClient.getUploadFileRetrofit().create(ServerApiInterface.class).uploadFile(url,bytes);
         execute(call,serviceCallBack);
     }
 }
