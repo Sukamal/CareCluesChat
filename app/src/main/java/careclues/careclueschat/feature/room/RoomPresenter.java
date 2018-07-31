@@ -48,11 +48,14 @@ public class RoomPresenter implements RoomContract.presenter,
         RoomDataPresenter.FetchMessageListner,
         RoomDataPresenter.FetchRoomListner,
         RoomDataPresenter.FetchSubscriptionListner,
+        RoomDataPresenter.CreateNewRoomListner,
 
         CcConnectListener,
         CcMessageCallback.SubscriptionCallback,
         CcRoomCallback.GroupCreateCallback,
         CcTypingListener {
+
+
 
 
     private final int LOG_IN_SUCCESS = 1;
@@ -89,6 +92,9 @@ public class RoomPresenter implements RoomContract.presenter,
         roomDataPresenter.registerUpdatedRoomListner(this);
         roomDataPresenter.registerRoomMemberHistoryListner(this);
         roomDataPresenter.registerMessageListner(this);
+        roomDataPresenter.registerCreateNewRoom(this);
+
+
 
         initWebSocket();
 
@@ -211,6 +217,8 @@ public class RoomPresenter implements RoomContract.presenter,
                 RestApiExecuter.getInstance().getAuthToken().saveToken(response.getData().getUserId(), response.getData().getAuthToken());
                 getLoginUserDetails(response.getData().getUserId());
                 getUserProfile(AppConstant.getUserId());
+                subscribeRoomChangeEvent(response.getData().getUserId());
+                subscribeSubscriptionChangeEvent(response.getData().getUserId());
                 handler.sendEmptyMessage(LOG_IN_SUCCESS);
             }
 
@@ -287,8 +295,6 @@ public class RoomPresenter implements RoomContract.presenter,
                         lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0,10);
 
                     }
-
-
                     subsCribeRoomMessageEvent(lastUpdatedRoomList);
                     populateAdapterData(lastUpdatedRoomList, LOAD_ROOM_DATA);
                 } catch (Throwable e) {
@@ -380,41 +386,45 @@ public class RoomPresenter implements RoomContract.presenter,
 
     }
 
-
     @Override
     public void createNewRoom() {
-        String roomName = "SUKU-TEST-" + (System.currentTimeMillis() / 1000);
-        String[] members = {"api_admin", "bot-la2zewmltd", "sachu-985"};
-        apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
-            @Override
-            public void onSuccess(GroupResponseModel response) {
-                Log.e("NEWROOM", "New Room : " + response.toString());
-                if (response.success) {
-                    setRoomTopic(response.group.id, "text-consultation");
-                }
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
-
+        roomDataPresenter.createNewRoom();
     }
 
-    private void setRoomTopic(String roomId, String topic) {
-        apiExecuter.setRoomTopicw(roomId, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
-            @Override
-            public void onSuccess(SetTopicResponseModel response) {
-                Log.e("NEWROOM", "SetTopic : " + response.toString());
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
-    }
+//    @Override
+//    public void createNewRoom() {
+//        String roomName = "TC-" + (System.currentTimeMillis() / 1000);
+//        String[] members = {"api_admin", "bot-la2zewmltd"};
+//        apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
+//            @Override
+//            public void onSuccess(GroupResponseModel response) {
+//                Log.e("NEWROOM", "New Room : " + response.toString());
+//                if (response.success) {
+//                    setRoomTopic(response.group.id, "text-consultation");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(List<NetworkError> errorList) {
+//
+//            }
+//        });
+//
+//    }
+//
+//    private void setRoomTopic(String roomId, String topic) {
+//        apiExecuter.setRoomTopicw(roomId, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
+//            @Override
+//            public void onSuccess(SetTopicResponseModel response) {
+//                Log.e("NEWROOM", "SetTopic : " + response.toString());
+//            }
+//
+//            @Override
+//            public void onFailure(List<NetworkError> errorList) {
+//
+//            }
+//        });
+//    }
 
     @Override
     public void getMessage(String roomId) {
@@ -433,6 +443,7 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onCreateGroup(String roomId) {
 
+
     }
 
     @Override
@@ -443,13 +454,28 @@ public class RoomPresenter implements RoomContract.presenter,
 
     private void subsCribeRoomMessageEvent(List<RoomEntity> roomList) {
 
-        for (RoomEntity room : roomList) {
-            CcChatRoomFactory roomFactory = chatClient.getChatRoomFactory();
-            chatClient.subscribeRoomMessageEvent(room.roomId, true, null, RoomPresenter.this);
-            chatClient.subscribeRoomTypingEvent(room.roomId, true, null, RoomPresenter.this);
+//        for (RoomEntity room : roomList) {
+//            CcChatRoomFactory roomFactory = chatClient.getChatRoomFactory();
+//            chatClient.subscribeRoomMessageEvent(room.roomId, true, null, RoomPresenter.this);
+//            chatClient.subscribeRoomTypingEvent(room.roomId, true, null, RoomPresenter.this);
+//
+//        }
 
-        }
 
+    }
+
+    private void subscribeRoomChangeEvent(String userId) {
+        Log.e("MMM"," subscribeRoomChangeEvent "+userId);
+        chatClient.subscribeRoomChanged(userId,null,RoomPresenter.this);
+    }
+
+    private void subscribeSubscriptionChangeEvent(String userId) {
+        Log.e("MMM"," subscribeRoomChangeEvent "+userId);
+        chatClient.subscribeSubscriptionChangeEvent(userId,null,RoomPresenter.this);
+    }
+
+    private void subscribeMessage(String userId) {
+        chatClient.subscribeMessageChangeEvent(userId,null,RoomPresenter.this);
     }
 
 
@@ -490,5 +516,11 @@ public class RoomPresenter implements RoomContract.presenter,
             }
         });
         return userProfileModel;
+    }
+
+
+    @Override
+    public void onNewRoomCreated() {
+
     }
 }

@@ -18,18 +18,19 @@ import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
+import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
-public class RoomListFragment extends BaseFragment implements RoomMainActivity.performRoomFragmentAction {
+public class RoomListFragment extends BaseFragment implements RoomMainActivity.performRoomFragmentAction{
 
     private LinearLayoutManager layoutManager;
     private RoomAdapter room1Adapter;
     @BindView(R.id.rvRoom)
     RecyclerView rvRoom;
 
-    public List<RoomAdapterModel> list;
 
+    public List<RoomAdapterModel> list;
     public void setRoomList(List<RoomAdapterModel> list){
         this.list = list;
     }
@@ -125,9 +126,6 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
     @OnClick(R.id.fab)
     void createNewRoom(){
         ((RoomMainActivity)getActivity()).presenter.createNewRoom();
-//        testupdateRoomMessage("B4Ycy99ntgvquFBPR");
-//        testupdateRoomMessage("HmawBnbQYYqWKSxmc");
-
     }
 
     public void testupdateRoomMessage(String roomId) {

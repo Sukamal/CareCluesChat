@@ -139,6 +139,21 @@ public class CcRocketChatClient {
         return websocketImpl.subscribeRoomTypingEvent(roomId, enable, subscribeListener, listener);
     }
 
+    public String subscribeRoomChanged(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        return websocketImpl.subscribeRoomChangeEvent(userId, subscribeListener, listener);
+    }
+
+    public String subscribeSubscriptionChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        return websocketImpl.subscribeSubscriptionChangeEvent(userId, subscribeListener, listener);
+    }
+
+    public String subscribeMessageChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        return websocketImpl.subscribeMessageChangeEvent(userId, subscribeListener, listener);
+    }
+
+
+
+
 
     public void removeSubscription(String roomId, CcCoreStreamMiddleware.SubscriptionType type) {
         websocketImpl.removeSubscription(roomId, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);

@@ -59,12 +59,20 @@ public class CcCoreSubRPC extends CcSubRPC {
         return getRemoteUnsubscriptionObject(subId).toString();
     }
 
-    public static String subscribeRoomChanged(String uniqueid) {
-        return getRemoteSubscriptionObject(uniqueid, STREAM_NOTIFY_USER,"rooms-changed").toString();
+    public static String subscribeRoomChanged(String uniqueid,String userId) {
+        Object[] param = {userId+"/rooms-changed",false};
+        return getRemoteSubscriptionObject(uniqueid, STREAM_NOTIFY_USER,param).toString();
+//        return getRemoteSubscriptionObject(uniqueid, STREAM_NOTIFY_USER,"rooms-changed").toString();
     }
 
-    public static String subscribeSubscriptionChanged(String uniqueid) {
-        return getRemoteSubscriptionObject(uniqueid, STREAM_NOTIFY_USER,"subscriptions-changed").toString();
+    public static String subscribeSubscriptionChanged(String uniqueid,String userId) {
+        Object[] param = {userId+"/subscriptions-changed",false};
+        return getRemoteSubscriptionObject(uniqueid, STREAM_NOTIFY_USER,param).toString();
+    }
+
+    public static String subscribeMessageChanged(String uniqueid,String userId) {
+        Object[] param = {userId+"/message",false};
+        return getRemoteSubscriptionObject(uniqueid, STREAM_NOTIFY_USER,param).toString();
     }
 
 }

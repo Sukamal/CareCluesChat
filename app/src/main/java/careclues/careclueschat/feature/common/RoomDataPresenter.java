@@ -13,6 +13,7 @@ import java.util.TimerTask;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.RoomResponse;
 import careclues.careclueschat.model.BaseRoomModel;
 import careclues.careclueschat.model.MessageModel;
@@ -20,6 +21,7 @@ import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomMemberModel;
 import careclues.careclueschat.model.RoomMemberResponse;
 import careclues.careclueschat.model.RoomModel;
+import careclues.careclueschat.model.SetTopicResponseModel;
 import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.model.SubscriptionResponse;
 import careclues.careclueschat.network.NetworkError;
@@ -57,6 +59,7 @@ public class RoomDataPresenter {
     private List<RoomEntity> roomEntities;
     private List<SubscriptionEntity> subscriptionEntities;
     private String roomId;
+    private GroupResponseModel groupResponseModel;
 
 
     private FetchRoomListner roomListner;
@@ -64,6 +67,7 @@ public class RoomDataPresenter {
     private FetchRoomMemberHistoryListner roomMemberHistoryListner;
     private FetchLastUpdatedRoomDbListner lastUpdatedRoomDbListner;
     private FetchMessageListner fetchMessageListner;
+    private CreateNewRoomListner createNewRoomListner;
 
     public RoomDataPresenter(Application application){
         this.application = application;
@@ -93,6 +97,10 @@ public class RoomDataPresenter {
         public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities,List<MessageEntity> messageEntities);
     }
 
+    public interface CreateNewRoomListner{
+        public void onNewRoomCreated();
+    }
+
 
     public void registerRoomListner(FetchRoomListner roomListner){
         this.roomListner = roomListner;
@@ -112,6 +120,10 @@ public class RoomDataPresenter {
 
     public void registerMessageListner(FetchMessageListner fetchMessageListner){
         this.fetchMessageListner = fetchMessageListner;
+    }
+
+    public void registerCreateNewRoom(CreateNewRoomListner createNewRoomListner){
+        this.createNewRoomListner = createNewRoomListner;
     }
 
     public void unreGisterMessageListner(){
@@ -498,6 +510,47 @@ public class RoomDataPresenter {
                 timer.schedule(new RoomDataPresenter.RemindTask(),1000);
             }
         }
+    }
+
+
+
+    public void createNewRoom() {
+        String roomName = "TC-" + (System.currentTimeMillis() / 1000);
+        String[] members = {"api_admin", "bot-la2zewmltd"};
+        apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
+            @Override
+            public void onSuccess(GroupResponseModel response) {
+                Log.e("NEWROOM", "New Room : " + response.toString());
+                if (response.success) {
+                    groupResponseModel = response;
+                    setRoomTopic(response.group.id, "text-consultation");
+                }
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+
+    }
+
+    private void setRoomTopic(String roomId, String topic) {
+        apiExecuter.setRoomTopicw(roomId, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
+            @Override
+            public void onSuccess(SetTopicResponseModel response) {
+                Log.e("NEWROOM", "SetTopic : " + response.toString());
+
+                if(createNewRoomListner != null){
+                    createNewRoomListner.onNewRoomCreated();
+                }
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
     }
 
 

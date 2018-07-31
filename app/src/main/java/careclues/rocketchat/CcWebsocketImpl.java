@@ -257,21 +257,24 @@ public class CcWebsocketImpl implements CcSocketListener {
         return uniqueID;
     }
 
-    //TODO  Needs to handle calback
-    public String subscribeRoomChangeEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+    public String subscribeRoomChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
         String uniqueID = CcUtils.shortUUID();
         coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
-        coreStreamMiddleware.createSubscription(roomId, listener, CcCoreStreamMiddleware.SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
-        socket.sendData(CcCoreSubRPC.subscribeRoomChanged(uniqueID));
+        socket.sendData(CcCoreSubRPC.subscribeRoomChanged(uniqueID,userId));
         return uniqueID;
     }
 
-    //TODO  Needs to handle calback
-    public String subscribeSubscriptionChangeEvent(String roomId, Boolean enable, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+    public String subscribeSubscriptionChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
         String uniqueID = CcUtils.shortUUID();
         coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
-        coreStreamMiddleware.createSubscription(roomId, listener, CcCoreStreamMiddleware.SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
-        socket.sendData(CcCoreSubRPC.subscribeSubscriptionChanged(uniqueID));
+        socket.sendData(CcCoreSubRPC.subscribeSubscriptionChanged(uniqueID,userId));
+        return uniqueID;
+    }
+
+    public String subscribeMessageChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
+        String uniqueID = CcUtils.shortUUID();
+        coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        socket.sendData(CcCoreSubRPC.subscribeMessageChanged(uniqueID,userId));
         return uniqueID;
     }
 
