@@ -23,6 +23,7 @@ import careclues.careclueschat.model.CreateRoomRequest;
 import careclues.careclueschat.model.SendMassageRequest;
 import careclues.careclueschat.model.SetTopicRequest;
 import careclues.careclueschat.model.UpdatePaymentModeRequest;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -219,13 +220,9 @@ public class RestApiExecuter {
         execute(call,serviceCallBack);
     }
 
-//    public <T> void uploadFile(String url, RequestBody bytes, ServiceCallBack<T> serviceCallBack) {
-//        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url,bytes);
-//        execute(call,serviceCallBack);
-//    }
-
-    public <T> void uploadFile(String url, FileUploadRequest bytes, ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getUploadFileRetrofit().create(ServerApiInterface.class).uploadFile(url,bytes);
+    public <T> void uploadFile(String url, RequestBody description, MultipartBody.Part file,ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url,description,file);
         execute(call,serviceCallBack);
     }
+
 }

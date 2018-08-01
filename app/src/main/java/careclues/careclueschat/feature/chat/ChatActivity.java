@@ -185,6 +185,11 @@ public class ChatActivity extends BaseActivity implements ChatContract.view {
 
     }
 
+    @Override
+    public void onUpdateImageToServer(String url) {
+
+    }
+
 
     @Override
     public void displayToastMessage(String message) {

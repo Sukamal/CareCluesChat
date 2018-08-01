@@ -17,6 +17,7 @@ import careclues.careclueschat.executor.ThreadsExecutor;
 import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.model.BaseRoomModel;
+import careclues.careclueschat.model.GroupModel;
 import careclues.careclueschat.model.LoginResponse;
 import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.MessageResponseModel;
@@ -403,7 +404,7 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void createNewRoom() {
-        roomDataPresenter.createNewRoom();
+        roomDataPresenter.createNewRoom(false);
     }
 
 //    @Override
@@ -536,9 +537,11 @@ public class RoomPresenter implements RoomContract.presenter,
 
 
     @Override
-    public void onNewRoomCreated() {
+    public void onNewRoomCreated(boolean reConsult,GroupModel groupModel) {
 
     }
+
+    String lastUpdate = null;
 
     @Override
     public void onNewRoom(String userId, final CcRoom roomModel) {
@@ -550,7 +553,7 @@ public class RoomPresenter implements RoomContract.presenter,
         roomEntities.add(roomEntity);
         roomDataPresenter.insertRoomRecordIntoDb(roomEntities);
 
-        String msg = "@bot-la2zewmltd introduce to text consultation";
+        String msg = "@bot-la2zewmltd introduce " + AppConstant.userProfile.data.firstName + " to text consultation";
 
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();

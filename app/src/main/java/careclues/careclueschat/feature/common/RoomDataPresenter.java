@@ -13,6 +13,7 @@ import java.util.TimerTask;
 
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.model.GroupModel;
 import careclues.careclueschat.model.GroupResponseModel;
 import careclues.careclueschat.model.RoomResponse;
 import careclues.careclueschat.model.BaseRoomModel;
@@ -98,7 +99,7 @@ public class RoomDataPresenter {
     }
 
     public interface CreateNewRoomListner{
-        public void onNewRoomCreated();
+        public void onNewRoomCreated(boolean reConsult,GroupModel groupModel);
     }
 
 
@@ -531,7 +532,7 @@ public class RoomDataPresenter {
 
 
 
-    public void createNewRoom() {
+    public void createNewRoom(final boolean reConsult) {
         String roomName = "TC-" + (System.currentTimeMillis() / 1000);
         String[] members = {"api_admin", "bot-la2zewmltd"};
         apiExecuter.createPrivateRoom(roomName, members, new ServiceCallBack<GroupResponseModel>(GroupResponseModel.class) {
@@ -540,7 +541,7 @@ public class RoomDataPresenter {
                 Log.e("NEWROOM", "New Room : " + response.toString());
                 if (response.success) {
                     groupResponseModel = response;
-                    setRoomTopic(response.group.id, "text-consultation");
+                    setRoomTopic(response.group, "text-consultation",reConsult);
                 }
             }
 
@@ -552,14 +553,14 @@ public class RoomDataPresenter {
 
     }
 
-    private void setRoomTopic(String roomId, String topic) {
-        apiExecuter.setRoomTopicw(roomId, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
+    private void setRoomTopic(final GroupModel groupModel, String topic, final boolean reConsult) {
+        apiExecuter.setRoomTopicw(groupModel.id, topic, new ServiceCallBack<SetTopicResponseModel>(SetTopicResponseModel.class) {
             @Override
             public void onSuccess(SetTopicResponseModel response) {
                 Log.e("NEWROOM", "SetTopic : " + response.toString());
 
                 if(createNewRoomListner != null){
-                    createNewRoomListner.onNewRoomCreated();
+                    createNewRoomListner.onNewRoomCreated(reConsult,groupModel);
                 }
             }
 

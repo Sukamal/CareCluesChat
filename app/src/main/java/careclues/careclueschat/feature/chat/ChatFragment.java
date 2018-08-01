@@ -481,6 +481,20 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         populetSendMessage(lastMessage.control,replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
     }
 
+    @Override
+    public void onUpdateImageToServer(String url) {
+
+        //TODO send message to rocket
+
+        ReplyMessageModel replyMessageModel = new ReplyMessageModel();
+        replyMessageModel.type = "image";
+        replyMessageModel.id = "patientDocument";
+        replyMessageModel.imageURL = url;
+        presenter.sendMessageViaApi(replyMessageModel,null);
+
+
+    }
+
 
     private void populetSendMessage(String messageType,  String replyMsgId, String content, PatientModel patientModel, CategoryModel categoryModel, SymptomModel symptomModel) {
         ReplyMessageModel replyMessageModel = new ReplyMessageModel();

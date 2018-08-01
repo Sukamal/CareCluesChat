@@ -48,6 +48,7 @@ import careclues.careclueschat.model.FamilyMemberResponseModel;
 import careclues.careclueschat.model.SymptomResponseModel;
 import careclues.careclueschat.model.TextConsultantListResponseModel;
 import careclues.careclueschat.model.TextConsultantResponseModel;
+import careclues.careclueschat.model.UploadFileResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.ApiClient;
 import careclues.careclueschat.network.NetworkError;
@@ -65,6 +66,7 @@ import careclues.rocketchat.models.CcBaseRoom;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcUser;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 public class ChatPresenter1 implements ChatContract.presenter {
@@ -87,6 +89,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     private LanguageResponseModel languageResponseModel;
     private RestApiExecuter apiExecuter;
     private FamilyMemberResponseModel familyMemberResponseModel = null;
+    private UploadFileResponseModel uploadFileResponseModel;
 
     private Timer timer;
     private List<String> addLanguageTasklist = new ArrayList<>();
@@ -202,74 +205,29 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     @Override
     public void uploadFile(File file, String desc) {
-//        chatRoom.uploadFile(file, "test_doc", desc, new FileListener() {
-//            @Override
-//            public void onUploadStarted(String roomId, String fileName, String description) {
-//
-//            }
-//
-//            @Override
-//            public void onUploadProgress(int progress, String roomId, String fileName, String description) {
-//
-//            }
-//
-//            @Override
-//            public void onUploadComplete(int statusCode, FileDescriptor file, String roomId, String fileName, String description) {
-//
-//            }
-//
-//            @Override
-//            public void onUploadError(RocketChatException error, IOException e) {
-//
-//            }
-//
-//            @Override
-//            public void onSendFile(Message message, RocketChatException error) {
-//
-//            }
-//        });
-
-
         view.displayProgressBar();
         String urlLink = AppConstant.textConsultantModel.getLink("documents");
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
 
-        byte[] fileByte = new byte[(int) file.length()];
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream(file);
-            fileInputStream.read(fileByte);
-//            for (int i = 0; i < fileByte.length; i++) {
-//                System.out.print((char)fileByte[i]);
-//            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File Not Found.");
-            e.printStackTrace();
-        }
-        catch (IOException e1) {
-            System.out.println("Error Reading The File.");
-            e1.printStackTrace();
-        }
 
-//        RequestBody body = RequestBody.create(MediaType.parse("application/octet-stream"), b);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
-        FileUploadRequest uploadRequest = new FileUploadRequest();
-//        uploadRequest.file = fileInputStream;
-        uploadRequest.file = fileByte;
+        RequestBody description = null;
+//        String descriptionString = "hello, this is description speaking";
+//        description = RequestBody.create(okhttp3.MultipartBody.FORM, descriptionString);
+//        description = RequestBody.create(MediaType.parse("text/plain"), "upload_test");
 
-
-        apiExecuter.uploadFile(urlLink,uploadRequest,new ServiceCallBack<String>(String.class) {
+        apiExecuter.uploadFile(urlLink, description,body, new ServiceCallBack<UploadFileResponseModel>(UploadFileResponseModel.class) {
             @Override
-            public void onSuccess(String response) {
-
-                String respon = response;
-                view.hideProgressBar();
+            public void onSuccess(UploadFileResponseModel response) {
+                uploadFileResponseModel = response;
             }
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
-
+                uploadFileResponseModel = null;
             }
         });
 

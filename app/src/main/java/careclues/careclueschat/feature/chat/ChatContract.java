@@ -33,6 +33,7 @@ public interface ChatContract {
         public void displayTextInput();
         public void displayPayFee();
         public void onUpdateLanguageToServer(String languages);
+        public void onUpdateImageToServer(String url);
 
     }
 

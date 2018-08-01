@@ -26,5 +26,12 @@ public class ReplyMessageModel {
     @Expose
     public SymptomModel symptomModel;
 
+    @SerializedName("id")
+    @Expose
+    public String id;
+    @SerializedName("imageURL")
+    @Expose
+    public String imageURL;
+
 
 }
