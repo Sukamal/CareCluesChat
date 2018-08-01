@@ -100,6 +100,18 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
     }
 
     @Override
+    public void displyNewRoomList(List<RoomAdapterModel> list) {
+        room1Adapter.addNewData(list);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                room1Adapter.notifyDataSetChanged();
+
+            }
+        });
+    }
+
+    @Override
     public void updateRoomMessage(MessageEntity msg) {
         for(RoomAdapterModel adapterModel : room1Adapter.roomObjects){
             if(adapterModel.Id.equals(msg.rId)){

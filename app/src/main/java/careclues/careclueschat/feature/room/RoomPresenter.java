@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -13,11 +14,15 @@ import java.util.List;
 import careclues.careclueschat.R;
 import careclues.careclueschat.application.CareCluesChatApplication;
 import careclues.careclueschat.executor.ThreadsExecutor;
+import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.common.RoomDataPresenter;
+import careclues.careclueschat.model.BaseRoomModel;
 import careclues.careclueschat.model.LoginResponse;
 import careclues.careclueschat.model.GroupResponseModel;
+import careclues.careclueschat.model.MessageResponseModel;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.model.RoomMemberModel;
+import careclues.careclueschat.model.RoomModel;
 import careclues.careclueschat.model.SetTopicResponseModel;
 import careclues.careclueschat.model.UserProfileResponseModel;
 import careclues.careclueschat.network.NetworkError;
@@ -32,6 +37,7 @@ import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 import careclues.rocketchat.CcRocketChatClient;
 import careclues.rocketchat.CcSocket;
+import careclues.rocketchat.CcUtils;
 import careclues.rocketchat.callback.CcLoginCallback;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.callback.CcRoomCallback;
@@ -40,6 +46,7 @@ import careclues.rocketchat.listner.CcChatRoomFactory;
 import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcMessage;
+import careclues.rocketchat.models.CcRoom;
 import careclues.rocketchat.models.CcToken;
 
 public class RoomPresenter implements RoomContract.presenter,
@@ -52,6 +59,7 @@ public class RoomPresenter implements RoomContract.presenter,
 
         CcConnectListener,
         CcMessageCallback.SubscriptionCallback,
+        CcMessageCallback.NewRoomCallback,
         CcRoomCallback.GroupCreateCallback,
         CcTypingListener {
 
@@ -62,6 +70,9 @@ public class RoomPresenter implements RoomContract.presenter,
     private final int LOG_IN_FAIL = 2;
     private final int LOAD_ROOM_DATA = 3;
     private final int LOAD_MORE_ROOM_DATA = 4;
+    private final int LOAD_NEW_ROOM_DATA = 5;
+
+
 
     private boolean isFirstTimeLoad = true;
     private RoomContract.view view;
@@ -93,6 +104,7 @@ public class RoomPresenter implements RoomContract.presenter,
         roomDataPresenter.registerRoomMemberHistoryListner(this);
         roomDataPresenter.registerMessageListner(this);
         roomDataPresenter.registerCreateNewRoom(this);
+
 
 
 
@@ -276,6 +288,9 @@ public class RoomPresenter implements RoomContract.presenter,
                     case LOAD_MORE_ROOM_DATA:
                         view.displyMoreRoomList(modelList);
                         break;
+                    case LOAD_NEW_ROOM_DATA:
+                        view.displyNewRoomList(modelList);
+                        break;
                 }
             }
         };
@@ -439,6 +454,7 @@ public class RoomPresenter implements RoomContract.presenter,
         view.updateRoomMessage(roomId, messageEntity);
 
     }
+    
 
     @Override
     public void onCreateGroup(String roomId) {
@@ -521,6 +537,41 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void onNewRoomCreated() {
+
+    }
+
+    @Override
+    public void onNewRoom(String userId, final CcRoom roomModel) {
+        Log.e("MSG","HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+        RoomEntity roomEntity;
+        roomEntity = ModelEntityTypeConverter.ccroomToEntity(roomModel);
+        List<RoomEntity> roomEntities = new ArrayList<>();
+        roomEntities.add(roomEntity);
+        roomDataPresenter.insertRoomRecordIntoDb(roomEntities);
+
+        String msg = "@bot-la2zewmltd introduce to text consultation";
+
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+        apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomEntity.roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+            @Override
+            public void onSuccess(MessageResponseModel response) {
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+
+        if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation")
+                && roomModel.type.name() == BaseRoomModel.RoomType.PRIVATE.name()){
+            populateAdapterData(roomEntities,LOAD_MORE_ROOM_DATA);
+        }
+
+
 
     }
 }

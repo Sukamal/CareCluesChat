@@ -260,6 +260,7 @@ public class CcWebsocketImpl implements CcSocketListener {
     public String subscribeRoomChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
         String uniqueID = CcUtils.shortUUID();
         coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        coreStreamMiddleware.createSubscription(userId, listener, CcCoreStreamMiddleware.SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
         socket.sendData(CcCoreSubRPC.subscribeRoomChanged(uniqueID,userId));
         return uniqueID;
     }
@@ -267,6 +268,7 @@ public class CcWebsocketImpl implements CcSocketListener {
     public String subscribeSubscriptionChangeEvent(String userId, CcSubscribeListener subscribeListener, CcMessageCallback.SubscriptionCallback listener) {
         String uniqueID = CcUtils.shortUUID();
         coreStreamMiddleware.createSubscriptionListener(uniqueID, subscribeListener);
+        coreStreamMiddleware.createSubscription(userId, listener, CcCoreStreamMiddleware.SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
         socket.sendData(CcCoreSubRPC.subscribeSubscriptionChanged(uniqueID,userId));
         return uniqueID;
     }

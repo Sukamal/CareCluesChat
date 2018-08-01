@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.concurrent.ConcurrentHashMap;
 
+import careclues.careclueschat.model.BaseRoomModel;
+import careclues.careclueschat.model.RoomModel;
 import careclues.rocketchat.callback.CcMessageCallback;
 import careclues.rocketchat.listner.CcListener;
 import careclues.rocketchat.listner.CcSubscribeListener;
 import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcMessage;
+import careclues.rocketchat.models.CcRoom;
 
 public class CcCoreStreamMiddleware {
     private ConcurrentHashMap<String, CcSubscribeListener> listeners;
@@ -61,7 +64,12 @@ public class CcCoreStreamMiddleware {
     public void processListeners(JSONObject object) {
         String s = object.optString("collection");
         JSONArray array = object.optJSONObject("fields").optJSONArray("args");
-        String roomId = object.optJSONObject("fields").optString("eventName").replace("/typing", "");
+        String roomId = object.optJSONObject("fields").optString("eventName")
+                .replace("/typing", "")
+                .replace("/rooms-changed", "")
+                .replace("/subscriptions-changed", "");
+        String eventName = object.optJSONObject("fields").optString("eventName");
+
         CcListener listener;
 
         if (subs.containsKey(roomId)) {
@@ -82,11 +90,30 @@ public class CcCoreStreamMiddleware {
                     CcTypingListener typingListener = (CcTypingListener) listener;
                     typingListener.onTyping(roomId, array.optString(0), array.optBoolean(1));
                     break;
+                case ROOM_SUBSCRIPTION_CHANGED:
+                    if(eventName.contains("/rooms-changed")){
+                        listener = subs.get(roomId).get(SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
+                        try {
+//                            if(array.optString(0).toString().equals("inserted")){
+//
+//                            }
+                            Gson gson = new Gson();
+                            CcMessageCallback.NewRoomCallback newRoomCallback = (CcMessageCallback.NewRoomCallback) listener;
+                            CcRoom roomModel = gson.fromJson(array.getJSONObject(1).toString().trim(),CcRoom.class);
+                            newRoomCallback.onNewRoom(roomId, roomModel);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }else if(eventName.contains("/subscriptions-changed")){
+
+                    }
+
+                    break;
+
                 case OTHER:
                     break;
             }
         }
-
     }
 
     public void processSubscriptionSuccess(JSONObject subObj) {

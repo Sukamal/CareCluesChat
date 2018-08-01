@@ -305,12 +305,29 @@ public class RoomDataPresenter {
     }
 
 
-    private void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities) {
+    public void insertRoomRecordIntoDb(final List<RoomEntity> roomEntities) {
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
                 try {
+                    ((CareCluesChatApplication) application).getChatDatabase().roomDao().insertAll(roomEntities);
+                } catch (Throwable e) {
+                    Log.e("DBERROR"," insertRoomRecordIntoDb : " + e.getMessage());
+                }
+            }
+        });
+
+    }
+
+    public void insertRoomRecordIntoDb(final RoomEntity roomEntity) {
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    List<RoomEntity> roomEntityList = new ArrayList<>();
+                    roomEntityList.add(roomEntity);
                     ((CareCluesChatApplication) application).getChatDatabase().roomDao().insertAll(roomEntities);
                 } catch (Throwable e) {
                     Log.e("DBERROR"," insertRoomRecordIntoDb : " + e.getMessage());

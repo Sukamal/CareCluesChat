@@ -128,6 +128,13 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
     }
 
     @Override
+    public void displyNewRoomList(List<RoomAdapterModel> list) {
+        if(roomFragmentAction != null){
+            roomFragmentAction.displyNewRoomList(list);
+        }
+    }
+
+    @Override
     public void onUserTyping(String roomId, String user, Boolean istyping) {
         if(chatFragmentAction != null){
             chatFragmentAction.displyUserTyping(roomId,user,istyping);
@@ -180,6 +187,7 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
     public interface performRoomFragmentAction {
         void displyRoomList(List<RoomAdapterModel> list);
         void displyMoreRoomList(List<RoomAdapterModel> list);
+        void displyNewRoomList(List<RoomAdapterModel> list);
         void updateRoomMessage(MessageEntity msg);
     }
 

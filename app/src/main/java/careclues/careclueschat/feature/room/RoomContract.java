@@ -18,6 +18,8 @@ public interface RoomContract {
         public void onFetchBasicData();
         public void displyRoomListScreen(List<RoomAdapterModel> list);
         public void displyMoreRoomList(List<RoomAdapterModel> list);
+        public void displyNewRoomList(List<RoomAdapterModel> list);
+
         public void updateRoomMessage(String roomId, MessageEntity msg);
         public void displyChatScreen(String roomId);
         public void onUserTyping(String roomId, String user, Boolean istyping);

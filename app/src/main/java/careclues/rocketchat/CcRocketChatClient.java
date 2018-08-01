@@ -151,10 +151,6 @@ public class CcRocketChatClient {
         return websocketImpl.subscribeMessageChangeEvent(userId, subscribeListener, listener);
     }
 
-
-
-
-
     public void removeSubscription(String roomId, CcCoreStreamMiddleware.SubscriptionType type) {
         websocketImpl.removeSubscription(roomId, CcCoreStreamMiddleware.SubscriptionType.SUBSCRIBE_ROOM_MESSAGE);
     }

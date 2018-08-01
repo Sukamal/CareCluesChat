@@ -21,8 +21,36 @@ import careclues.careclueschat.storage.database.entity.RoomEntity;
 import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.rocketchat.models.CcMessage;
+import careclues.rocketchat.models.CcRoom;
 
 public class ModelEntityTypeConverter {
+
+    public static RoomEntity ccroomToEntity(CcRoom data) {
+        if (data == null) {
+            return null;
+        }
+        RoomEntity roomEntity = new RoomEntity();
+
+        roomEntity.roomId = data.Id;
+        roomEntity.type = data.type.name();
+
+        RoomUserModel userModel = new RoomUserModel();
+        userModel.userName = data.user.userName;
+        userModel.name = data.user.name;
+        userModel.id = data.user.id;
+
+        roomEntity.user = userModel;
+//        roomEntity.userId = data.user.id;
+//        roomEntity.userName = data.user.userName;
+        roomEntity.roomName = data.name;
+        roomEntity.roomFname = data.fName;
+        roomEntity.topic = data.topic;
+        roomEntity.updatedAt = RoomUserTypeConverter.toDate(data.updatedAt.date);
+        roomEntity.description = data.description;
+        roomEntity.readOnly = data.readOnly;
+
+        return roomEntity;
+    }
 
     public static RoomEntity roomModelToEntity(RoomModel data) {
         if (data == null) {

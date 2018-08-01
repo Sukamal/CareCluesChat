@@ -90,7 +90,17 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     public void addLoadData(List<RoomAdapterModel> dataList){
         if(roomObjects != null){
             roomObjects.addAll(dataList);
-//            this.notifyDataSetChanged();
+            Collections.sort(roomObjects);
+
+        }
+        setLoaded();
+    }
+
+    public void addNewData(List<RoomAdapterModel> dataList){
+        if(roomObjects != null){
+            roomObjects.addAll(0,dataList);
+            Collections.sort(roomObjects);
+
         }
         setLoaded();
     }

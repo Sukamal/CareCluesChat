@@ -19,6 +19,12 @@ public abstract class CcBaseRoom {
     @SerializedName("u")
     public  CcUser user;
 
+    @SerializedName("name")
+    public  String name;
+
+    @SerializedName("fname")
+    public  String fName;
+
     public abstract String name();
 
     public enum RoomType {

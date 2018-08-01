@@ -361,7 +361,10 @@ public class ChatPresenter1 implements ChatContract.presenter {
         apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantListResponseModel>(TextConsultantListResponseModel.class) {
             @Override
             public void onSuccess(TextConsultantListResponseModel response) {
-                AppConstant.textConsultantModel = response.data.get(0);
+                if(response != null && response.data != null && response.data.size() > 0){
+                    AppConstant.textConsultantModel = response.data.get(0);
+
+                }
 
             }
 
