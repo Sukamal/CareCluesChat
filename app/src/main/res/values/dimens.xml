@@ -13,6 +13,7 @@
     <dimen name="details_circle_size">30dp</dimen>
     <dimen name="text_size_details_circle">16sp</dimen>
 
+    <dimen name="margin_2">2dp</dimen>
     <dimen name="margin_5">5dp</dimen>
     <dimen name="margin_4">4dp</dimen>
     <dimen name="margin_8">8dp</dimen>
@@ -22,9 +23,12 @@
     <dimen name="margin_25">25dp</dimen>
     <dimen name="margin_30">30dp</dimen>
 
+    <dimen name="text_size_large">18sp</dimen>
     <dimen name="text_size_heading">16sp</dimen>
     <dimen name="text_size_normal">14sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
 
     <dimen name="bubble_corners_radius">15dp</dimen>
+
+    <dimen name="dim_48">48dp</dimen>
 </resources>

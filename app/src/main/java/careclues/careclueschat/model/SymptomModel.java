@@ -1,5 +1,4 @@
 package careclues.careclueschat.model;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -20,4 +19,5 @@ public class SymptomModel {
     @SerializedName("links")
     @Expose
     public List<LinkModel> links = null;
+
 }

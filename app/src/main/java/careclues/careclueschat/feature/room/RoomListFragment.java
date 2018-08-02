@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +20,6 @@ import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.common.OnLoadMoreListener;
-import careclues.careclueschat.feature.common.RoomDataPresenter;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 
@@ -71,6 +72,7 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
                 room1Adapter.setAdapterItemClickListner(new RoomAdapter.onAdapterItemClickListner() {
                     @Override
                     public void onListItemClick(int position,String roomId) {
+                        Log.d("Item clicked", "onListItemClick: ");
                         updateRoomStatus(roomId,false);
                         ((RoomMainActivity)getActivity()).presenter.getMessage(roomId);
                     }
@@ -122,7 +124,7 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
             }
         }
 
-        room1Adapter.rearangeData();
+        room1Adapter.rearangedata();
     }
 
 
@@ -148,7 +150,7 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
             }
         }
 
-        room1Adapter.rearangeData();
+        room1Adapter.rearangedata();
     }
 
 

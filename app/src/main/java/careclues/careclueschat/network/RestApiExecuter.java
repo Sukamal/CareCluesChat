@@ -25,10 +25,12 @@ import careclues.careclueschat.model.SetTopicRequest;
 import careclues.careclueschat.model.UpdatePaymentModeRequest;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import careclues.careclueschat.model.UserProfileResponseModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Part;
 
 /**
  * Created by SukamalD on 6/2/2018.
@@ -221,7 +223,16 @@ public class RestApiExecuter {
     }
 
     public <T> void uploadFile(String url, RequestBody description, MultipartBody.Part file,ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url,description,file);
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url, description, file);
+    }
+
+//    public <T> void uploadFile(String url,  MultipartBody.Part file, ServiceCallBack<T> serviceCallBack) {
+//        Call<ResponseBody> call = ApiClient.getUploadRetrofit().create(ServerApiInterface.class).uploadFile(url,null, file);
+//        execute(call,serviceCallBack);
+//    }
+
+    public <T> void updateUserProfile(String url, UserProfileResponseModel dataModel, ServiceCallBack<T> serviceCallBack) {
+        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).updateUserProfile(url,dataModel);
         execute(call,serviceCallBack);
     }
 

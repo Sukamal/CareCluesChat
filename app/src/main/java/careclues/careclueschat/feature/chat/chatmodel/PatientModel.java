@@ -21,7 +21,6 @@ public class PatientModel {
     public Boolean languagePreferredExists;
 
 
-
 //    @Ignore
     public String displayName;
 }

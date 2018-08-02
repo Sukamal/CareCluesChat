@@ -31,7 +31,6 @@ public class LoggingInterceptor implements Interceptor {
 
         Response newResponse = response.newBuilder().body(ResponseBody.create(responseBody.contentType(), responseBodyString.getBytes())).build();
 
-
         return newResponse;
     }
 

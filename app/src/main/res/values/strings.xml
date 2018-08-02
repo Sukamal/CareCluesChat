@@ -8,7 +8,7 @@
     <string name="txt_Chose_image_from">Chose image from:</string>
     <string name="txt_Take_a_photo">Camera</string>
     <string name="txt_Upload_photo">Gallery</string>
-    <string name="txt_Upload_file">Upload file</string>
+    <string name="txt_Upload_file">Document</string>
 
     <string name="tc_status_inactivity_expired">Expired due to inactivity</string>
     <string name="tc_status_payment_expired">Expired due to non-payment</string>
@@ -25,7 +25,6 @@
     <string name="age">Age</string>
     <string name="gender">Gender</string>
 
-
     <string-array name="blood_groups">
         <item>A+</item>
         <item>A-</item>
@@ -36,4 +35,26 @@
         <item>AB+</item>
         <item>AB-</item>
     </string-array>
+
+    <string name="my_clinics">I practice here</string>
+    <string name="my_reviews">Reviews by Patient</string>
+    <string name="my_educations">My education</string>
+    <string name="my_services">My areas of expertise</string>
+    <string name="my_specialization">My specializations</string>
+    <string name="my_awards">My awards</string>
+    <string name="my_language">I can speak</string>
+
+    <string name="tc_suggest_followup">You are requested to follow up on %1$s.</string>
+    <string name="tc_payment_success">Thank you for making the payment. Please begin your Chat Consultation with %1$s.</string>
+    <string name="tc_msg_inactivity_expired">It seems that the most suitable doctors for your condition are busy at the moment. Please request for a Chat Consultation after sometime.</string>
+    <string name="tc_msg_payment_expired">Owing to the non-payment of doctor’s fee, your Chat Consultation has been suspended.</string>
+    <string name="tc_msg_completed">Your 24-hour Chat Consultation window has expired. Please take a moment to rate and review your experience with Dr. %1$s.\n\nAnd if you have any further queries, don’t hesitate to request for a follow-up!</string>
+    <string name="completed_by_physician">Your Chat Consultation with Dr. %1$s is completed.\n\nPlease take a moment to rate and review your experience with Dr. %2$s.\nAnd if you have any further queries, don’t hesitate to request for a follow-up!</string>
+    <string name="rejected_by_physician">Unfortunately, the doctor is unavailable for a follow-up consultation.\n\nYou may consider consulting other doctors, who are well equipped to diagnose your medical condition.</string>
+    <string name="write_review">Write Review</string>
+    <string name="consult_again">Consult Again</string>
+
+    <string name="years_of_experience">%1$d Years of experience</string>
+
+
 </resources>

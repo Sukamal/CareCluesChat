@@ -10,6 +10,7 @@ import careclues.careclueschat.model.LinkWalletValidateOtpRequest;
 import careclues.careclueschat.model.UpdatePaymentModeRequest;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import careclues.careclueschat.model.UserProfileResponseModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -17,6 +18,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Url;
@@ -63,13 +66,15 @@ public interface ServerApiInterface {
     @POST
     public Call<ResponseBody> payViaGetway(@Url String url);
 
-//    @POST
-//    public Call<ResponseBody> uploadFile(@Url String url,@Body RequestBody bytes);
-
-//    @POST
-//    public Call<ResponseBody> uploadFile(@Url String url, @Body FileUploadRequest body );
-
     @POST
     @Multipart
     public Call<ResponseBody> uploadFile(@Url String url,@Part("description") RequestBody description, @Part MultipartBody.Part file);
+
+//    @POST
+//    @Multipart
+//    public Call<ResponseBody> uploadFile(@Url String url, @Part("file") RequestBody body, @Part MultipartBody.Part file );
+
+    @PATCH
+    public Call<ResponseBody> updateUserProfile(@Url String url, @Body UserProfileResponseModel body );
+
 }

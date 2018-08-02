@@ -2,9 +2,9 @@ package careclues.careclueschat.feature.chat;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -38,6 +38,7 @@ import careclues.careclueschat.model.AddLanguageResponseModel;
 import careclues.careclueschat.model.BaseUserModel;
 import careclues.careclueschat.model.CreateTextConsultantModel;
 import careclues.careclueschat.model.FileUploadRequest;
+import careclues.careclueschat.model.FeeRangeResponse;
 import careclues.careclueschat.model.HealthTopicResponseModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.LanguageResponseModel;
@@ -68,6 +69,7 @@ import careclues.rocketchat.models.CcUser;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+
 
 public class ChatPresenter1 implements ChatContract.presenter {
 
@@ -187,8 +189,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
         apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
-                if (controlType != null && controlType.equals(ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())) {
-
+                if (controlType.equals(ControlType.CONTROL_FEE_SELECT.get())) {
                     String url = replyMessageModel.patient.lLink;
                     String categoryLink = replyMessageModel.categoryModel.link;
                     String topicId = categoryLink.substring((categoryLink.lastIndexOf("/")) + 1);
@@ -205,6 +206,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     @Override
     public void uploadFile(File file, String desc) {
+
         view.displayProgressBar();
         String urlLink = AppConstant.textConsultantModel.getLink("documents");
         if (apiExecuter == null)
@@ -215,22 +217,18 @@ public class ChatPresenter1 implements ChatContract.presenter {
         MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
 
         RequestBody description = null;
-//        String descriptionString = "hello, this is description speaking";
-//        description = RequestBody.create(okhttp3.MultipartBody.FORM, descriptionString);
-//        description = RequestBody.create(MediaType.parse("text/plain"), "upload_test");
 
         apiExecuter.uploadFile(urlLink, description,body, new ServiceCallBack<UploadFileResponseModel>(UploadFileResponseModel.class) {
             @Override
             public void onSuccess(UploadFileResponseModel response) {
                 uploadFileResponseModel = response;
-            }
 
+            }
             @Override
             public void onFailure(List<NetworkError> errorList) {
                 uploadFileResponseModel = null;
             }
         });
-
 
     }
 
@@ -295,11 +293,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
         apiExecuter.createTextConsultant(url, healthTopicModel, new ServiceCallBack<TextConsultantResponseModel>(TextConsultantResponseModel.class) {
             @Override
             public void onSuccess(TextConsultantResponseModel response) {
-
                 AppConstant.textConsultantModel = response.data;
-
                 Log.v("API","sucess");
-
             }
 
             @Override
@@ -311,17 +306,15 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     @Override
     public void getTextConsultant(String roomId) {
-        String urlLink = AppConstant.API_BASE_URL + "text_consultations?chat_conversation_id="+roomId;
+        String urlLink = AppConstant.API_BASE_URL + "text_consultations?chat_conversation_id="+roomId+"&expand=physician,patient,health_topic,qualifications,reviews_count,specializations";
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
-
 
         apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantListResponseModel>(TextConsultantListResponseModel.class) {
             @Override
             public void onSuccess(TextConsultantListResponseModel response) {
                 if(response != null && response.data != null && response.data.size() > 0){
                     AppConstant.textConsultantModel = response.data.get(0);
-
                 }
 
             }
@@ -333,6 +326,33 @@ public class ChatPresenter1 implements ChatContract.presenter {
         });
     }
 
+     public void updatePatientAge(int age) {
+         if (userProfileModel != null) {
+             userProfileModel.data.dateOfBirth  = "1970-04-22";
+             String url = userProfileModel.data.getLink("self");
+             if (apiExecuter == null)
+                 apiExecuter = RestApiExecuter.getInstance();
+             apiExecuter.updateUserProfile(url, userProfileModel, new ServiceCallBack<UserProfileResponseModel>(UserProfileResponseModel.class) {
+                 @Override
+                 public void onSuccess(UserProfileResponseModel response) {
+                     Log.v("API","sucessz");
+
+                 }
+
+                 @Override
+                 public void onFailure(List<NetworkError> errorList) {
+
+                 }
+             });
+
+
+         }
+     }
+
+    @Override
+    public void consulAgain() {
+
+    }
 
     private void getChatHistory(final String roomId,final int startcount, final int endcount) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
@@ -439,30 +459,35 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
 
     public void enableInputControlOptions(ServerMessageModel messageModel) {
+        Log.d("EnableInputControl", "enableInputControlOptions: " + messageModel.toString());
         if (messageModel != null && messageModel.control != null) {
-            if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())) {
+            if (messageModel.type == "completed") {
+                //TODO embed end consultation template
+            } else if (messageModel.control.equals(ControlType.CONTROL_SELECT_LANGUAGE.get())) {
+                getLanguage();
+            } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FAMILY_MEMBER_SELECT.get())) {
                 getFamilyMember();
             } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT.get())) {
                 getHealthTopic();
+            } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_FEE_SELECT.get())) {
+                getFeePreferences(messageModel.categoryModel.link);
             } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT.get())) {
                 getPrimarySymptom(messageModel.categoryModel.link);
             } else if (messageModel.control.equals(ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT.get())) {
                 getSymptoms(messageModel.categoryModel.link, messageModel.symptomModel.id);
             } else if (messageModel.control.equals(ControlType.CONTROL_SELECT.get())) {
                 view.displayOptions(messageModel.options);
-            } else if (messageModel.control.equals(ControlType.CONTROL_SELECT_LANGUAGE.get())) {
-                getLanguage();
             } else if (messageModel.control.equals(ControlType.CONTROL_TEXT.get())) {
                 displayTextInput();
             } else {
                 displayTextInput();
             }
         } else {
-            if(messageModel.type.equalsIgnoreCase("physicianCard")){
+            if (messageModel.type.equalsIgnoreCase("physicianCard")) {
                 displayPayFees();
-            }else if(messageModel.type.equalsIgnoreCase("reply")){
+            } else if (messageModel.type.equalsIgnoreCase("reply")) {
                 displayTextInput();
-            } else{
+            } else {
                 displayBlank();
 
             }
@@ -477,7 +502,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
         view.displayTextInput();
     }
 
-    private void displayPayFees(){
+    private void displayPayFees() {
         view.displayPayFee();
     }
 
@@ -517,6 +542,27 @@ public class ChatPresenter1 implements ChatContract.presenter {
             @Override
             public void onFailure(List<NetworkError> errorList) {
                 familyMemberResponseModel = null;
+            }
+        });
+
+
+    }
+
+    private void getFeePreferences(String healthTopicLick) {
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.getServerResponse(healthTopicLick + "/fee_ranges", new ServiceCallBack<FeeRangeResponse>(FeeRangeResponse.class) {
+            @Override
+            public void onSuccess(FeeRangeResponse response) {
+                //  FeeRangeResponse feeRangeResponse = response;
+                // view.displayHealthTopic(healthTopicResponseModel.data);
+                view.displayFeeRanges(response.getData());
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+                // familyMemberResponseModel = null;
             }
         });
 
@@ -613,7 +659,10 @@ public class ChatPresenter1 implements ChatContract.presenter {
         CONTROL_PRIMARY_SYMPTOM_SELECT("primarySymptomSelect"),
         CONTROL_SYMPTOM_SELECT("symptomSelect"),
         CONTROL_SELECT("select"),
-        CONTROL_SELECT_LANGUAGE("languageSelect");
+        CONTROL_SELECT_LANGUAGE("languageSelect"),
+        CONTROL_SELECT_AGE("ageInput"),
+        CONTROL_FEE_SELECT("feeSelect"),
+        CONTROL_FINISH_CONSULTATION_SELECT("finishConsultation");
 
         private String control;
 
@@ -637,6 +686,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 timer.schedule(new RemindTask(), 100);
             }
         }
+
     }
 
     private void checkTaskComplete() {
@@ -644,21 +694,21 @@ public class ChatPresenter1 implements ChatContract.presenter {
         timer.schedule(new RemindTask(), 100);
     }
 
-    public void writeFileOnInternalStorage(Context mcoContext,String sFileName, String sBody){
+    public void writeFileOnInternalStorage(Context mcoContext, String sFileName, String sBody) {
 
-        File file = new File(mcoContext.getFilesDir(),"mydir");
-        if(!file.exists()){
+        File file = new File(mcoContext.getFilesDir(), "mydir");
+        if (!file.exists()) {
             file.mkdir();
         }
 
-        try{
+        try {
             File gpxfile = new File(file, sFileName);
             FileWriter writer = new FileWriter(gpxfile);
             writer.append(sBody);
             writer.flush();
             writer.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
 
         }
@@ -678,16 +728,16 @@ public class ChatPresenter1 implements ChatContract.presenter {
         return newBitmap;
     }
 
-    public  File saveToInternalStorage(Context mcoContext,String roomid,Bitmap bitmapImage){
-        Bitmap scaleImage = scaleDown(bitmapImage,600,false);
+    public File saveToInternalStorage(Context mcoContext, String roomid, Bitmap bitmapImage) {
+        Bitmap scaleImage = scaleDown(bitmapImage, 600, false);
         File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
 
 //        File directory = new File(mcoContext.getFilesDir(),"mydir");
-        if(!directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
         }
-        String fname="Pic_"+ String.valueOf(System.currentTimeMillis())  + ".jpg";
-        File mypath = new File(directory,fname);
+        String fname = "Pic_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+        File mypath = new File(directory, fname);
 
         FileOutputStream fos = null;
         try {
@@ -707,15 +757,15 @@ public class ChatPresenter1 implements ChatContract.presenter {
     }
 
 
-    public File copy(File src,Context mcoContext,String roomid,String extention) throws IOException {
+    public File copy(File src, Context mcoContext, String roomid, String extention) throws IOException {
 
         File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
 //        File directory = new File(mcoContext.getFilesDir(),"mydir");
-        if(!directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
         }
-        String fname= "Doc_"+ roomid + extention;
-        File dst = new File(directory,fname);
+        String fname = "Doc_" + roomid + extention;
+        File dst = new File(directory, fname);
 
         FileInputStream fileInputStream = new FileInputStream(src);
 
@@ -738,7 +788,5 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
         return dst;
     }
-
-
 
 }

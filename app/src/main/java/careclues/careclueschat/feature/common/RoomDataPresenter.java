@@ -71,32 +71,32 @@ public class RoomDataPresenter {
     private FetchMessageListner fetchMessageListner;
     private CreateNewRoomListner createNewRoomListner;
 
-    public RoomDataPresenter(Application application){
+    public RoomDataPresenter(Application application) {
         this.application = application;
-        appPreference = ((CareCluesChatApplication)application).getAppPreference();
+        appPreference = ((CareCluesChatApplication) application).getAppPreference();
         apiExecuter = RestApiExecuter.getInstance();
         initHandler();
 
     }
 
-    public interface FetchRoomListner{
+    public interface FetchRoomListner {
         public void onFetchRoom(List<RoomEntity> entities);
     }
 
-    public interface FetchLastUpdatedRoomDbListner{
+    public interface FetchLastUpdatedRoomDbListner {
         public void onFetchDbUpdatedRoom(List<RoomEntity> entities);
     }
 
-    public interface FetchSubscriptionListner{
+    public interface FetchSubscriptionListner {
         public void onFetchSubscription(List<SubscriptionEntity> entities);
     }
 
-    public interface FetchMessageListner{
+    public interface FetchMessageListner {
         public void onFetchMessage(String roomId);
     }
 
-    public interface FetchRoomMemberHistoryListner{
-        public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities,List<MessageEntity> messageEntities);
+    public interface FetchRoomMemberHistoryListner {
+        public void onFetchRoomMemberMessage(List<RoomMemberEntity> roomMemberEntities, List<MessageEntity> messageEntities);
     }
 
     public interface CreateNewRoomListner{
@@ -104,23 +104,23 @@ public class RoomDataPresenter {
     }
 
 
-    public void registerRoomListner(FetchRoomListner roomListner){
+    public void registerRoomListner(FetchRoomListner roomListner) {
         this.roomListner = roomListner;
     }
 
-    public void registerUpdatedRoomListner(FetchLastUpdatedRoomDbListner lastUpdatedRoomDbListner){
+    public void registerUpdatedRoomListner(FetchLastUpdatedRoomDbListner lastUpdatedRoomDbListner) {
         this.lastUpdatedRoomDbListner = lastUpdatedRoomDbListner;
     }
 
-    public void registerSubscriptionListner(FetchSubscriptionListner subscriptionListner){
+    public void registerSubscriptionListner(FetchSubscriptionListner subscriptionListner) {
         this.subscriptionListner = subscriptionListner;
     }
 
-    public void registerRoomMemberHistoryListner(FetchRoomMemberHistoryListner roomMemberHistoryListner){
+    public void registerRoomMemberHistoryListner(FetchRoomMemberHistoryListner roomMemberHistoryListner) {
         this.roomMemberHistoryListner = roomMemberHistoryListner;
     }
 
-    public void registerMessageListner(FetchMessageListner fetchMessageListner){
+    public void registerMessageListner(FetchMessageListner fetchMessageListner) {
         this.fetchMessageListner = fetchMessageListner;
     }
 
@@ -132,43 +132,43 @@ public class RoomDataPresenter {
         fetchMessageListner = null;
     }
 
-    private void initHandler(){
-        handler = new Handler(Looper.getMainLooper()){
+    private void initHandler() {
+        handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(android.os.Message msg) {
-                switch (msg.what){
+                switch (msg.what) {
                     case FETCH_ROOM_COMPLETED:
                         insertRoomRecordIntoDb(roomEntities);
-                        if(roomListner != null){
+                        if (roomListner != null) {
                             roomListner.onFetchRoom(roomEntities);
                         }
                         break;
                     case FETCH_NO_ROOM_FOUND:
-                        if(roomListner != null){
+                        if (roomListner != null) {
                             roomListner.onFetchRoom(null);
                         }
                         break;
                     case FETCH_SUBSCRIPTION_COMPLETED:
                         insertSubscriptionRecordIntoDb(subscriptionEntities);
-                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(new Date(),"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-                        if(subscriptionListner != null){
+                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+                        if (subscriptionListner != null) {
                             subscriptionListner.onFetchSubscription(subscriptionEntities);
                         }
                         break;
                     case FETCH_MEMBER_MESSAGE_COMPLETED:
                         insertRoomMemberRecordIntoDb(roomMemberEntities);
-                        insertMessageRecordIntoDb(messageEntities,false);
-                        if(roomMemberHistoryListner != null){
-                            roomMemberHistoryListner.onFetchRoomMemberMessage(roomMemberEntities,messageEntities);
+                        insertMessageRecordIntoDb(messageEntities, false);
+                        if (roomMemberHistoryListner != null) {
+                            roomMemberHistoryListner.onFetchRoomMemberMessage(roomMemberEntities, messageEntities);
                         }
                         break;
                     case FETCH_UPDATED_ROOM:
-                        if(lastUpdatedRoomDbListner != null){
+                        if (lastUpdatedRoomDbListner != null) {
                             lastUpdatedRoomDbListner.onFetchDbUpdatedRoom(lastUpdatedRoomList);
                         }
                         break;
                     case FETCH_MESSAGE_COMPLETED:
-                        if(fetchMessageListner != null){
+                        if (fetchMessageListner != null) {
                             fetchMessageListner.onFetchMessage(roomId);
                         }
                         break;
@@ -178,7 +178,7 @@ public class RoomDataPresenter {
         };
     }
 
-    public  void getActiveRoomList(final int count){
+    public void getActiveRoomList(final int count) {
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -186,19 +186,18 @@ public class RoomDataPresenter {
                 try {
 //                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,count);
                     lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
-                    if(lastUpdatedRoomList.size() == 0){
-                        lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0,1);
+                    if (lastUpdatedRoomList.size() == 0) {
+                        lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0, 1);
                     }
 
                     handler.sendEmptyMessage(FETCH_UPDATED_ROOM);
                 } catch (Throwable e) {
-                    Log.e("DBERROR", "getActiveRoomList : "+e.toString());
+                    Log.e("DBERROR", "getActiveRoomList : " + e.toString());
                 }
 
             }
         });
     }
-
 
 
     public void getRoom(String lastUpadate) {
@@ -234,12 +233,12 @@ public class RoomDataPresenter {
 
     }
 
-    private void filterRoomRecords(List<RoomModel> rooms){
-        if(rooms != null && rooms.size() > 0){
+    private void filterRoomRecords(List<RoomModel> rooms) {
+        if (rooms != null && rooms.size() > 0) {
             roomEntities = new ArrayList<>();
-            for(RoomModel roomModel : rooms){
-                if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation")
-                        && roomModel.type == BaseRoomModel.RoomType.PRIVATE){
+            for (RoomModel roomModel : rooms) {
+                if (roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation")
+                        && roomModel.type == BaseRoomModel.RoomType.PRIVATE) {
                     RoomEntity roomEntity;
                     roomEntity = ModelEntityTypeConverter.roomModelToEntity(roomModel);
                     roomEntities.add(roomEntity);
@@ -247,20 +246,20 @@ public class RoomDataPresenter {
             }
             handler.sendEmptyMessage(FETCH_ROOM_COMPLETED);
 
-        }else{
+        } else {
             handler.sendEmptyMessage(FETCH_NO_ROOM_FOUND);
         }
 
     }
 
 
-    public void getSubscription(String lastUpadate,final List<RoomEntity> moreList){
-        if(lastUpadate == null){
+    public void getSubscription(String lastUpadate, final List<RoomEntity> moreList) {
+        if (lastUpadate == null) {
             apiExecuter.getSubscription(new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
                 @Override
                 public void onSuccess(SubscriptionResponse response) {
 //                System.out.println("Subscription Response: "+ response);
-                    filterSubscriptionRecord(response.update,moreList);
+                    filterSubscriptionRecord(response.update, moreList);
                 }
 
                 @Override
@@ -268,13 +267,13 @@ public class RoomDataPresenter {
 
                 }
             });
-        }else{
+        } else {
             apiExecuter.getSubscription(lastUpadate,
                     new ServiceCallBack<SubscriptionResponse>(SubscriptionResponse.class) {
                         @Override
                         public void onSuccess(SubscriptionResponse response) {
 //                System.out.println("Subscription Response: "+ response);
-                            filterSubscriptionRecord(response.update,moreList);
+                            filterSubscriptionRecord(response.update, moreList);
                         }
 
                         @Override
@@ -286,17 +285,18 @@ public class RoomDataPresenter {
 
     }
 
-    private void filterSubscriptionRecord(List<SubscriptionModel> update, final List<RoomEntity> moreList){
+    private void filterSubscriptionRecord(List<SubscriptionModel> update, final List<RoomEntity> moreList) {
 
-        if(moreList != null){
+        if (moreList != null) {
             subscriptionEntities = new ArrayList<>();
             List<String> roomIdList = new ArrayList<>();
-            for(RoomEntity roomModel : moreList){
+            for (RoomEntity roomModel : moreList) {
                 roomIdList.add(roomModel.roomId);
             }
-            for(SubscriptionModel subscriptionModel : update){
-                if( roomIdList.contains(subscriptionModel.rId)){
-                    SubscriptionEntity subscriptionEntity ;
+            for (SubscriptionModel subscriptionModel : update) {
+                // if( roomIdList.contains(subscriptionModel.rId) && (subscriptionModel.open)){
+                if (roomIdList.contains(subscriptionModel.rId)) {
+                    SubscriptionEntity subscriptionEntity;
                     subscriptionEntity = ModelEntityTypeConverter.subscriptionModelToEntity(subscriptionModel);
                     subscriptionEntities.add(subscriptionEntity);
                 }
@@ -332,7 +332,7 @@ public class RoomDataPresenter {
                     roomEntityList.add(roomEntity);
                     ((CareCluesChatApplication) application).getChatDatabase().roomDao().insertAll(roomEntities);
                 } catch (Throwable e) {
-                    Log.e("DBERROR"," insertRoomRecordIntoDb : " + e.getMessage());
+                    Log.e("DBERROR", " insertRoomRecordIntoDb : " + e.getMessage());
                 }
             }
         });
@@ -347,7 +347,7 @@ public class RoomDataPresenter {
                 try {
                     ((CareCluesChatApplication) application).getChatDatabase().subscriptionDao().insertAll(subscriptionEntities);
                 } catch (Throwable e) {
-                    Log.e("DBERROR"," insertSubscriptionRecordIntoDb : "+ e.getMessage());
+                    Log.e("DBERROR", " insertSubscriptionRecordIntoDb : " + e.getMessage());
                 }
             }
         });
@@ -359,10 +359,10 @@ public class RoomDataPresenter {
     private List<RoomMemberEntity> roomMemberEntities;
     private List<MessageEntity> messageEntities;
 
-    public void fetchMemberAndMessage(List<RoomEntity> moreList){
+    public void fetchMemberAndMessage(List<RoomEntity> moreList) {
         roomIdMember = new ArrayList<>();
         roomIdMessage = new ArrayList<>();
-        for(RoomEntity roomEntity:moreList){
+        for (RoomEntity roomEntity : moreList) {
             roomIdMember.add(roomEntity.roomId);
             roomIdMessage.add(roomEntity.roomId);
         }
@@ -370,42 +370,42 @@ public class RoomDataPresenter {
         getRoomMemberMessageHistory(moreList);
     }
 
-    private void getRoomMemberMessageHistory(List<RoomEntity> moreList){
+    private void getRoomMemberMessageHistory(List<RoomEntity> moreList) {
         roomMemberEntities = new ArrayList<>();
         messageEntities = new ArrayList<>();
-        for(RoomEntity roomEntity:moreList){
+        for (RoomEntity roomEntity : moreList) {
             getRoomMembers(roomEntity.roomId);
             getMessageHistory(roomEntity.roomId);
         }
 
     }
 
-    private void getAllRoomMember(List<RoomEntity> moreList){
+    private void getAllRoomMember(List<RoomEntity> moreList) {
         roomMemberEntities = new ArrayList<>();
         messageEntities = new ArrayList<>();
-        for(RoomEntity roomEntity:moreList){
+        for (RoomEntity roomEntity : moreList) {
             getRoomMembers(roomEntity.roomId);
             getMessageHistory(roomEntity.roomId);
         }
 
     }
 
-    private  void getAllRoomMessage(List<RoomEntity> moreList){
+    private void getAllRoomMessage(List<RoomEntity> moreList) {
         roomMemberEntities = new ArrayList<>();
         messageEntities = new ArrayList<>();
-        for(RoomEntity roomEntity:moreList){
+        for (RoomEntity roomEntity : moreList) {
             getRoomMembers(roomEntity.roomId);
             getMessageHistory(roomEntity.roomId);
         }
 
     }
 
-    private void getRoomMembers(final String roomId){
+    private void getRoomMembers(final String roomId) {
         apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
             @Override
             public void onSuccess(RoomMemberResponse response) {
 //                System.out.println("RoomMember Response: "+ response.members.toString());
-                filterRoomMembersRecord(roomId,response.members);
+                filterRoomMembersRecord(roomId, response.members);
                 roomIdMember.remove(roomId);
             }
 
@@ -416,8 +416,8 @@ public class RoomDataPresenter {
         });
     }
 
-    private void getMessageHistory(final String roomId){
-        apiExecuter.getChatMessage(roomId,0,null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+    private void getMessageHistory(final String roomId) {
+        apiExecuter.getChatMessage(roomId, 0, null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
 //                System.out.println("RoomMember Response: "+ response.messages.toString());
@@ -432,24 +432,24 @@ public class RoomDataPresenter {
         });
     }
 
-    public void fetchMessages(final String roomId, final boolean isOnItemClick){
+    public void fetchMessages(final String roomId, final boolean isOnItemClick) {
         this.roomId = roomId;
-        apiExecuter.getChatMessage(roomId,0,null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+        apiExecuter.getChatMessage(roomId, 0, null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
                 filterMessageRecord(response.messages);
-                insertMessageRecordIntoDb(messageEntities,isOnItemClick);
+                insertMessageRecordIntoDb(messageEntities, isOnItemClick);
             }
 
             @Override
             public void onFailure(List<NetworkError> errorList) {
-                Log.e("Error","Error!!!!");
+                Log.e("Error", "Error!!!!");
             }
         });
     }
 
-    private void filterRoomMembersRecord(String roomid,List<RoomMemberModel> memberModels){
-        for(RoomMemberModel memberModel : memberModels){
+    private void filterRoomMembersRecord(String roomid, List<RoomMemberModel> memberModels) {
+        for (RoomMemberModel memberModel : memberModels) {
             RoomMemberEntity memberEntity;
             memberEntity = ModelEntityTypeConverter.roomMemberToEntity(memberModel);
             memberEntity.rId = roomid;
@@ -457,35 +457,40 @@ public class RoomDataPresenter {
         }
     }
 
-    private void filterMessageRecord(List<MessageModel> messageModels){
+    private void filterMessageRecord(List<MessageModel> messageModels) {
 
-        if(messageEntities == null ){
+        if (messageEntities == null) {
             messageEntities = new ArrayList<>();
         }
-        for(MessageModel messageModel : messageModels){
+        for (MessageModel messageModel : messageModels) {
             MessageEntity messageEntity;
-            messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
-            messageEntity.synced = true;
-            messageEntities.add(messageEntity);
+            //TODO check if message is hidden then don't store
+            Log.d("MessageHideen", "filterMessageRecord: " + messageModel.isHiddenMessage());
+            if (!messageModel.isHiddenMessage()) {
+                messageEntity = ModelEntityTypeConverter.messageModelToEntity(messageModel);
+                messageEntity.synced = true;
+                messageEntities.add(messageEntity);
+            }
         }
     }
 
-    private void insertRoomMemberRecordIntoDb(final List<RoomMemberEntity> roomMemberEntities){
+
+    private void insertRoomMemberRecordIntoDb(final List<RoomMemberEntity> roomMemberEntities) {
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
-                try{
-                    ((CareCluesChatApplication)application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
+                try {
+                    ((CareCluesChatApplication) application).getChatDatabase().roomMemberDao().insertAll(roomMemberEntities);
 
-                }catch (Throwable e){
-                    Log.e("DBERROR", " insertRoomMemberRecordIntoDb : "+e.getMessage());
+                } catch (Throwable e) {
+                    Log.e("DBERROR", " insertRoomMemberRecordIntoDb : " + e.getMessage());
                 }
             }
         });
     }
 
-    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities,final boolean isOnItemClick) {
+    private void insertMessageRecordIntoDb(final List<MessageEntity> messageEntities, final boolean isOnItemClick) {
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
             public void run() {
@@ -495,12 +500,12 @@ public class RoomDataPresenter {
 //                    }
                     ((CareCluesChatApplication) application).getChatDatabase().messageDao().insertAll(messageEntities);
 
-                    if(isOnItemClick){
+                    if (isOnItemClick) {
                         handler.sendEmptyMessage(FETCH_MESSAGE_COMPLETED);
 
                     }
                 } catch (Throwable e) {
-                    Log.e("DBERROR", " insertMessageRecordIntoDb : "+ e.toString());
+                    Log.e("DBERROR", " insertMessageRecordIntoDb : " + e.toString());
                 }
 
             }
@@ -509,29 +514,26 @@ public class RoomDataPresenter {
     }
 
 
-
-    private void checkTaskComplete(){
+    private void checkTaskComplete() {
         timer = new Timer();
-        timer.schedule(new RoomDataPresenter.RemindTask(),1000);
+        timer.schedule(new RoomDataPresenter.RemindTask(), 1000);
     }
 
     class RemindTask extends TimerTask {
         @Override
         public void run() {
-            if(roomIdMember.size() == 0 ){
-                if(roomIdMessage.size() == 0){
+            if (roomIdMember.size() == 0) {
+                if (roomIdMessage.size() == 0) {
                     timer.cancel();
                     handler.sendEmptyMessage(FETCH_MEMBER_MESSAGE_COMPLETED);
-                }else{
-                    timer.schedule(new RoomDataPresenter.RemindTask(),1000);
+                } else {
+                    timer.schedule(new RoomDataPresenter.RemindTask(), 1000);
                 }
-            }else{
-                timer.schedule(new RoomDataPresenter.RemindTask(),1000);
+            } else {
+                timer.schedule(new RoomDataPresenter.RemindTask(), 1000);
             }
         }
     }
-
-
 
     public void createNewRoom(final boolean reConsult) {
         String roomName = "TC-" + (System.currentTimeMillis() / 1000);
@@ -589,8 +591,5 @@ public class RoomDataPresenter {
             }
         });
     }
-
-
-
 
 }

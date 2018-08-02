@@ -84,4 +84,26 @@ public class ApiClient {
         }
         return serverRetrofit;
     }
+
+    public static Retrofit getUploadRetrofit(){
+
+        client = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
+                .addInterceptor(new ServerUploadHeaderInterceptor())
+                .build();
+
+        gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .setLenient()
+                .create();
+
+        if (serverRetrofit==null) {
+            serverRetrofit = new Retrofit.Builder()
+                    .baseUrl(AppConstant.API_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(client)
+                    .build();
+        }
+        return serverRetrofit;
+    }
 }

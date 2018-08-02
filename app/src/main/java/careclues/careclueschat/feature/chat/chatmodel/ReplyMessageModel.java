@@ -7,6 +7,9 @@ import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.SymptomModel;
 
 public class ReplyMessageModel {
+    @SerializedName("id")
+    @Expose
+    public String id;
     @SerializedName("replyToQuestionId")
     @Expose
     public String replyToQuestionId;
@@ -25,10 +28,6 @@ public class ReplyMessageModel {
     @SerializedName("symptom")
     @Expose
     public SymptomModel symptomModel;
-
-    @SerializedName("id")
-    @Expose
-    public String id;
     @SerializedName("imageURL")
     @Expose
     public String imageURL;

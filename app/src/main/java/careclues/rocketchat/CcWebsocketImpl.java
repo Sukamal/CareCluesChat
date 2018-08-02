@@ -44,8 +44,6 @@ public class CcWebsocketImpl implements CcSocketListener {
 
     private CcConnectListener connecTionListner;
 
-
-
     CcWebsocketImpl(OkHttpClient client, CcSocketFactory factory, String baseUrl) {
         this.client = client;
         this.factory = factory;
@@ -292,8 +290,6 @@ public class CcWebsocketImpl implements CcSocketListener {
     void removeAllSubscriptions(String roomId) {
         coreStreamMiddleware.removeAllSubscriptions(roomId);
     }
-
-
 
     void getChatHistory(String roomID, int limit, Date oldestMessageTimestamp,
                         Date lasttimestamp, CcHistoryCallback callback) {

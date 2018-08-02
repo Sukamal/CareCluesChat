@@ -22,14 +22,11 @@
         android:theme="@style/AppTheme">
         <activity android:name=".feature.room.RoomMainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
-
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.my.package.name.provider"
@@ -41,15 +38,12 @@
                 android:resource="@xml/provider_paths"
                 tools:replace="android:resource"/>
         </provider>
-
         <receiver android:name=".feature.paytm.SmsReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
         </receiver>
-
-
+        <activity android:name=".feature.doctordetail.DoctorDetailActivity">
+        </activity>
     </application>
-
-
 </manifest>

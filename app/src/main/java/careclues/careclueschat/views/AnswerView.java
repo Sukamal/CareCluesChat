@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -20,6 +21,7 @@ import careclues.careclueschat.feature.chat.ChatAnsAdapter;
 import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.feature.chat.chatmodel.ChatAnsModel;
 import careclues.careclueschat.feature.common.OnAdapterItemClickListener;
+import careclues.careclueschat.model.FeeRangeModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.SymptomModel;
@@ -198,6 +200,7 @@ public class AnswerView extends RelativeLayout {
 
 
     private void displaySelectedAnswers(){
+        Log.d("AnswerView", "displaySelectedAnswers: " + answers.toString());
         String selectedAnswers = "";
         if(selectedAnswerList != null){
             for(ChatAnsModel ans : selectedAnswerList){
@@ -210,6 +213,8 @@ public class AnswerView extends RelativeLayout {
 
             if(controlType == ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT){
                 answerSelectionListner.onHealthTopicSelected((HealthTopicModel) selectedAnswerList.get(0).ansObject);
+            }else if(controlType == ChatPresenter1.ControlType.CONTROL_FEE_SELECT){
+                answerSelectionListner.onFeeRangeSelect((FeeRangeModel) selectedAnswerList.get(0).ansObject);
             }else if(controlType == ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT){
                 answerSelectionListner.onSymptomSelected((SymptomModel) selectedAnswerList.get(0).ansObject);
             }else if(controlType == ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT){
@@ -218,9 +223,9 @@ public class AnswerView extends RelativeLayout {
                 answerSelectionListner.onOptionSelected((String)selectedAnswerList.get(0).ansObject);
             }else if(controlType == ChatPresenter1.ControlType.CONTROL_SELECT_LANGUAGE){
                 answerSelectionListner.onLanguageSelected(((LanguageModel)selectedAnswerList.get(0).ansObject).name);
+            }else if(controlType == ChatPresenter1.ControlType.CONTROL_SELECT_AGE){
+                answerSelectionListner.onAgeSelected((String)selectedAnswerList.get(0).ansObject);
             }
-
-
 
         }
     }
@@ -238,9 +243,5 @@ public class AnswerView extends RelativeLayout {
         answers.add(new ChatAnsModel("Answer 7345gdf dfgd",false));
         return answers;
     }
-
-
-
-
 
 }

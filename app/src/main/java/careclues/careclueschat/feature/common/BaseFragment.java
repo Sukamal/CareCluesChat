@@ -33,7 +33,7 @@ public class BaseFragment extends Fragment {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 //                fragmentManager.popBackStackImmediate(fragment.getClass().getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
+                    fragmentTransaction.add(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
                     if(addtoBac){
                         fragmentTransaction.addToBackStack(fragment.getClass().getName());
                     }

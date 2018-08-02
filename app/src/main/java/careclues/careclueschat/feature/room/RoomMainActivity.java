@@ -20,7 +20,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import careclues.careclueschat.R;
-import careclues.careclueschat.feature.chat.ChatActivity;
+//import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.model.RoomAdapterModel;

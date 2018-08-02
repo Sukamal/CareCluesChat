@@ -17,27 +17,36 @@ public class TextConsultantModel {
     @SerializedName("type")
     @Expose
     public String type;
+    @SerializedName("fee")
+    @Expose
+    public String fee;
     @SerializedName("status")
     @Expose
     public String status;
+    @SerializedName("physician_gratification_amount")
+    @Expose
+    public String physicianGratificationAmount;
     @SerializedName("internet_handling_fee")
     @Expose
     public String internetHandlingFee;
     @SerializedName("created_at")
     @Expose
     public String createdAt;
+    @SerializedName("updated_at")
+    @Expose
+    public String updatedAt;
     @SerializedName("links")
     @Expose
     public List<LinkModel> links = null;
     @SerializedName("duration")
     @Expose
     public Integer duration;
+    @SerializedName("mode_of_payment")
+    @Expose
+    public String modeOfPayment;
     @SerializedName("paid")
     @Expose
     public Boolean paid;
-    @SerializedName("expires_at")
-    @Expose
-    public String expiresAt;
     @SerializedName("allows_general_physician")
     @Expose
     public Boolean allowsGeneralPhysician;
@@ -59,12 +68,32 @@ public class TextConsultantModel {
     @SerializedName("default_discount_amount")
     @Expose
     public String defaultDiscountAmount;
+    @SerializedName("physician_discount_amount")
+    @Expose
+    public String physicianDiscountAmount;
     @SerializedName("discount_amount_by_discount_code")
     @Expose
     public String discountAmountByDiscountCode;
     @SerializedName("discount_amount")
     @Expose
     public String discountAmount;
+    @SerializedName("discounted_amount")
+    @Expose
+    public String discountedAmount;
+    @SerializedName("gross_amount")
+    @Expose
+    public String grossAmount;
+    @SerializedName("gross_amount_without_discount")
+    @Expose
+    public String grossAmountWithoutDiscount;
+
+    @SerializedName("health_topic")
+    @Expose
+    public HealthTopicModel healthTopic;
+
+    @SerializedName("physician")
+    @Expose
+    public PhysicianModel physician;
 
     public String getLink(String key){
         String retVal = null;

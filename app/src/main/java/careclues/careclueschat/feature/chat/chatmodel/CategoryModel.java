@@ -14,4 +14,13 @@ public class CategoryModel {
     public String link;
     @SerializedName("alternate_medicine")
     public Boolean alternate_medicine;
+
+    @SerializedName("feeFilterEnabled")
+    public Boolean feeFilterEnabled;
+
+    @SerializedName("startFee")
+    public String startFee;
+
+    @SerializedName("finishFee")
+    public String finishFee;
 }

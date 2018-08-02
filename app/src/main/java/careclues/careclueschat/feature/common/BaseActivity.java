@@ -30,13 +30,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         initComponents();
     }
 
-    public void addFragment(final Fragment fragment, final boolean addtoBac, final Bundle bundle){
+    public void addFragment(final Fragment fragment, final boolean addtoBac, final Bundle bundle) {
 
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                if(bundle != null){
+                if (bundle != null) {
                     fragment.setArguments(bundle);
                 }
 
@@ -44,15 +44,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                     FragmentManager fragmentManager = getSupportFragmentManager();
 //                fragmentManager.popBackStackImmediate(fragment.getClass().getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.fl_MainContainer,fragment,fragment.getClass().getName());
-                    if(addtoBac){
+                    fragmentTransaction.add(R.id.fl_MainContainer, fragment, fragment.getClass().getName());
+                    if (addtoBac) {
                         fragmentTransaction.addToBackStack(fragment.getClass().getName());
                     }
-//                fragmentTransaction.commitAllowingStateLoss();
-                    fragmentTransaction.commit();
+                    fragmentTransaction.commitAllowingStateLoss();
+                    //fragmentTransaction.commit();
                 }
-
-
 
             }
         });

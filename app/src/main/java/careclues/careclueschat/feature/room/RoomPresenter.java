@@ -282,7 +282,6 @@ public class RoomPresenter implements RoomContract.presenter,
                         roomDataPresenter.getRoom(lastUpdate);
                         break;
                     case LOG_IN_FAIL:
-
                         break;
                     case LOAD_ROOM_DATA:
                         view.displyRoomListScreen(modelList);
@@ -343,11 +342,13 @@ public class RoomPresenter implements RoomContract.presenter,
                                 adapterModel.updatedAt = entity.updatedAt;
                             }
 
+                            adapterModel.name = "New-Consultant";
                             if(memberEntities != null ){
                                 for (RoomMemberEntity memberEntity : memberEntities) {
                                     RoomMemberModel memberModel = ModelEntityTypeConverter.roomMemberEntityToModel(memberEntity);
                                     if (memberEntity.userName.equalsIgnoreCase("api_admin") || memberEntity.userName.equalsIgnoreCase("bot-la2zewmltd") || memberEntity.userName.equalsIgnoreCase(((CareCluesChatApplication) application).getUserName())) {
-                                        adapterModel.name = "New-Consultant";
+                                        //adapterModel.name = "New-Consultant";
+                                        continue;
                                     } else {
                                         adapterModel.name = memberEntity.name;
                                         adapterModel.userName = memberEntity.userName;
@@ -359,7 +360,6 @@ public class RoomPresenter implements RoomContract.presenter,
 
                             if (entity.readOnly == false) {
                                 adapterModel.status = application.getResources().getString(R.string.tc_status_ongoing);
-                                ;
                             } else {
                                 if (adapterModel.name != null && adapterModel.name.equals("New-Consultant")) {
 

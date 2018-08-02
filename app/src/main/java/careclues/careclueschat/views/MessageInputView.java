@@ -5,15 +5,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -24,7 +28,7 @@ import java.util.List;
 import butterknife.OnClick;
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.AnswerSelectionListner;
-import careclues.careclueschat.feature.chat.ChatActivity;
+//import careclues.careclueschat.feature.chat.ChatActivity;
 import careclues.careclueschat.feature.chat.ChatFragment;
 import careclues.careclueschat.feature.chat.ChatPresenter1;
 import careclues.careclueschat.util.AppConstant;
@@ -41,8 +45,8 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
     private AppDialog appDialog;
     private Context context;
     private Fragment fragment;
-
-
+    private ConstraintLayout clInput;
+    Rect rectf = new Rect();
 
     public MessageInputView(Context context) {
         super(context);
@@ -71,9 +75,11 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
 
         this.context = context;
         inflate(context, R.layout.view_message_input_text,this);
+
+        clInput = (ConstraintLayout) findViewById(R.id.cl_input);
+
         ivSubmit = (ImageButton) findViewById(R.id.ib_submit);
         ibAttachement = (ImageButton) findViewById(R.id.ib_attachement);
-
 
         etMessage = findViewById(R.id.et_message);
         ivSubmit.setEnabled(false);
@@ -121,11 +127,19 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
 
     public void pickAttachment(){
         appDialog = new AppDialog();
-        appDialog.showAlertPickImageDialog(context, new AppDialog.PickImageListener() {
+
+        int test1[] = new int[2];
+        clInput.getLocationInWindow(test1);
+
+//        int test2[] = new int[2];
+//        clInput.getLocationOnScreen(test2);
+//
+//        System.out.println(test1[1] + " " + test2[1]);
+
+        appDialog.showAlertPickImageDialog(context, this, new AppDialog.PickImageListener() {
             @Override
             public void OnCameraPress() {
                 if (AppUtil.checkPermission(context, Manifest.permission.CAMERA)) {
-
                     if (AppUtil.checkPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         pickImageFromCamera();
 
@@ -149,8 +163,6 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
             }
         });
     }
-
-
 
 
     public void askPermission(String permission) {
@@ -213,6 +225,5 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
                 targets.toArray(new Parcelable[targets.size()]));
         fragment.startActivityForResult(chooser, AppConstant.RequestTag.PICK_GALARRY_REQUEST);
     }
-
 
 }

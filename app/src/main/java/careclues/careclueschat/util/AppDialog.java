@@ -5,12 +5,14 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import careclues.careclueschat.R;
@@ -140,17 +143,27 @@ public class AppDialog {
 
     }
 
-    public void showAlertPickImageDialog(final Context context, final PickImageListener dialogListener) {
+    public void showAlertPickImageDialog(final Context context, RelativeLayout view, final PickImageListener dialogListener) {
         if (!((Activity) context).isFinishing()) {
-            dialog = new Dialog(context);
+            dialog = new Dialog(context, R.style.transparentDialog);
+            dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.dialog_chose_image_option);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             int diveWidth = AppUtil.getDeviceWidth(context);
-            dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
+           // dialog.getWindow().setLayout((6 * diveWidth)/7, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+            wmlp.gravity = Gravity.BOTTOM | Gravity.CENTER;
+            wmlp.x = 0;//100;   //x position
+            wmlp.y = AppUtil.dpToPx(context, 50);   //y position
+
             dialog.show();
 
-
-            TextView TV_camera = (TextView) dialog.findViewById(R.id.TV_camera);
+            RelativeLayout TV_camera = (RelativeLayout) dialog.findViewById(R.id.TV_camera);
             TV_camera.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -163,7 +176,7 @@ public class AppDialog {
                 }
             });
 
-            TextView TV_gallary = (TextView) dialog.findViewById(R.id.TV_gallary);
+            RelativeLayout TV_gallary = (RelativeLayout) dialog.findViewById(R.id.TV_gallary);
             TV_gallary.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -175,7 +188,7 @@ public class AppDialog {
                 }
             });
 
-            TextView TV_pdf = (TextView) dialog.findViewById(R.id.TV_pdf);
+            RelativeLayout TV_pdf = (RelativeLayout) dialog.findViewById(R.id.TV_pdf);
             TV_pdf.setOnClickListener(new View.OnClickListener() {
 
                 @Override

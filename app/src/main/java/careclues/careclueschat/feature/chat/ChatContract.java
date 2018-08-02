@@ -8,6 +8,7 @@ import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.common.CommonViewInterface;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.FeeRangeModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.PostsModel;
@@ -25,6 +26,7 @@ public interface ChatContract {
         public void onConnectionFaild(int errorType);
         public void displayFamilyMember(List<DataModel> data);
         public void displayHealthTopic(List<HealthTopicModel> data);
+        public void displayFeeRanges(List<FeeRangeModel> data);
         public void displayPrimarySymptom(List<SymptomModel> data);
         public void displaySymptom(List<SymptomModel> data);
         public void displayLanguage(List<LanguageModel> data);
@@ -34,7 +36,7 @@ public interface ChatContract {
         public void displayPayFee();
         public void onUpdateLanguageToServer(String languages);
         public void onUpdateImageToServer(String url);
-
+        //public void displayWriteAReview();
     }
 
     interface presenter {
@@ -47,6 +49,7 @@ public interface ChatContract {
         public void addLanguageApiCall(String languages);
         public void createTextConsultant(String url, String topicId, String roomId);
         public void getTextConsultant(String roomId);
-
+        public void updatePatientAge(int age);
+        public void consulAgain();
     }
 }

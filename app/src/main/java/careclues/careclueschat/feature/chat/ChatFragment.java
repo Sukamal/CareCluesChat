@@ -27,9 +27,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,12 +45,12 @@ import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.PatientModel;
 import careclues.careclueschat.feature.chat.chatmodel.ReplyMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
-import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.feature.common.BaseFragment;
 import careclues.careclueschat.feature.paytm.LoadWebPage;
 import careclues.careclueschat.feature.paytm.PaymentFragment;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
+import careclues.careclueschat.model.FeeRangeModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.SymptomModel;
@@ -93,7 +92,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     @BindView(R.id.ib_submit_ans)
     ImageButton ibSubmitAns;
     @BindView(R.id.ll_input_layout)
-    public LinearLayout llInputLayout;
+    public RelativeLayout llInputLayout;
     @BindView(R.id.view_familymember)
     public FamilyMemberView viewFamilymember;
     @BindView(R.id.view_answer)
@@ -102,6 +101,10 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public MakePaymentView view_PayFee;
     //    private ChatMessageModel lastMessage;
     private ServerMessageModel lastMessage;
+
+//    @BindView(R.id.rlAnswer_container)
+//    public RelativeLayout rlAnswerContainer;
+
     @BindView(R.id.iv_test)
     ImageView iv_test;
 
@@ -194,7 +197,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         viewFamilymember.addMembers(data);
         viewFamilymember.setAnsSelectionListner(this);
         viewFamilymember.setInitData(getActivity(), roomId);
-        dispayTemplet(TYPE_FAMILY_MEMBER);
+        displayTemplate(TYPE_FAMILY_MEMBER);
     }
 
     @Override
@@ -208,7 +211,22 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         view_answer.setAnswerList(ansList, ChatPresenter1.ControlType.CONTROL_HEALTH_TOPIC_SELECT, true);
         view_answer.removeAllListner();
         view_answer.setAnsSelectionListner(this);
-        dispayTemplet(TYPE_SELECT_ANSWERS);
+        displayTemplate(TYPE_SELECT_ANSWERS);
+    }
+
+    @Override
+    public void displayFeeRanges(List<FeeRangeModel> data) {
+        List<ChatAnsModel> ansList = new ArrayList<>();
+        for (FeeRangeModel feeRangeModel : data) {
+            ChatAnsModel ansModel = new ChatAnsModel(feeRangeModel.getMinimum(), false);
+            ansModel.ansObject = feeRangeModel;
+            ansList.add(ansModel);
+        }
+        view_answer.setAnswerList(ansList, ChatPresenter1.ControlType.CONTROL_FEE_SELECT, false);
+        view_answer.removeAllListner();
+        view_answer.setAnsSelectionListner(this);
+        displayTemplate(TYPE_SELECT_ANSWERS);
+
     }
 
     @Override
@@ -222,7 +240,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         view_answer.setAnswerList(ansList, ChatPresenter1.ControlType.CONTROL_PRIMARY_SYMPTOM_SELECT, true);
         view_answer.removeAllListner();
         view_answer.setAnsSelectionListner(this);
-        dispayTemplet(TYPE_SELECT_ANSWERS);
+        displayTemplate(TYPE_SELECT_ANSWERS);
     }
 
     @Override
@@ -236,7 +254,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         view_answer.setAnswerList(ansList, ChatPresenter1.ControlType.CONTROL_SYMPTOM_SELECT, true);
         view_answer.removeAllListner();
         view_answer.setAnsSelectionListner(this);
-        dispayTemplet(TYPE_SELECT_ANSWERS);
+        displayTemplate(TYPE_SELECT_ANSWERS);
     }
 
     @Override
@@ -250,7 +268,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         view_answer.setAnswerList(ansList, ChatPresenter1.ControlType.CONTROL_SELECT_LANGUAGE, true);
         view_answer.removeAllListner();
         view_answer.setAnsSelectionListner(this);
-        dispayTemplet(TYPE_SELECT_ANSWERS);
+        displayTemplate(TYPE_SELECT_ANSWERS);
     }
 
     @Override
@@ -264,27 +282,27 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         view_answer.setAnswerList(ansList, ChatPresenter1.ControlType.CONTROL_SELECT, true);
         view_answer.removeAllListner();
         view_answer.setAnsSelectionListner(this);
-        dispayTemplet(TYPE_SELECT_ANSWERS);
+        displayTemplate(TYPE_SELECT_ANSWERS);
     }
 
     @Override
     public void displayTextInput() {
         inputView.setAnsSelectionListner(this);
         inputView.setActivity(this);
-        dispayTemplet(TYPE_TEXT);
+        displayTemplate(TYPE_TEXT);
     }
 
     @Override
     public void displayPayFee() {
         view_PayFee.setAnsSelectionListner(this);
-        dispayTemplet(TYPE_PAY_FEES);
+        displayTemplate(TYPE_PAY_FEES);
 
     }
 
 
     @Override
     public void displayNothing() {
-        dispayTemplet(null);
+        displayTemplate(null);
     }
 
     @Override
@@ -313,7 +331,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         });
     }
 
-
     @Override
     public void displyUserTyping(final String roomId, final String user, final Boolean istyping) {
         getActivity().runOnUiThread(new Runnable() {
@@ -333,7 +350,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         });
     }
 
-
     // Will fire when soket listen any new message
     @Override
     public void updateChatMessage(MessageEntity message) {
@@ -342,7 +358,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             ChatMessageModel chatMessageModel = new ChatMessageModel(message.Id, message.msg, message.updatedAt, message.user.id);
             list.add(chatMessageModel);
             messageAdapter.addMessage(list);
-            etMessage.setText("");
+            // etMessage.setText("");
             messageAdapter.notifyDataSetChanged();
             layoutManager.smoothScrollToPosition(rvChatHistory, null, messageAdapter.getItemCount());
 
@@ -367,8 +383,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         }
     }
 
-
-    private void dispayTemplet(InputType type) {
+    private void displayTemplate(InputType type) {
+        // private void displayTemplate(String type) {
         for (int i = 0; i < llInputLayout.getChildCount(); i++) {
             llInputLayout.getChildAt(i).setVisibility(View.GONE);
         }
@@ -381,6 +397,16 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         }else if (type == TYPE_PAY_FEES) {
             view_PayFee.setVisibility(View.VISIBLE);
         }
+        /*else if(type.equals("familymember")){
+            viewFamilymember.setVisibility(View.VISIBLE);
+        }else if(type.equals("qsans")){
+            //rlAnswerContainer.setVisibility(View.VISIBLE);
+        }*/
+//        }else if(type.equals("familymember")){
+//            viewFamilymember.setVisibility(View.VISIBLE);
+//        }else if(type.equals("qsans")){
+//            //rlAnswerContainer.setVisibility(View.VISIBLE);
+//        }
     }
 
 
@@ -422,8 +448,9 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         String replyMsgId = lastMessage.id;
         String content = (patientModel.self) ? "I am consulting for myself" : "I am consulting for my " + patientModel.displayName;
         patientModel.displayName = null;
-        patientModel.age = 23;
-        populetSendMessage(lastMessage.control,replyMsgId, content, patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
+        //patientModel.age = 23;
+        patientModel.age = -1;
+        populetSendMessage(lastMessage.control, replyMsgId, content, patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
     }
 
     @Override
@@ -435,29 +462,60 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         categoryModel.name = healthTopicModel.name;
         categoryModel.alternate_medicine = healthTopicModel.alternateMedicine;
         categoryModel.link = healthTopicModel.getLink("self");
+        categoryModel.feeFilterEnabled = true;
 
-        populetSendMessage(lastMessage.control,replyMsgId, content, lastMessage.patientModel, categoryModel, lastMessage.symptomModel);
+        populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, categoryModel, lastMessage.symptomModel);
+    }
+
+    @Override
+    public void onFeeRangeSelect(FeeRangeModel feeRangeModel) {
+
+        String replyMsgId = lastMessage.id;
+        String content = "₹ 0 - ₹ 200";
+
+        CategoryModel categoryModel = lastMessage.categoryModel;
+        //if(feeRangeModel.getMinimum()>0) {
+        categoryModel.startFee = feeRangeModel.getMinimum();
+        //}
+        categoryModel.finishFee = feeRangeModel.getMaximum();
+        populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, categoryModel, lastMessage.symptomModel);
+
     }
 
     @Override
     public void onSymptomSelected(SymptomModel symptomModel) {
         String replyMsgId = lastMessage.id;
         String content = symptomModel.name;
-        populetSendMessage(lastMessage.control,replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, symptomModel);
+        populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, symptomModel);
     }
 
     @Override
     public void onOptionSelected(String option) {
+        // onEndConsultationOptionSelected(option);
         String replyMsgId = lastMessage.id;
         String content = option;
-        populetSendMessage(lastMessage.control,replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
+        populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
     }
 
     @Override
+    public void onEndConsultationOptionSelected(String option) {
+        ReplyMessageModel replyMessageModel = new ReplyMessageModel();
+        replyMessageModel.type = "reply";
+        replyMessageModel.id = "finishConsultationReply";
+        replyMessageModel.content = option;
+        presenter.sendMessageViaApi(replyMessageModel, lastMessage.control);
+
+    }
+
+
+    @Override
     public void onSimpleTextSelected(String msg) {
+        //TODO check if inoutType ageInput update patient object first
+        //presenter.updatePatientAge(12);
+       // lastMessage.patientModel.age = 40;
         String replyMsgId = lastMessage.id;
         String content = msg;
-        populetSendMessage(lastMessage.control,replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
+        populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
     }
 
     @Override
@@ -471,6 +529,24 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         Toast.makeText(getActivity(), "Click On Pay Button ChatFragment", Toast.LENGTH_SHORT).show();
         Fragment fragment = new PaymentFragment();
         addFragment(fragment,true,null);
+
+    }
+
+    @Override
+    public void onAgeSelected(String option) {
+        presenter.updatePatientAge(12);
+    }
+
+    @Override
+    public void onWriteAReview() {
+        Toast.makeText(getActivity(), "On Click Write a Review", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onEndConsultation() {
+
+       // presenter.createTextConsultant
     }
 
     @Override
@@ -478,25 +554,21 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         String replyMsgId = lastMessage.id;
         String content = languages;
         lastMessage.patientModel.languagePreferredExists = true;
-        populetSendMessage(lastMessage.control,replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
+        populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
     }
 
     @Override
     public void onUpdateImageToServer(String url) {
-
         //TODO send message to rocket
-
         ReplyMessageModel replyMessageModel = new ReplyMessageModel();
         replyMessageModel.type = "image";
         replyMessageModel.id = "patientDocument";
         replyMessageModel.imageURL = url;
         presenter.sendMessageViaApi(replyMessageModel,null);
-
-
     }
 
 
-    private void populetSendMessage(String messageType,  String replyMsgId, String content, PatientModel patientModel, CategoryModel categoryModel, SymptomModel symptomModel) {
+    private void populetSendMessage(String messageType, String replyMsgId, String content, PatientModel patientModel, CategoryModel categoryModel, SymptomModel symptomModel) {
         ReplyMessageModel replyMessageModel = new ReplyMessageModel();
 
         replyMessageModel.type = "reply";
@@ -512,7 +584,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             replyMessageModel.symptomModel = symptomModel;
             replyMessageModel.symptomModel.links = null;
         }
-        presenter.sendMessageViaApi(replyMessageModel,messageType);
+        presenter.sendMessageViaApi(replyMessageModel, messageType);
     }
 
     @Override
@@ -526,25 +598,20 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 iv_test.setImageBitmap(bitmap);
                 File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
                 presenter.uploadFile(destFile,"Test Upload File");
+              //  presenter.copy(file, getActivity(), roomId, ".jpg");
 
+                // TODO ---------- Upload Image
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (requestCode == AppConstant.RequestTag.PICK_CAMERA_REQUEST && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             File destFile = presenter.saveToInternalStorage(getActivity(),roomId,photo);
+            presenter.saveToInternalStorage(getActivity(), roomId, photo);
             iv_test.setImageBitmap(photo);
             presenter.uploadFile(destFile,"Test Upload File");
         } else if (requestCode == AppConstant.RequestTag.PICK_DOCUMENT_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
-
-//                String mImagePath = data.getData().getPath();
-////                Uri uri = data.getData();
-////                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
-//                File file = new File(mImagePath);
-//                File destFile = presenter.copy(file,getActivity(),roomId,mImagePath.substring(mImagePath.lastIndexOf(".")));
-////                presenter.uploadFile(destFile,"Test Upload File");
-
 
                 // Get the Uri of the selected file
                 Uri uri = data.getData();
@@ -568,7 +635,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 }
 
                 File destFile = presenter.copy(myFile,getActivity(),roomId,".pdf");
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -600,7 +666,4 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 break;
         }
     }
-
-
-
 }

@@ -1,54 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/margin_10">
+    android:background="@drawable/chat_input_bg"
+    android:layout_margin="@dimen/margin_8"
+    android:padding="@dimen/margin_10"
+    android:gravity="center">
 
-    <TextView
-        android:id="@+id/TV_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/txt_Chose_image_from"
-        android:layout_marginBottom="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_10"
-        style="@style/Text_Normal"
-        android:textColor="@color/color_text"/>
+    <!--<TextView-->
+        <!--android:id="@+id/TV_title"-->
+        <!--style="@style/Text_Normal"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:drawableTop="@drawable/camera"-->
+        <!--android:text="@string/txt_Chose_image_from"-->
+        <!--android:textColor="@color/color_text" />-->
 
-    <TextView
+    <RelativeLayout
         android:id="@+id/TV_camera"
-        android:layout_width="match_parent"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="@string/txt_Take_a_photo"
-        android:drawableLeft="@drawable/camera"
-        android:drawablePadding="@dimen/margin_10"
-        android:layout_marginBottom="@dimen/margin_10"
-        android:gravity="center_vertical"
-        style="@style/Text_Normal"
-        android:textColor="@color/color_hint_text"/>
-    <TextView
+        android:layout_margin="@dimen/margin_10">
+
+        <ImageView
+            android:id="@+id/camera_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/camera" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/camera_icon"
+            android:gravity="center"
+            android:text="@string/txt_Take_a_photo"/>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/TV_gallary"
-        android:layout_width="match_parent"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="@string/txt_Upload_photo"
-        android:drawableLeft="@drawable/photo"
-        android:drawablePadding="@dimen/margin_10"
-        android:layout_marginBottom="@dimen/margin_10"
-        android:gravity="center_vertical"
-        style="@style/Text_Normal"
-        android:textColor="@color/color_hint_text"/>
-    <TextView
+        android:layout_margin="@dimen/margin_10">
+        <ImageView
+            android:id="@+id/gallary_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/gallery"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gallary_icon"
+            android:gravity="center"
+            android:text="@string/txt_Upload_photo"/>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/TV_pdf"
-        android:layout_width="match_parent"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="@string/txt_Upload_file"
-        android:drawableLeft="@drawable/pdf"
-        android:drawablePadding="@dimen/margin_10"
-        android:gravity="center_vertical"
-        style="@style/Text_Normal"
-        android:textColor="@color/color_hint_text"
-        android:visibility="visible"/>
+        android:layout_margin="@dimen/margin_10">
+        <ImageView
+            android:id="@+id/pdf_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/document"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pdf_icon"
+            android:gravity="center"
+            android:text="@string/txt_Upload_file"/>
+    </RelativeLayout>
+
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/TV_camera"-->
+        <!--style="@style/Text_Normal"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:drawableTop="@drawable/camera"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:padding="@dimen/margin_10"-->
+        <!--android:text="@string/txt_Take_a_photo"-->
+        <!--android:textColor="@color/color_hint_text" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/TV_gallary"-->
+        <!--style="@style/Text_Normal"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:drawableTop="@drawable/gallery"-->
+        <!--android:drawablePadding="@dimen/margin_10"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:padding="@dimen/margin_10"-->
+        <!--android:text="@string/txt_Upload_photo"-->
+        <!--android:textColor="@color/color_hint_text" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/imageButton"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:background="@drawable/ic_gallery" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/TV_pdf"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/txt_Upload_file"-->
+        <!--android:drawableTop="@drawable/document"-->
+        <!--android:drawablePadding="@dimen/margin_10"-->
+        <!--android:padding="@dimen/margin_10"-->
+        <!--android:gravity="center_vertical"-->
+        <!--style="@style/Text_Normal"-->
+        <!--android:textColor="@color/color_hint_text"-->
+        <!--android:visibility="visible"/>-->
 
 
 

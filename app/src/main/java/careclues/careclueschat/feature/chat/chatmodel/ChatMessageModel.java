@@ -1,6 +1,7 @@
 package careclues.careclueschat.feature.chat.chatmodel;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -57,13 +58,10 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
         msg = msg.replaceAll("\"\\{","{");
         msg = msg.replaceAll("\\}\"","}");
 
-
-
         ServerMessageModel messageModel = null;
         boolean isJson = false;
         JSONObject jsonObject = null;
         if(msg != null && msg.trim().length() > 0){
-
             if(msg.startsWith("{")){
                 isJson = true;
             }else{
@@ -89,5 +87,13 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
 
         }
         return messageModel;
+    }
+
+    public ServerMessageModel getMessageModel() {
+        return messageModel;
+    }
+
+    public void setMessageModel(ServerMessageModel messageModel) {
+        this.messageModel = messageModel;
     }
 }

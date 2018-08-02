@@ -19,7 +19,7 @@ import careclues.careclueschat.util.AppConstant;
 
 public class AddMemberPresenter implements AddMemberContract.presenter{
 
-    private  AddMemberContract.view view;
+    private AddMemberContract.view view;
     private Application application;
     private String roomId;
     private RestApiExecuter apiExecuter;
@@ -38,7 +38,6 @@ public class AddMemberPresenter implements AddMemberContract.presenter{
     @Override
     public void addNewMember(DataModel familyMember) {
         addFamilyMember(familyMember);
-
     }
 
     private void addFamilyMember(DataModel familyMember) {

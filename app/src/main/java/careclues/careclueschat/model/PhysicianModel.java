@@ -63,11 +63,15 @@ public class PhysicianModel {
     @Expose
     public List<LinkModel> links = null;
 
-    public String getLink(String key){
+    public String getFullName() {
+        return "Dr." + firstName + " " + lastName;
+    }
+
+    public String getLink(String key) {
         String retVal = null;
-        if(links != null){
-            for(LinkModel linkModel : links){
-                if(linkModel.rel.equals(key)){
+        if (links != null) {
+            for (LinkModel linkModel : links) {
+                if (linkModel.rel.equals(key)) {
                     retVal = linkModel.href;
                     return retVal;
                 }

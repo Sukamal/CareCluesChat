@@ -54,4 +54,26 @@ public class MessageModel extends BaseMessageModel{
         return stringBuffer.toString();
     }
 
+    public boolean isHiddenMessage(){
+
+        if(mentions!=null && mentions.size()>0){
+
+            for(BaseUserModel baseUserModel : mentions){
+
+                if(baseUserModel.userName.equals("bot-la2zewmltd")){
+
+                    return true;
+                }
+            }
+
+        }
+
+        if(type==null || (type!=null && type.equals("p")) ){
+            return false;
+        }
+
+        return true;
+
+    }
+
 }

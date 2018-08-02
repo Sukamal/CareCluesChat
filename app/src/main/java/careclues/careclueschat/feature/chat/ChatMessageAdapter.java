@@ -1,6 +1,7 @@
 package careclues.careclueschat.feature.chat;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -13,18 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import careclues.careclueschat.R;
 import careclues.careclueschat.feature.chat.chatmodel.ChatMessageModel;
 import careclues.careclueschat.feature.chat.chatmodel.ServerMessageModel;
+import careclues.careclueschat.model.PhysicianModel;
 import careclues.careclueschat.model.PhysicianResponseModel;
 import careclues.careclueschat.model.QualificationModel;
 import careclues.careclueschat.model.SpecializationModel;
@@ -32,6 +36,7 @@ import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.DateFormatter;
 
 /**
@@ -39,32 +44,25 @@ import careclues.careclueschat.util.DateFormatter;
  */
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder> implements DateFormatter.Formatter {
-
     private List<ChatMessageModel> messageList;
     private Context context;
     private String userId;
     private DateFormatter.Formatter dateFormatter;
     private InputTypeListner inputTypeListner;
-    private RestApiExecuter apiExecuter;
-    private PhysicianResponseModel physicianResponseModel;
     private RecyclerView recyclerView;
     public int lastVisibleItem, totalItemCount;
 
-
-
-
-    public interface InputTypeListner{
+    public interface InputTypeListner {
         public void onInputType(ServerMessageModel messageModel);
     }
 
-    public void setInputTypeListner(InputTypeListner inputTypeListner){
+    public void setInputTypeListner(InputTypeListner inputTypeListner) {
         this.inputTypeListner = inputTypeListner;
     }
 
-    public ChatMessageAdapter(Context context,List<ChatMessageModel> messageList,String userId,RecyclerView recyclerView){
+    public ChatMessageAdapter(Context context, List<ChatMessageModel> messageList, String userId, RecyclerView recyclerView) {
         this.context = context;
-//        Collections.sort(messageList);
-        this.messageList = messageList ;
+        this.messageList = messageList;
         this.userId = userId;
         dateFormatter = this;
         this.recyclerView = recyclerView;
@@ -83,12 +81,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
                 super.onScrolled(recyclerView, dx, dy);
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                Log.e("Pos",String.valueOf(totalItemCount)+" / "+ String.valueOf(lastVisibleItem));
-
+                Log.e("Pos", String.valueOf(totalItemCount) + " / " + String.valueOf(lastVisibleItem));
                 if (lastVisibleItem >= 5) {
-
-                    Log.e("REACHED","LOADMORE");
-
+                    Log.e("REACHED", "LOADMORE");
                 }
             }
         });
@@ -107,43 +102,40 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ChatMessageModel chatMessageModel = messageList.get(position);
-        Log.e("msg",String.valueOf(position));
+
         Date previousDate = null;
-        if(position > 0){
-            previousDate = messageList.get(position -1).createdAt;
+        if (position > 0) {
+            previousDate = messageList.get(position - 1).createdAt;
         }
         setTimeTextVisibility(chatMessageModel.createdAt, previousDate, holder.tvDate);
 
-
-        if(chatMessageModel.userId.equalsIgnoreCase(userId/*"sachu-985" "2eRbrjSZnsACYkRx4"*/)){
+        if (chatMessageModel.userId.equalsIgnoreCase(userId/*"sachu-985" "2eRbrjSZnsACYkRx4"*/)) {
+            holder.tvRightMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
             holder.cvLeft.setVisibility(View.GONE);
             holder.cvRight.setVisibility(View.VISIBLE);
             holder.cardViewDrCard.setVisibility(View.GONE);
-            holder.tvRight.setText(chatMessageModel.messageModel.content);
-        }else{
-
-            if(chatMessageModel.messageModel.type.equals("physicianCard")){
-
-                if(physicianResponseModel == null){
-                    handleMessage(holder,chatMessageModel);
-                    getPhysicianDetails(chatMessageModel.messageModel.physicianLink);
-                }else{
-                    displayPhysicianCard(holder,chatMessageModel);
+            holder.tvRight.setText(chatMessageModel.messageModel.getContent(context));
+        } else {
+            if (chatMessageModel.messageModel.type.equals("physicianCard")) {
+                //TODO check if physician exists
+                displayPhysicianCard(holder, chatMessageModel);
+            } else {
+                holder.tvLeftMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
+                if (!chatMessageModel.userId.equalsIgnoreCase("JvMNPmN3xo4G7v2qi")) {
+                    holder.tvHeading.setVisibility(View.GONE);
+                } else {
+                    holder.tvHeading.setVisibility(View.VISIBLE);
                 }
-
-
-            }else{
                 holder.cvLeft.setVisibility(View.VISIBLE);
                 holder.cvRight.setVisibility(View.GONE);
                 holder.cardViewDrCard.setVisibility(View.GONE);
-                holder.tvLeft.setText(chatMessageModel.messageModel.content);
+                holder.tvLeft.setText(chatMessageModel.messageModel.getContent(context));
             }
         }
 
-        if(position == (messageList.size()-1)){
-            if(inputTypeListner != null) {
+        if (position == (messageList.size() - 1)) {
+            if (inputTypeListner != null) {
                 inputTypeListner.onInputType(chatMessageModel.messageModel);
-//                Toast.makeText(context, "LAST type is : " + chatMessageModel.messageModel.type, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -164,8 +156,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         }
     }
 
-    public void addMessage(List<ChatMessageModel> dataList){
-        if(messageList != null){
+    public void addMessage(List<ChatMessageModel> dataList) {
+        if (messageList != null) {
             messageList.addAll(dataList);
         }
     }
@@ -174,7 +166,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
         RelativeLayout cvLeft;
         TextView tvLeft;
-        RelativeLayout  cvRight;
+        RelativeLayout cvRight;
         TextView tvRight;
         TextView tvDate;
         CardView cardViewDrCard;
@@ -185,15 +177,17 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         TextView tv_dr_details3;
         TextView tv_fees;
         Button btn_view;
-
-
+        TextView tvHeading;
+        TextView tvLeftMessageTime;
+        TextView tvRightMessageTime;
+        RatingBar rating;
 
         public MyViewHolder(View itemView) {
             super(itemView);
 
-            cvLeft = (RelativeLayout ) itemView.findViewById(R.id.card_view_left);
+            cvLeft = (RelativeLayout) itemView.findViewById(R.id.card_view_left);
             tvLeft = (TextView) itemView.findViewById(R.id.tv_left);
-            cvRight = (RelativeLayout ) itemView.findViewById(R.id.card_view_right);
+            cvRight = (RelativeLayout) itemView.findViewById(R.id.card_view_right);
             tvRight = (TextView) itemView.findViewById(R.id.tv_right);
             tvDate = (TextView) itemView.findViewById(R.id.tv_date);
             cardViewDrCard = (CardView) itemView.findViewById(R.id.cardView_dr_card);
@@ -204,37 +198,38 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             tv_dr_details3 = (TextView) itemView.findViewById(R.id.tv_dr_details3);
             tv_fees = (TextView) itemView.findViewById(R.id.tv_fees);
             btn_view = (Button) itemView.findViewById(R.id.btn_view);
+            tvHeading = (TextView) itemView.findViewById(R.id.tv_heading);
+            tvLeftMessageTime = (TextView) itemView.findViewById(R.id.tv_left_time);
+            tvRightMessageTime = (TextView) itemView.findViewById(R.id.tv_right_time);
+            rating = (RatingBar) itemView.findViewById(R.id.ratingBar);
+
         }
     }
 
-    private void setTimeTextVisibility(Date date1, Date date2, TextView timeText){
+    private void setTimeTextVisibility(Date date1, Date date2, TextView timeText) {
 
-        if(date2 == null){
+        if (date2 == null) {
             timeText.setVisibility(View.VISIBLE);
-            if(dateFormatter != null ){
+            if (dateFormatter != null) {
                 timeText.setText(dateFormatter.format(date1));
-            }else{
+            } else {
                 timeText.setText(DateFormatter.format(date1, DateFormatter.Template.STRING_DAY_MONTH));
 
             }
 
-        }else {
-            boolean isSameDay = DateFormatter.isSameDay(date1,date2);
-
-            if(isSameDay){
+        } else {
+            boolean isSameDay = DateFormatter.isSameDay(date1, date2);
+            if (isSameDay) {
                 timeText.setVisibility(View.GONE);
                 timeText.setText("");
-//                timeText.setText("-------- " + DateFormatter.format(date2, DateFormatter.Template.STRING_DAY_MONTH));
-            }else {
+            } else {
                 timeText.setVisibility(View.VISIBLE);
-                if(dateFormatter != null ){
+                if (dateFormatter != null) {
                     timeText.setText(dateFormatter.format(date1));
-                }else{
+                } else {
                     timeText.setText(DateFormatter.format(date1, DateFormatter.Template.STRING_DAY_MONTH));
                 }
-
             }
-
         }
     }
 
@@ -244,77 +239,48 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         return DateFormatter.isSameDay(dateToCompare, previousPositionDate);
     }
 
-    public void getPhysicianDetails(String url){
-        String urlLink = url + "?expand=specializations,qualifications,reviews_count,ratings";
-        if (apiExecuter == null)
-            apiExecuter = RestApiExecuter.getInstance();
+    private void displayPhysicianCard(MyViewHolder holder, ChatMessageModel chatMessageModel) {
 
-
-        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<PhysicianResponseModel>(PhysicianResponseModel.class) {
-            @Override
-            public void onSuccess(PhysicianResponseModel response) {
-                physicianResponseModel =  response;
-                handler.sendEmptyMessage(PHYSICIAN_DETAILS_FETCHED);
-
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-                physicianResponseModel = null;
-            }
-        });
-    }
-
-    private void displayPhysicianCard(MyViewHolder holder,ChatMessageModel chatMessageModel){
         holder.cvLeft.setVisibility(View.GONE);
         holder.cvRight.setVisibility(View.GONE);
         holder.cardViewDrCard.setVisibility(View.VISIBLE);
-//        holder.tv_dr_name.setText("HH "+chatMessageModel.messageModel.physicianName);
-//        holder.tv_fees.setText("RRs."+chatMessageModel.messageModel.fee);
-        holder.tv_dr_name.setText(chatMessageModel.messageModel.physicianName);
-        holder.tv_fees.setText("Rs."+chatMessageModel.messageModel.fee);
 
-        Picasso.with(context)
-                .load(physicianResponseModel.data.getLink("profile_photo"))
-                .into(holder.iv_dr_image);
+        PhysicianModel physician = AppConstant.textConsultantModel.physician;
 
-        StringBuffer qualification = new StringBuffer();
-        for(QualificationModel qualificationModel : physicianResponseModel.data.qualifications){
-            qualification.append(qualificationModel.degree);
-            if(qualificationModel.specialty != null && qualificationModel.specialty.length() > 0){
-                qualification.append("(");
-                qualification.append(qualificationModel.specialty);
-                qualification.append("), ");
-            }
-        }
+        if(physician != null){
+            holder.tv_dr_name.setText((CharSequence) physician.getFullName());
+            holder.tv_fees.setText(AppUtil.getFormattedFee(AppConstant.textConsultantModel.grossAmountWithoutDiscount));
+            holder.tv_fees.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-        StringBuffer speciality = new StringBuffer();
-        for(SpecializationModel specializationModel : physicianResponseModel.data.specializations){
-            speciality.append(specializationModel.subspecialty);
-        }
+            Picasso.with(context)
+                    .load(physician.getLink("profile_photo"))
+                    .into(holder.iv_dr_image);
 
-        holder.tv_dr_details1.setText(""+physicianResponseModel.data.yearsOfExperience + "Years of experience");
-        holder.tv_dr_details2.setText(qualification.toString());
-        holder.tv_dr_details3.setText(speciality.toString());
+            holder.rating.setRating(Float.parseFloat(physician.rating));
 
-
-    }
-
-    private Handler handler;
-    private final int PHYSICIAN_DETAILS_FETCHED = 101;
-
-    private void handleMessage(final MyViewHolder holder,final ChatMessageModel chatMessageModel) {
-        handler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(android.os.Message msg) {
-                switch (msg.what) {
-                    case PHYSICIAN_DETAILS_FETCHED:
-                        displayPhysicianCard(holder,chatMessageModel);
-                        break;
-
+            StringBuffer qualification = new StringBuffer();
+            for (QualificationModel qualificationModel : physician.qualifications) {
+                qualification.append(qualificationModel.degree);
+                if (qualificationModel.specialty != null && qualificationModel.specialty.length() > 0) {
+                    qualification.append(" (");
+                    qualification.append(qualificationModel.specialty);
+                    qualification.append("), ");
                 }
             }
-        };
+
+            StringBuffer speciality = new StringBuffer();
+            // ArrayList<String> specialtyList =new ArrayList<String>();
+            for (SpecializationModel specializationModel : physician.specializations) {
+                speciality.append(specializationModel.subspecialty).append(", ");
+                // specialtyList.add(specializationModel.subspecialty);
+            }
+
+            holder.tv_dr_details1.setText(String.format(context.getResources().getString(R.string.years_of_experience),physician.yearsOfExperience));
+            holder.tv_dr_details2.setText(qualification.deleteCharAt(qualification.length() - 2).toString());
+            holder.tv_dr_details3.setText(speciality.deleteCharAt(speciality.length() - 2).toString());
+
+        }
+
     }
 
 }

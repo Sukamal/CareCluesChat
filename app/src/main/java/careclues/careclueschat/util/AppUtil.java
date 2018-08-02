@@ -203,6 +203,10 @@ public class AppUtil {
         return filePath;
     }
 
+    public static String getFormattedFee(String amount){
+        return "₹ " +  amount;
+    }
+
     public static boolean isEmpty(EditText editText){
         if(editText.getText().toString().isEmpty()){
             editText.setError("Please enter some value");
@@ -222,7 +226,6 @@ public class AppUtil {
     }
 
     public static boolean isValidMobileNumber(EditText editText){
-
         if(!Patterns.PHONE.matcher(editText.getText()).matches()){
             editText.setError("Please enter valid mobile number");
             return false;
