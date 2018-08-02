@@ -22,6 +22,7 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcRoom;
+import careclues.rocketchat.models.CcSubscription;
 
 public class ModelEntityTypeConverter {
 
@@ -94,6 +95,33 @@ public class ModelEntityTypeConverter {
 
     }
 
+
+    public static SubscriptionEntity ccSubscriptionToEntity(CcSubscription data) {
+        if (data == null) {
+            return null;
+        }
+        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
+
+        subscriptionEntity.Id  = data.Id;
+        subscriptionEntity.type  = data.type.name();
+        RoomUserModel userModel = new RoomUserModel();
+        userModel.userName = data.user.userName;
+        userModel.name = data.user.name;
+        userModel.id = data.user.id;
+        subscriptionEntity.user  = userModel;
+        subscriptionEntity.name  = data.name;
+        subscriptionEntity.rId  = data.rid;
+        subscriptionEntity.timeStamp  = RoomUserTypeConverter.toDate(data.ts.date);
+        subscriptionEntity.lastSeen  = RoomUserTypeConverter.toDate(data.ls.date);
+        subscriptionEntity.open  = data.open;
+        subscriptionEntity.alert  = data.alert;
+        subscriptionEntity.updatedAt  = RoomUserTypeConverter.toDate(data._updatedAt.date);
+        subscriptionEntity.unread  = data.unread;
+        subscriptionEntity.userMentions  = data.userMentions;
+        subscriptionEntity.groupMentions  = data.groupMentions;
+
+        return subscriptionEntity;
+    }
 
 
     public static SubscriptionEntity subscriptionModelToEntity(SubscriptionModel data) {

@@ -21,6 +21,7 @@ import careclues.rocketchat.listner.CcSubscribeListener;
 import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcRoom;
+import careclues.rocketchat.models.CcSubscription;
 
 public class CcCoreStreamMiddleware {
     private ConcurrentHashMap<String, CcSubscribeListener> listeners;
@@ -94,18 +95,23 @@ public class CcCoreStreamMiddleware {
                     if(eventName.contains("/rooms-changed")){
                         listener = subs.get(roomId).get(SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
                         try {
-//                            if(array.optString(0).toString().equals("inserted")){
-//
-//                            }
                             Gson gson = new Gson();
                             CcMessageCallback.NewRoomCallback newRoomCallback = (CcMessageCallback.NewRoomCallback) listener;
                             CcRoom roomModel = gson.fromJson(array.getJSONObject(1).toString().trim(),CcRoom.class);
-                            newRoomCallback.onNewRoom(roomId, roomModel);
+                            newRoomCallback.onNewRoom(roomId, roomModel,array.optString(0).toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }else if(eventName.contains("/subscriptions-changed")){
-
+                        listener = subs.get(roomId).get(SubscriptionType.ROOM_SUBSCRIPTION_CHANGED);
+                        try {
+                            Gson gson = new Gson();
+                            CcMessageCallback.NewRoomCallback newRoomCallback = (CcMessageCallback.NewRoomCallback) listener;
+                            CcSubscription subscription = gson.fromJson(array.getJSONObject(1).toString().trim(),CcSubscription.class);
+                            newRoomCallback.onNewSubscription(roomId, subscription,array.optString(0).toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     break;

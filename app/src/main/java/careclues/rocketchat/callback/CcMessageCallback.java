@@ -5,6 +5,7 @@ import careclues.careclueschat.model.RoomModel;
 import careclues.rocketchat.listner.CcListener;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcRoom;
+import careclues.rocketchat.models.CcSubscription;
 
 public class CcMessageCallback {
     public interface SubscriptionCallback extends CcListener {
@@ -16,7 +17,9 @@ public class CcMessageCallback {
     }
 
     public interface NewRoomCallback extends CcListener {
-        void onNewRoom(String userId, CcRoom room);
+        void onNewRoom(String userId, CcRoom room,String type);
+        void onNewSubscription(String userId, CcSubscription subscription, String type);
+
     }
 
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -75,102 +74,109 @@
 
 </RelativeLayout>-->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/chatbg">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF">
 
-
-    <ImageView
-        android:id="@+id/iv_test"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/ic_cloud"
-        app:layout_constraintBottom_toBottomOf="@+id/prev"
-        app:layout_constraintEnd_toStartOf="@+id/prev"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/prev" />
-
-    <Button
-        android:id="@+id/prev"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Prev"
-        app:layout_constraintEnd_toStartOf="@+id/btnShow"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/iv_test"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/nxt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/btnShow"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvChatHistory"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scrollbarSize="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/ll_input_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/prev" />
-
-    <LinearLayout
-        android:id="@+id/ll_input_layout"
+    <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/chatbg">
 
 
-        <careclues.careclueschat.views.FamilyMemberView
-            android:id="@+id/view_familymember"
+        <ImageView
+            android:id="@+id/iv_test"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_cloud"
+            app:layout_constraintBottom_toBottomOf="@+id/prev"
+            app:layout_constraintEnd_toStartOf="@+id/prev"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/prev" />
+
+        <Button
+            android:id="@+id/prev"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Prev"
+            app:layout_constraintEnd_toStartOf="@+id/btnShow"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/iv_test"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/nxt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btnShow"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvChatHistory"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scrollbarSize="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/ll_input_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/prev" />
+
+        <LinearLayout
+            android:id="@+id/ll_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <careclues.careclueschat.views.MessageInputView
-            android:id="@+id/view_messageinput"
-            android:layout_width="match_parent"
+
+            <careclues.careclueschat.views.FamilyMemberView
+                android:id="@+id/view_familymember"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <careclues.careclueschat.views.MessageInputView
+                android:id="@+id/view_messageinput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <careclues.careclueschat.views.AnswerView
+                android:id="@+id/view_answer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <careclues.careclueschat.views.MakePaymentView
+                android:id="@+id/view_pay_fee"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnShow"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-        <careclues.careclueschat.views.AnswerView
-            android:id="@+id/view_answer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-        <careclues.careclueschat.views.MakePaymentView
-            android:id="@+id/view_pay_fee"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/btnShow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ShowFragment"
-        app:layout_constraintEnd_toStartOf="@+id/nxt"
-        app:layout_constraintStart_toEndOf="@+id/prev"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:text="ShowFragment"
+            app:layout_constraintEnd_toStartOf="@+id/nxt"
+            app:layout_constraintStart_toEndOf="@+id/prev"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</RelativeLayout>

@@ -546,13 +546,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
 ////                presenter.uploadFile(destFile,"Test Upload File");
 
 
-
-
-
-
-
-
-
                 // Get the Uri of the selected file
                 Uri uri = data.getData();
                 String uriString = uri.toString();

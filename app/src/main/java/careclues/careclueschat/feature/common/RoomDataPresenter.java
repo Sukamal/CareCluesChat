@@ -36,6 +36,7 @@ import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.DateFormatter;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
+import careclues.rocketchat.CcUtils;
 
 /**
  * Created by SukamalD on 6/16/2018.
@@ -338,7 +339,7 @@ public class RoomDataPresenter {
 
     }
 
-    private void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities) {
+    public void insertSubscriptionRecordIntoDb(final List<SubscriptionEntity> subscriptionEntities) {
 
         ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
             @Override
@@ -558,10 +559,28 @@ public class RoomDataPresenter {
             @Override
             public void onSuccess(SetTopicResponseModel response) {
                 Log.e("NEWROOM", "SetTopic : " + response.toString());
-
+                initiateBotChat(groupModel.id);
                 if(createNewRoomListner != null){
                     createNewRoomListner.onNewRoomCreated(reConsult,groupModel);
                 }
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+    }
+
+
+    private void initiateBotChat(String roomId){
+        String msg = "@bot-la2zewmltd introduce " + AppConstant.userProfile.data.firstName + " to text consultation";
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+        apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+            @Override
+            public void onSuccess(MessageResponseModel response) {
+
             }
 
             @Override

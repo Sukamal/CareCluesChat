@@ -51,7 +51,9 @@ public class SubscriptionEntity {
     public Date timeStamp;
 
     @ColumnInfo(name = "lastSeen")
-    public String lastSeen;
+//    public String lastSeen;
+    public Date lastSeen;
+
 
     @ColumnInfo(name = "open")
     public Boolean open;

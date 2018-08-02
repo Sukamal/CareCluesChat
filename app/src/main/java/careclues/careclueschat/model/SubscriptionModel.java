@@ -22,7 +22,7 @@ public class SubscriptionModel extends BaseRoomModel {
     public Date timeStamp;
 
     @SerializedName("ls")
-    public String lastSeen;
+    public Date lastSeen;
 
     @SerializedName("open")
     public Boolean open;

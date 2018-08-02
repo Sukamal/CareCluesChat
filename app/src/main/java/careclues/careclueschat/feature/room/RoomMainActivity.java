@@ -150,10 +150,14 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
                         .make(findViewById(R.id.activity_room), roomId, Snackbar.LENGTH_LONG)
                         .show();
                 if(dispalyFragment.equals(RoomListFragment.class.getName())){
-                    roomFragmentAction.updateRoomMessage(messageEntity);
+                    if(roomFragmentAction != null){
+                        roomFragmentAction.updateRoomMessage(messageEntity);
+                    }
 
                 }else if(dispalyFragment.equals(ChatFragment.class.getName())){
-                    chatFragmentAction.updateChatMessage(messageEntity);
+                    if(chatFragmentAction != null){
+                        chatFragmentAction.updateChatMessage(messageEntity);
+                    }
 
                 }
             }

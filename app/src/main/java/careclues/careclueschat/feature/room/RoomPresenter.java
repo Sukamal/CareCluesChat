@@ -48,6 +48,7 @@ import careclues.rocketchat.listner.CcConnectListener;
 import careclues.rocketchat.listner.CcTypingListener;
 import careclues.rocketchat.models.CcMessage;
 import careclues.rocketchat.models.CcRoom;
+import careclues.rocketchat.models.CcSubscription;
 import careclues.rocketchat.models.CcToken;
 
 public class RoomPresenter implements RoomContract.presenter,
@@ -471,12 +472,12 @@ public class RoomPresenter implements RoomContract.presenter,
 
     private void subsCribeRoomMessageEvent(List<RoomEntity> roomList) {
 
-//        for (RoomEntity room : roomList) {
-//            CcChatRoomFactory roomFactory = chatClient.getChatRoomFactory();
-//            chatClient.subscribeRoomMessageEvent(room.roomId, true, null, RoomPresenter.this);
-//            chatClient.subscribeRoomTypingEvent(room.roomId, true, null, RoomPresenter.this);
-//
-//        }
+        for (RoomEntity room : roomList) {
+            CcChatRoomFactory roomFactory = chatClient.getChatRoomFactory();
+            chatClient.subscribeRoomMessageEvent(room.roomId, true, null, RoomPresenter.this);
+            chatClient.subscribeRoomTypingEvent(room.roomId, true, null, RoomPresenter.this);
+
+        }
 
 
     }
@@ -538,13 +539,11 @@ public class RoomPresenter implements RoomContract.presenter,
 
     @Override
     public void onNewRoomCreated(boolean reConsult,GroupModel groupModel) {
-
     }
 
-    String lastUpdate = null;
 
     @Override
-    public void onNewRoom(String userId, final CcRoom roomModel) {
+    public void onNewRoom(String userId, final CcRoom roomModel,String type) {
         Log.e("MSG","HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
         RoomEntity roomEntity;
@@ -553,28 +552,50 @@ public class RoomPresenter implements RoomContract.presenter,
         roomEntities.add(roomEntity);
         roomDataPresenter.insertRoomRecordIntoDb(roomEntities);
 
-        String msg = "@bot-la2zewmltd introduce " + AppConstant.userProfile.data.firstName + " to text consultation";
-
-        if (apiExecuter == null)
-            apiExecuter = RestApiExecuter.getInstance();
-        apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomEntity.roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
-            @Override
-            public void onSuccess(MessageResponseModel response) {
-
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
-
-        if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation")
-                && roomModel.type.name() == BaseRoomModel.RoomType.PRIVATE.name()){
+        if(type.equals("inserted")){
             populateAdapterData(roomEntities,LOAD_MORE_ROOM_DATA);
+            subsCribeRoomMessageEvent(roomEntities);
+
+
         }
 
+//        String msg = "@bot-la2zewmltd introduce " + AppConstant.userProfile.data.firstName + " to text consultation";
+//
+//        if (apiExecuter == null)
+//            apiExecuter = RestApiExecuter.getInstance();
+//        apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomEntity.roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
+//            @Override
+//            public void onSuccess(MessageResponseModel response) {
+//
+//            }
+//
+//            @Override
+//            public void onFailure(List<NetworkError> errorList) {
+//
+//            }
+//        });
+//
+//        if( roomModel.topic != null && roomModel.topic.equalsIgnoreCase("text-consultation")
+//                && roomModel.type.name() == BaseRoomModel.RoomType.PRIVATE.name()){
+//            populateAdapterData(roomEntities,LOAD_MORE_ROOM_DATA);
+//        }
 
 
+
+    }
+
+    @Override
+    public void onNewSubscription(String userId, CcSubscription subscription, String type) {
+        Log.e("MSG","SUBCRIPTIONSSSSSSSSSSSSSSSSSSSSSS");
+
+        SubscriptionEntity subscriptionEntity;
+        subscriptionEntity = ModelEntityTypeConverter.ccSubscriptionToEntity(subscription);
+        List<SubscriptionEntity> subsEntities = new ArrayList<>();
+        subsEntities.add(subscriptionEntity);
+        roomDataPresenter.insertSubscriptionRecordIntoDb(subsEntities);
+
+        if(type.equals("inserted")){
+
+        }
     }
 }
