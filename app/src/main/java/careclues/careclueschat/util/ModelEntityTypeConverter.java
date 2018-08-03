@@ -181,11 +181,11 @@ public class ModelEntityTypeConverter {
             return null;
         }
         MessageEntity messageEntity = new MessageEntity();
-
         messageEntity.Id = data.id;
         messageEntity.rId = data.rId;
         messageEntity.msg = data.msg;
         messageEntity.timeStamp = data.timeStamp;
+        messageEntity.image_url = data.image_url;
         messageEntity.user = data.user;
         messageEntity.updatedAt = data.updatedAt;
         messageEntity.type = data.type;
@@ -207,6 +207,8 @@ public class ModelEntityTypeConverter {
             model.rId = data.rId;
             model.msg = data.msg;
             model.timeStamp = data.timeStamp;
+            model.image_url = data.image_url;
+
 //            model.user = data.user;
             model.updatedAt = data.updatedAt;
             model.type = data.type;
@@ -270,6 +272,8 @@ public class ModelEntityTypeConverter {
         roomUserModel.name = data.user.name;
         roomUserModel.userName = data.user.userName;
         messageEntity.user = roomUserModel;
+
+        messageEntity.image_url = data.image_url;
         messageEntity.updatedAt = new Date(data.updatedAt.date);
         messageEntity.type = data.type;
         messageEntity.alias = data.alias;

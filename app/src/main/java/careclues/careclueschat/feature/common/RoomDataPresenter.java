@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -151,8 +152,14 @@ public class RoomDataPresenter {
                         break;
                     case FETCH_SUBSCRIPTION_COMPLETED:
                         insertSubscriptionRecordIntoDb(subscriptionEntities);
-                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-                        if (subscriptionListner != null) {
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(new Date());
+                        calendar.add(Calendar.DATE, -1);
+
+
+                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(calendar.getTime(),"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+                        if(subscriptionListner != null){
                             subscriptionListner.onFetchSubscription(subscriptionEntities);
                         }
                         break;
@@ -586,11 +593,11 @@ public class RoomDataPresenter {
 
             }
 
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
+                @Override
+                public void onFailure(List<NetworkError> errorList) {
 
-            }
-        });
+                }
+            });
     }
 
     public void getTextConsultant(String roomId) {

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import careclues.careclueschat.network.ServiceCallBack;
 import careclues.careclueschat.util.AppConstant;
 import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.DateFormatter;
+import careclues.careclueschat.views.ChatImageView;
 
 /**
  * Created by SukamalD on 6/15/2018.
@@ -103,39 +105,60 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ChatMessageModel chatMessageModel = messageList.get(position);
 
-        Date previousDate = null;
-        if (position > 0) {
-            previousDate = messageList.get(position - 1).createdAt;
-        }
-        setTimeTextVisibility(chatMessageModel.createdAt, previousDate, holder.tvDate);
-
-        if (chatMessageModel.userId.equalsIgnoreCase(userId/*"sachu-985" "2eRbrjSZnsACYkRx4"*/)) {
-            holder.tvRightMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
-            holder.cvLeft.setVisibility(View.GONE);
-            holder.cvRight.setVisibility(View.VISIBLE);
-            holder.cardViewDrCard.setVisibility(View.GONE);
-            holder.tvRight.setText(chatMessageModel.messageModel.getContent(context));
-        } else {
-            if (chatMessageModel.messageModel.type.equals("physicianCard")) {
-                //TODO check if physician exists
-                displayPhysicianCard(holder, chatMessageModel);
-            } else {
-                holder.tvLeftMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
-                if (!chatMessageModel.userId.equalsIgnoreCase("JvMNPmN3xo4G7v2qi")) {
-                    holder.tvHeading.setVisibility(View.GONE);
-                } else {
-                    holder.tvHeading.setVisibility(View.VISIBLE);
-                }
-                holder.cvLeft.setVisibility(View.VISIBLE);
-                holder.cvRight.setVisibility(View.GONE);
-                holder.cardViewDrCard.setVisibility(View.GONE);
-                holder.tvLeft.setText(chatMessageModel.messageModel.getContent(context));
+        if(chatMessageModel != null){
+            Date previousDate = null;
+            if (position > 0) {
+                previousDate = messageList.get(position - 1).createdAt;
             }
-        }
+            setTimeTextVisibility(chatMessageModel.createdAt, previousDate, holder.tvDate);
 
-        if (position == (messageList.size() - 1)) {
-            if (inputTypeListner != null) {
-                inputTypeListner.onInputType(chatMessageModel.messageModel);
+            if (chatMessageModel.userId != null && chatMessageModel.userId.equalsIgnoreCase(userId)) {
+                holder.cvLeft.setVisibility(View.GONE);
+                holder.cvRight.setVisibility(View.VISIBLE);
+                holder.cardViewDrCard.setVisibility(View.GONE);
+
+                if (chatMessageModel.messageModel != null && chatMessageModel.messageModel.type != null && chatMessageModel.messageModel.type.equals("image")) {
+                    holder.llRightMessage.setVisibility(View.GONE);
+                    holder.civRightChatImage.setVisibility(View.VISIBLE);
+                    displayImage(holder.civRightChatImage, chatMessageModel);
+                }else{
+                    holder.llRightMessage.setVisibility(View.VISIBLE);
+                    holder.civRightChatImage.setVisibility(View.GONE);
+                    holder.tvRightMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
+                    holder.tvRight.setText(chatMessageModel.messageModel.getContent(context));
+                }
+
+            } else {
+                if (chatMessageModel.messageModel != null && chatMessageModel.messageModel.type != null && chatMessageModel.messageModel.type.equals("physicianCard")) {
+                    //TODO check if physician exists
+                    displayPhysicianCard(holder, chatMessageModel);
+                }  else {
+                    holder.cvLeft.setVisibility(View.VISIBLE);
+                    holder.cvRight.setVisibility(View.GONE);
+                    holder.cardViewDrCard.setVisibility(View.GONE);
+                    if (chatMessageModel.messageModel.type != null && chatMessageModel.messageModel.type.equals("image")) {
+                        holder.llLeftMessage.setVisibility(View.GONE);
+                        holder.civLeftChatImage.setVisibility(View.VISIBLE);
+                        displayImage(holder.civLeftChatImage, chatMessageModel);
+                    }else{
+                        holder.llLeftMessage.setVisibility(View.VISIBLE);
+                        holder.civLeftChatImage.setVisibility(View.GONE);
+
+                        holder.tvLeftMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
+                        if (!chatMessageModel.userId.equalsIgnoreCase("JvMNPmN3xo4G7v2qi")) {
+                            holder.tvHeading.setVisibility(View.GONE);
+                        } else {
+                            holder.tvHeading.setVisibility(View.VISIBLE);
+                        }
+                        holder.tvLeft.setText(chatMessageModel.messageModel.getContent(context));
+                    }
+                }
+            }
+
+            if (position == (messageList.size() - 1)) {
+                if (inputTypeListner != null) {
+                    inputTypeListner.onInputType(chatMessageModel.messageModel);
+                }
             }
         }
     }
@@ -181,6 +204,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         TextView tvLeftMessageTime;
         TextView tvRightMessageTime;
         RatingBar rating;
+        LinearLayout llLeftMessage;
+        LinearLayout llRightMessage;
+        ChatImageView civLeftChatImage;
+        ChatImageView civRightChatImage;
+
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -202,6 +230,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             tvLeftMessageTime = (TextView) itemView.findViewById(R.id.tv_left_time);
             tvRightMessageTime = (TextView) itemView.findViewById(R.id.tv_right_time);
             rating = (RatingBar) itemView.findViewById(R.id.ratingBar);
+            llLeftMessage = (LinearLayout) itemView.findViewById(R.id.llLeftMessage);
+            llRightMessage = (LinearLayout) itemView.findViewById(R.id.llRightMessage);
+            civLeftChatImage = (ChatImageView) itemView.findViewById(R.id.civLeftChatImage);
+            civRightChatImage = (ChatImageView) itemView.findViewById(R.id.civRightChatImage);
+
+
+
 
         }
     }
@@ -237,6 +272,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         if (messageList.size() <= position) return false;
         Date previousPositionDate = ((ChatMessageModel) messageList.get(position)).createdAt;
         return DateFormatter.isSameDay(dateToCompare, previousPositionDate);
+    }
+
+    private void displayImage(View view, ChatMessageModel chatMessageModel){
+        ((ChatImageView)view).setImage(chatMessageModel.image_url);
     }
 
     private void displayPhysicianCard(MyViewHolder holder, ChatMessageModel chatMessageModel) {

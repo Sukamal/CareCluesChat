@@ -223,13 +223,9 @@ public class RestApiExecuter {
     }
 
     public <T> void uploadFile(String url, RequestBody description, MultipartBody.Part file,ServiceCallBack<T> serviceCallBack) {
-        Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).uploadFile(url, description, file);
+        Call<ResponseBody> call = ApiClient.getUploadFileRetrofit().create(ServerApiInterface.class).uploadFile(url, description, file);
+        execute(call,serviceCallBack);
     }
-
-//    public <T> void uploadFile(String url,  MultipartBody.Part file, ServiceCallBack<T> serviceCallBack) {
-//        Call<ResponseBody> call = ApiClient.getUploadRetrofit().create(ServerApiInterface.class).uploadFile(url,null, file);
-//        execute(call,serviceCallBack);
-//    }
 
     public <T> void updateUserProfile(String url, UserProfileResponseModel dataModel, ServiceCallBack<T> serviceCallBack) {
         Call<ResponseBody> call = ApiClient.getApiRetrofit().create(ServerApiInterface.class).updateUserProfile(url,dataModel);

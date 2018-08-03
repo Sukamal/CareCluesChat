@@ -51,6 +51,7 @@ import careclues.careclueschat.feature.paytm.PaymentFragment;
 import careclues.careclueschat.feature.room.RoomMainActivity;
 import careclues.careclueschat.model.DataModel;
 import careclues.careclueschat.model.FeeRangeModel;
+import careclues.careclueschat.model.FileUploadSendMessageModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.LanguageModel;
 import careclues.careclueschat.model.SymptomModel;
@@ -293,6 +294,11 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     }
 
     @Override
+    public void displayImageInput() {
+
+    }
+
+    @Override
     public void displayPayFee() {
         view_PayFee.setAnsSelectionListner(this);
         displayTemplate(TYPE_PAY_FEES);
@@ -355,7 +361,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void updateChatMessage(MessageEntity message) {
         if (message.rId.equals(roomId)) {
             List<ChatMessageModel> list = new ArrayList<>();
-            ChatMessageModel chatMessageModel = new ChatMessageModel(message.Id, message.msg, message.updatedAt, message.user.id);
+            ChatMessageModel chatMessageModel = new ChatMessageModel(message);
             list.add(chatMessageModel);
             messageAdapter.addMessage(list);
             // etMessage.setText("");
@@ -448,8 +454,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         String replyMsgId = lastMessage.id;
         String content = (patientModel.self) ? "I am consulting for myself" : "I am consulting for my " + patientModel.displayName;
         patientModel.displayName = null;
-        //patientModel.age = 23;
-        patientModel.age = -1;
+        patientModel.age = 23;
+//        patientModel.age = -1;
         populetSendMessage(lastMessage.control, replyMsgId, content, patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
     }
 
@@ -561,8 +567,9 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void onUpdateImageToServer(String url) {
         //TODO send message to rocket
         ReplyMessageModel replyMessageModel = new ReplyMessageModel();
-        replyMessageModel.type = "image";
-        replyMessageModel.id = "patientDocument";
+        replyMessageModel.fileUploadSendMessageModel = new FileUploadSendMessageModel();
+        replyMessageModel.fileUploadSendMessageModel.type = "image";
+        replyMessageModel.fileUploadSendMessageModel.id = "patientDocument";
         replyMessageModel.imageURL = url;
         presenter.sendMessageViaApi(replyMessageModel,null);
     }

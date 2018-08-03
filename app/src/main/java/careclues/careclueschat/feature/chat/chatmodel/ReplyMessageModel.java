@@ -3,6 +3,7 @@ package careclues.careclueschat.feature.chat.chatmodel;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import careclues.careclueschat.model.FileUploadSendMessageModel;
 import careclues.careclueschat.model.HealthTopicModel;
 import careclues.careclueschat.model.SymptomModel;
 
@@ -31,6 +32,10 @@ public class ReplyMessageModel {
     @SerializedName("imageURL")
     @Expose
     public String imageURL;
+
+    @SerializedName("message")
+    @Expose
+    public FileUploadSendMessageModel fileUploadSendMessageModel;
 
 
 }

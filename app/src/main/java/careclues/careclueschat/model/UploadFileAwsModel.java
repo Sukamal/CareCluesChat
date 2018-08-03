@@ -9,25 +9,25 @@ public class UploadFileAwsModel {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    public Integer id;
     @SerializedName("path")
     @Expose
-    private String path;
+    public String path;
     @SerializedName("url")
     @Expose
-    private String url;
+    public String url;
     @SerializedName("title")
     @Expose
-    private String title;
+    public String title;
     @SerializedName("pending")
     @Expose
-    private Boolean pending;
+    public Boolean pending;
     @SerializedName("created_at")
     @Expose
-    private String createdAt;
+    public String createdAt;
     @SerializedName("links")
     @Expose
-    private List<LinkModel> links = null;
+    public List<LinkModel> links = null;
 
     public String getLink(String key){
         String retVal = null;

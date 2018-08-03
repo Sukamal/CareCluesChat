@@ -21,13 +21,13 @@ public class AppConstant {
     public static final int DATABASE_VERSION = 1;
     public static final String PREFERENCE_NAME = "com.careClues.chat.pref";
 
-//    public static final String USER_NAME = "sukamal-1035";
-//    public static final String PASSWORD = "EskSolYUXYobtDhLPEvTwxd";
+    public static final String USER_NAME = "sukamal-1035";
+    public static final String PASSWORD = "EskSolYUXYobtDhLPEvTwxd";
 
 //    public static final String USER_NAME = "sachu-985";
 //    public static final String PASSWORD = "XVQuexlHYvphcWYgtyLZLtf";
-    public static final String USER_NAME = "dipa-1291";
-    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
+//    public static final String USER_NAME = "dipa-1291";
+//    public static final String PASSWORD = "SYcgsbNRSUHaRJWbmhhFYzc";
 
     public static long ADD_DISPLAY_THRESHOLD = 60000 * 1;
 

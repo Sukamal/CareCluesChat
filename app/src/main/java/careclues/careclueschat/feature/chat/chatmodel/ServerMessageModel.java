@@ -75,7 +75,7 @@ public class ServerMessageModel {
 
         if (id != null && id.equals("paymentSuccess")) {
             sb.append(String.format(context.getResources().getString(R.string.tc_payment_success), physicianName));
-        } else if (type.equals("suggest_followup")) {
+        } else if (type != null && type.equals("suggest_followup")) {
             sb.append(String.format(context.getResources().getString(R.string.tc_suggest_followup), DateFormatter.format(date, "EEE, d MMM")));
             if (content != "") {
                 sb.append("\n" + content);

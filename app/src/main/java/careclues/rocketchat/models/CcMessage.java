@@ -39,6 +39,9 @@ public class CcMessage extends CcBaseMessage{
     @SerializedName("starred")
     public List<CcUser> starred;
 
+    @SerializedName("image_url")
+    public String image_url;
+
 
     @Override
     public String toString() {

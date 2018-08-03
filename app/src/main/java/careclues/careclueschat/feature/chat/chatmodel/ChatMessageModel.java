@@ -21,22 +21,25 @@ public class ChatMessageModel implements Comparable<ChatMessageModel>{
     public String text;
     public Date createdAt;
     public String userId;
+    public String image_url;
     public ServerMessageModel messageModel;
 
-    public ChatMessageModel(String id,String text,Date createdAt,String userId){
-        this.id = id;
-        this.text = text;
-        this.createdAt = createdAt;
-        this.userId = userId;
-        this.messageModel = parseMessage(text);
-    }
+//    public ChatMessageModel(String id,String text,Date createdAt,String userId){
+//        this.id = id;
+//        this.text = text;
+//        this.createdAt = createdAt;
+//        this.userId = userId;
+//        this.messageModel = parseMessage(text);
+//    }
 
     public ChatMessageModel(MessageEntity messageEntity){
         this.id = messageEntity.Id;
         this.text = messageEntity.msg;
         this.createdAt = messageEntity.timeStamp;
         this.userId = messageEntity.user.id;
+        this.image_url = messageEntity.image_url;
         this.messageModel = parseMessage(messageEntity.msg);
+
     }
 
     @Override

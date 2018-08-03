@@ -34,7 +34,7 @@ public interface MessageDao {
     @Query("select * from message where rId = :roomId order by updatedAt desc limit 1")
     MessageEntity getLastMessage(String roomId);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<MessageEntity> entityList);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

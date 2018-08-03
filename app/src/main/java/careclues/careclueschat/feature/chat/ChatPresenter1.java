@@ -191,7 +191,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
         apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
-                if (controlType.equals(ControlType.CONTROL_FEE_SELECT.get())) {
+                if (controlType != null && controlType.equals(ControlType.CONTROL_FEE_SELECT.get())) {
                     String url = replyMessageModel.patient.lLink;
                     String categoryLink = replyMessageModel.categoryModel.link;
                     String topicId = categoryLink.substring((categoryLink.lastIndexOf("/")) + 1);
@@ -209,7 +209,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     @Override
     public void uploadFile(File file, String desc) {
 
-        view.displayProgressBar();
+//        view.displayProgressBar();
         String urlLink = AppConstant.textConsultantModel.getLink("documents");
         if (apiExecuter == null)
             apiExecuter = RestApiExecuter.getInstance();
@@ -224,6 +224,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
             @Override
             public void onSuccess(UploadFileResponseModel response) {
                 uploadFileResponseModel = response;
+                view.onUpdateImageToServer(uploadFileResponseModel.data.url);
 
             }
             @Override
@@ -464,7 +465,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     public void enableInputControlOptions(ServerMessageModel messageModel) {
         Log.d("EnableInputControl", "enableInputControlOptions: " + messageModel.toString());
         if (messageModel != null && messageModel.control != null) {
-            if (messageModel.type == "completed") {
+            if (messageModel.type != null && messageModel.type == "completed") {
                 //TODO embed end consultation template
             } else if (messageModel.control.equals(ControlType.CONTROL_SELECT_LANGUAGE.get())) {
                 getLanguage();
@@ -486,9 +487,11 @@ public class ChatPresenter1 implements ChatContract.presenter {
                 displayTextInput();
             }
         } else {
-            if (messageModel.type.equalsIgnoreCase("physicianCard")) {
+            if (messageModel.type != null && messageModel.type.equalsIgnoreCase("physicianCard")) {
                 displayPayFees();
-            } else if (messageModel.type.equalsIgnoreCase("reply")) {
+            } else if (messageModel.type != null && messageModel.type.equalsIgnoreCase("reply")) {
+                displayTextInput();
+            }else if (messageModel.type != null && messageModel.type.equalsIgnoreCase("image")) {
                 displayTextInput();
             } else {
                 displayBlank();
@@ -503,6 +506,10 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     private void displayTextInput() {
         view.displayTextInput();
+    }
+
+    private void displayImageInput() {
+        view.displayImageInput();
     }
 
     private void displayPayFees() {

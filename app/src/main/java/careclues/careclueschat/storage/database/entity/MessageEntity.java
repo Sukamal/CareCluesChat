@@ -38,6 +38,9 @@ public class MessageEntity {
 //    public String timeStamp;
     public Date timeStamp;
 
+    @SerializedName("image_url")
+    public String image_url;
+
 
     @ColumnInfo(name = "user")
     @TypeConverters(RoomUserTypeConverter.class)
