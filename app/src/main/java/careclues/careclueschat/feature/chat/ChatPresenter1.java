@@ -80,7 +80,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     private String roomId;
 
     private AtomicInteger integer;
-//    private RoomDataPresenter roomDataPresenter;
+    private RoomDataPresenter roomDataPresenter;
 
 
     private CcRocketChatClient api;
@@ -103,6 +103,8 @@ public class ChatPresenter1 implements ChatContract.presenter {
         this.application = application;
         this.roomId = roomId;
         integer = new AtomicInteger(1);
+        roomDataPresenter = new RoomDataPresenter(application);
+
 
         userId = RestApiExecuter.getInstance().getAuthToken().getUserId();
         getLoginUserDetails(userId);
@@ -159,7 +161,7 @@ public class ChatPresenter1 implements ChatContract.presenter {
     @Override
     public void loadData(int startcount,int endcount) {
         getChatHistory(roomId, startcount,endcount);
-        getTextConsultant(roomId);
+//        getTextConsultant(roomId);
     }
 
     @Override
@@ -306,24 +308,25 @@ public class ChatPresenter1 implements ChatContract.presenter {
 
     @Override
     public void getTextConsultant(String roomId) {
-        String urlLink = AppConstant.API_BASE_URL + "text_consultations?chat_conversation_id="+roomId+"&expand=physician,patient,health_topic,qualifications,reviews_count,specializations";
-        if (apiExecuter == null)
-            apiExecuter = RestApiExecuter.getInstance();
-
-        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantListResponseModel>(TextConsultantListResponseModel.class) {
-            @Override
-            public void onSuccess(TextConsultantListResponseModel response) {
-                if(response != null && response.data != null && response.data.size() > 0){
-                    AppConstant.textConsultantModel = response.data.get(0);
-                }
-
-            }
-
-            @Override
-            public void onFailure(List<NetworkError> errorList) {
-
-            }
-        });
+        roomDataPresenter.getTextConsultant(roomId);
+//        String urlLink = AppConstant.API_BASE_URL + "text_consultations?chat_conversation_id="+roomId+"&expand=physician,patient,health_topic,qualifications,reviews_count,specializations";
+//        if (apiExecuter == null)
+//            apiExecuter = RestApiExecuter.getInstance();
+//
+//        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantListResponseModel>(TextConsultantListResponseModel.class) {
+//            @Override
+//            public void onSuccess(TextConsultantListResponseModel response) {
+//                if(response != null && response.data != null && response.data.size() > 0){
+//                    AppConstant.textConsultantModel = response.data.get(0);
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(List<NetworkError> errorList) {
+//
+//            }
+//        });
     }
 
      public void updatePatientAge(int age) {

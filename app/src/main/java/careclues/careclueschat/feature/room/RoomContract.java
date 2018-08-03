@@ -33,5 +33,7 @@ public interface RoomContract {
         public void getMoreRoom(int startCount, int threshold);
         public void getMessage(String roomId);
         public void createNewRoom();
+        public void getTextConsultant(String roomId);
+
     }
 }

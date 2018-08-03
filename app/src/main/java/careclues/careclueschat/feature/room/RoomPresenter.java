@@ -408,6 +408,11 @@ public class RoomPresenter implements RoomContract.presenter,
         roomDataPresenter.createNewRoom(false);
     }
 
+    @Override
+    public void getTextConsultant(String roomId) {
+        roomDataPresenter.getTextConsultant(roomId);
+    }
+
 //    @Override
 //    public void createNewRoom() {
 //        String roomName = "TC-" + (System.currentTimeMillis() / 1000);

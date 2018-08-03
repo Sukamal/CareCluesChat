@@ -74,6 +74,7 @@ public class RoomListFragment extends BaseFragment implements RoomMainActivity.p
                     public void onListItemClick(int position,String roomId) {
                         Log.d("Item clicked", "onListItemClick: ");
                         updateRoomStatus(roomId,false);
+                        ((RoomMainActivity)getActivity()).presenter.getTextConsultant(roomId);
                         ((RoomMainActivity)getActivity()).presenter.getMessage(roomId);
                     }
                 });

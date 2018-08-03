@@ -25,6 +25,7 @@ import careclues.careclueschat.model.RoomModel;
 import careclues.careclueschat.model.SetTopicResponseModel;
 import careclues.careclueschat.model.SubscriptionModel;
 import careclues.careclueschat.model.SubscriptionResponse;
+import careclues.careclueschat.model.TextConsultantListResponseModel;
 import careclues.careclueschat.network.NetworkError;
 import careclues.careclueschat.network.RestApiExecuter;
 import careclues.careclueschat.network.ServiceCallBack;
@@ -582,6 +583,27 @@ public class RoomDataPresenter {
         apiExecuter.sendNewMessage(CcUtils.shortUUID(), roomId, msg, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {
+
+            }
+
+            @Override
+            public void onFailure(List<NetworkError> errorList) {
+
+            }
+        });
+    }
+
+    public void getTextConsultant(String roomId) {
+        String urlLink = AppConstant.API_BASE_URL + "text_consultations?chat_conversation_id="+roomId+"&expand=physician,patient,health_topic,qualifications,reviews_count,specializations";
+        if (apiExecuter == null)
+            apiExecuter = RestApiExecuter.getInstance();
+
+        apiExecuter.getServerResponse(urlLink, new ServiceCallBack<TextConsultantListResponseModel>(TextConsultantListResponseModel.class) {
+            @Override
+            public void onSuccess(TextConsultantListResponseModel response) {
+                if(response != null && response.data != null && response.data.size() > 0){
+                    AppConstant.textConsultantModel = response.data.get(0);
+                }
 
             }
 

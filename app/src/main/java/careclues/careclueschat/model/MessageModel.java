@@ -19,6 +19,10 @@ public class MessageModel extends BaseMessageModel{
     @SerializedName("mentions")
     public List<BaseUserModel> mentions;
 
+    @SerializedName("image_url")
+    public String image_url;
+
+
 //    @SerializedName("attachments")
 //    public List<Object> attachments = null;
 
