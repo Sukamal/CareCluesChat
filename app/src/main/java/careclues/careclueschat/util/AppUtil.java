@@ -14,6 +14,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Display;
 import android.view.View;
@@ -172,6 +173,41 @@ public class AppUtil {
     public static boolean isSDCardAvailable(){
         Boolean isSDPresent = android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
         return isSDPresent;
+    }
+
+
+    public static String getRealPathFromUri(Context ctx, Uri uri) {
+        String[] filePathColumn = { MediaStore.Files.FileColumns.DATA };
+
+        Cursor cursor = ctx.getContentResolver().query(uri, filePathColumn,
+                null, null, null);
+        cursor.moveToFirst();
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+       String picturePath = cursor.getString(columnIndex);
+        Log.e("", "picturePath : " + picturePath);
+        cursor.close();
+        return picturePath;
+    }
+
+
+
+    public static String getPathFromContentURI(Context context,Uri uri) {
+
+        String path = null;
+        String[] projection = { MediaStore.Files.FileColumns.DATA };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+
+        if(cursor == null){
+            path = uri.getPath();
+        }
+        else{
+            cursor.moveToFirst();
+            int column_index = cursor.getColumnIndexOrThrow(projection[0]);
+            path = cursor.getString(column_index);
+            cursor.close();
+        }
+
+        return ((path == null || path.isEmpty()) ? (uri.getPath()) : path);
     }
 
     public static String getAbsolutePathFromContentURI(Context context,Uri uri)

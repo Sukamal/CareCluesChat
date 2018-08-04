@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -766,16 +767,51 @@ public class ChatPresenter1 implements ChatContract.presenter {
         return mypath;
     }
 
+    public File copyFile(File source, String filename) {
+        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        File destination = new File(directory, filename);
 
-    public File copy(File src, Context mcoContext, String roomid, String extention) throws IOException {
+        FileChannel in = null;
+        FileChannel out = null;
+        try {
+
+            in = new FileInputStream(source).getChannel();
+            out = new FileOutputStream(destination).getChannel();
+            in.transferTo(0, in.size(), out);
+
+            return destination;
+        } catch(Exception e){
+            Log.e("ERROR",e.getMessage().toString());
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return destination;
+    }
+
+    public File copy(File src, Context mcoContext, String filename) throws IOException {
 
         File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
 //        File directory = new File(mcoContext.getFilesDir(),"mydir");
         if (!directory.exists()) {
             directory.mkdirs();
         }
-        String fname = "Doc_" + roomid + extention;
-        File dst = new File(directory, fname);
+        File dst = new File(directory, filename);
 
         FileInputStream fileInputStream = new FileInputStream(src);
 

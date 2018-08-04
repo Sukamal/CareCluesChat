@@ -600,7 +600,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         if (requestCode == AppConstant.RequestTag.PICK_GALARRY_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
                 Uri uri = data.getData();
-                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
+//                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
+                String mImagePath = AppUtil.getPathFromContentURI(getActivity(), uri);
                 Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
                 iv_test.setImageBitmap(bitmap);
                 File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
@@ -621,27 +622,34 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             try {
 
                 // Get the Uri of the selected file
+//                Uri uri = data.getData();
+//                String uriString = uri.toString();
+//                File myFile = new File(uriString);
+//                String path = myFile.getAbsolutePath();
+//                String displayName = null;
+//
+//                if (uriString.startsWith("content://")) {
+//                    Cursor cursor = null;
+//                    try {
+//                        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+//                        if (cursor != null && cursor.moveToFirst()) {
+//                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                        }
+//                    } finally {
+//                        cursor.close();
+//                    }
+//                } else if (uriString.startsWith("file://")) {
+//                    displayName = myFile.getName();
+//                }
+
+
                 Uri uri = data.getData();
-                String uriString = uri.toString();
-                File myFile = new File(uriString);
-                String path = myFile.getAbsolutePath();
-                String displayName = null;
-
-                if (uriString.startsWith("content://")) {
-                    Cursor cursor = null;
-                    try {
-                        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-                        if (cursor != null && cursor.moveToFirst()) {
-                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                        }
-                    } finally {
-                        cursor.close();
-                    }
-                } else if (uriString.startsWith("file://")) {
-                    displayName = myFile.getName();
-                }
-
-                File destFile = presenter.copy(myFile,getActivity(),roomId,".pdf");
+                String filePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
+                String filename = filePath.substring(filePath.lastIndexOf("/")+1);
+//                String filename = uri.getLastPathSegment();
+//                String filePath = AppUtil.getPathFromContentURI(getActivity(), uri);
+                File myFile = new File(filePath);
+                File destFile = presenter.copyFile(myFile,filename);
 
             } catch (Exception e) {
                 e.printStackTrace();

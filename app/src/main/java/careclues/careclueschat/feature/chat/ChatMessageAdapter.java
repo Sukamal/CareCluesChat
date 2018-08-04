@@ -1,5 +1,6 @@
 package careclues.careclueschat.feature.chat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Handler;
@@ -47,7 +48,7 @@ import careclues.careclueschat.views.ChatImageView;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder> implements DateFormatter.Formatter {
     private List<ChatMessageModel> messageList;
-    private Context context;
+    private Activity activity;
     private String userId;
     private DateFormatter.Formatter dateFormatter;
     private InputTypeListner inputTypeListner;
@@ -62,8 +63,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         this.inputTypeListner = inputTypeListner;
     }
 
-    public ChatMessageAdapter(Context context, List<ChatMessageModel> messageList, String userId, RecyclerView recyclerView) {
-        this.context = context;
+    public ChatMessageAdapter(Activity activity, List<ChatMessageModel> messageList, String userId, RecyclerView recyclerView) {
+        this.activity = activity;
         this.messageList = messageList;
         this.userId = userId;
         dateFormatter = this;
@@ -125,7 +126,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
                     holder.llRightMessage.setVisibility(View.VISIBLE);
                     holder.civRightChatImage.setVisibility(View.GONE);
                     holder.tvRightMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
-                    holder.tvRight.setText(chatMessageModel.messageModel.getContent(context));
+                    holder.tvRight.setText(chatMessageModel.messageModel.getContent(activity));
                 }
 
             } else {
@@ -150,7 +151,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
                         } else {
                             holder.tvHeading.setVisibility(View.VISIBLE);
                         }
-                        holder.tvLeft.setText(chatMessageModel.messageModel.getContent(context));
+                        holder.tvLeft.setText(chatMessageModel.messageModel.getContent(activity));
                     }
                 }
             }
@@ -275,7 +276,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     }
 
     private void displayImage(View view, ChatMessageModel chatMessageModel){
-        ((ChatImageView)view).setImage(chatMessageModel.image_url);
+        ((ChatImageView)view).setImage(activity,chatMessageModel.id, chatMessageModel.image_url);
     }
 
     private void displayPhysicianCard(MyViewHolder holder, ChatMessageModel chatMessageModel) {
@@ -291,7 +292,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             holder.tv_fees.setText(AppUtil.getFormattedFee(AppConstant.textConsultantModel.grossAmountWithoutDiscount));
             holder.tv_fees.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-            Picasso.with(context)
+            Picasso.with(activity)
                     .load(physician.getLink("profile_photo"))
                     .into(holder.iv_dr_image);
 
@@ -314,7 +315,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
                 // specialtyList.add(specializationModel.subspecialty);
             }
 
-            holder.tv_dr_details1.setText(String.format(context.getResources().getString(R.string.years_of_experience),physician.yearsOfExperience));
+            holder.tv_dr_details1.setText(String.format(activity.getResources().getString(R.string.years_of_experience),physician.yearsOfExperience));
             holder.tv_dr_details2.setText(qualification.deleteCharAt(qualification.length() - 2).toString());
             holder.tv_dr_details3.setText(speciality.deleteCharAt(speciality.length() - 2).toString());
 

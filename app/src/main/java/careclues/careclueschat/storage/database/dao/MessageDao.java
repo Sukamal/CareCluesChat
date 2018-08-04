@@ -34,7 +34,7 @@ public interface MessageDao {
     @Query("select * from message where rId = :roomId order by updatedAt desc limit 1")
     MessageEntity getLastMessage(String roomId);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<MessageEntity> entityList);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -42,6 +42,12 @@ public interface MessageDao {
 
     @Update
     void update(MessageEntity entity);
+
+    @Query("UPDATE message SET local_image_url = :localPath  WHERE id = :messageId")
+    void updateLocalPath(String messageId, String localPath);
+
+    @Query("SELECT local_image_url from message WHERE id = :messageId")
+    String getLocalPath(String messageId);
 
     @Delete
     void delete(MessageEntity entity);

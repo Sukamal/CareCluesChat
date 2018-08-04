@@ -41,6 +41,8 @@ public class MessageEntity {
     @SerializedName("image_url")
     public String image_url;
 
+    @SerializedName("local_image_url")
+    public String local_image_url;
 
     @ColumnInfo(name = "user")
     @TypeConverters(RoomUserTypeConverter.class)
