@@ -651,6 +651,42 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 File myFile = new File(filePath);
                 File destFile = presenter.copyFile(myFile,filename);
 
+
+
+
+
+
+
+
+//                Uri uri = data.getData();
+//                String uriString = uri.toString();
+//                File myFile = new File(uriString);
+//                String path = myFile.getAbsolutePath();
+//                String displayName = null;
+//
+//                if (uriString.startsWith("content://")) {
+//                    Cursor cursor = null;
+//                    try {
+//                        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+//                        if (cursor != null && cursor.moveToFirst()) {
+//                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                        }
+//                    } finally {
+//                        cursor.close();
+//                    }
+//                } else if (uriString.startsWith("file://")) {
+//                    displayName = myFile.getName();
+//                }
+//
+//
+//                File destFile = presenter.copyFile(myFile,displayName);
+
+
+
+
+
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

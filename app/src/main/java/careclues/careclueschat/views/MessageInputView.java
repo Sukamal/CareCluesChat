@@ -192,8 +192,12 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
 //        intent.setType("pdf");
 //        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
 
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Uri target = Uri.parse("content://media/external/images/media");
+        Intent intent = new Intent(Intent.ACTION_VIEW, target);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
         intent = Intent.createChooser(intent, "Choose a file");
         fragment.startActivityForResult(intent, AppConstant.RequestTag.PICK_DOCUMENT_REQUEST);
     }
