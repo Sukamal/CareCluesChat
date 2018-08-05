@@ -739,22 +739,59 @@ public class ChatPresenter1 implements ChatContract.presenter {
         return newBitmap;
     }
 
-    public File saveToInternalStorage(Context mcoContext, String roomid, Bitmap bitmapImage) {
-        Bitmap scaleImage = scaleDown(bitmapImage, 600, false);
-        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
 
-//        File directory = new File(mcoContext.getFilesDir(),"mydir");
+    public  File saveFileToInternalStorage(String filename, InputStream inputStream) {
+
+        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
         if (!directory.exists()) {
             directory.mkdirs();
         }
-        String fname = "Pic_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-        File mypath = new File(directory, fname);
+
+        File mypath = new File(directory, filename);
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(mypath);
+
+            // Transfer bytes from in to out
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = inputStream.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return mypath;
+    }
+
+    public File saveToInternalStorage(String filename, Bitmap bitmapImage) {
+        Bitmap scaleImage = scaleDown(bitmapImage, 600, false);
+        File directory = new File(Environment.getExternalStorageDirectory(), "ccchat");
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        if(filename == null ){
+            filename = "Pic_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+        }
+        File mypath = new File(directory, filename);
 
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(mypath);
             // Use the compress method on the BitMap object to write image to the OutputStream
-            scaleImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            scaleImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

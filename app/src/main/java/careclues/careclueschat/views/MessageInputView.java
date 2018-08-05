@@ -188,51 +188,50 @@ public class MessageInputView extends RelativeLayout implements View.OnClickList
     }
 
     public void pickDocumentFromGallery() {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("pdf");
-//        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-
-        Uri target = Uri.parse("content://media/external/images/media");
-        Intent intent = new Intent(Intent.ACTION_VIEW, target);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-
         intent = Intent.createChooser(intent, "Choose a file");
         fragment.startActivityForResult(intent, AppConstant.RequestTag.PICK_DOCUMENT_REQUEST);
     }
 
     public void pickImageGallary() {
 
-        List<Intent> targets = new ArrayList<Intent>();
-        Uri target = Uri.parse("content://media/external/images/media");
-        Intent intent = new Intent(Intent.ACTION_VIEW, target);
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        intent = Intent.createChooser(intent, "Choose a file");
+        fragment.startActivityForResult(intent, AppConstant.RequestTag.PICK_GALARRY_REQUEST);
 
-        List<ResolveInfo> candidates = fragment.getActivity().getPackageManager().queryIntentActivities(intent, 0);
 
-        for (ResolveInfo candidate : candidates) {
-            String packageName = candidate.activityInfo.packageName;
-            if (!packageName.equals("com.google.android.apps.photos")
-                    && !packageName
-                    .equals("com.google.android.apps.plus")
-                    && !packageName.equals("com.android.documentsui")) {
-                Intent iWantThis = new Intent();
-                iWantThis.setType("image/*");
-                iWantThis.setAction(Intent.ACTION_GET_CONTENT);
-                iWantThis.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                iWantThis.setPackage(packageName);
-                targets.add(iWantThis);
-            }
-        }
 
-        Intent chooser = Intent.createChooser(targets.remove(0),
-                "Select Picture");
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                targets.toArray(new Parcelable[targets.size()]));
-        fragment.startActivityForResult(chooser, AppConstant.RequestTag.PICK_GALARRY_REQUEST);
+//        List<Intent> targets = new ArrayList<Intent>();
+//        Uri target = Uri.parse("content://media/external/images/media");
+//        Intent intent = new Intent(Intent.ACTION_VIEW, target);
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/*");
+//        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+//
+//        List<ResolveInfo> candidates = fragment.getActivity().getPackageManager().queryIntentActivities(intent, 0);
+//
+//        for (ResolveInfo candidate : candidates) {
+//            String packageName = candidate.activityInfo.packageName;
+//            if (!packageName.equals("com.google.android.apps.photos")
+//                    && !packageName
+//                    .equals("com.google.android.apps.plus")
+//                    && !packageName.equals("com.android.documentsui")) {
+//                Intent iWantThis = new Intent();
+//                iWantThis.setType("image/*");
+//                iWantThis.setAction(Intent.ACTION_GET_CONTENT);
+//                iWantThis.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+//                iWantThis.setPackage(packageName);
+//                targets.add(iWantThis);
+//            }
+//        }
+//
+//        Intent chooser = Intent.createChooser(targets.remove(0),
+//                "Select Picture");
+//        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+//                targets.toArray(new Parcelable[targets.size()]));
+//        fragment.startActivityForResult(chooser, AppConstant.RequestTag.PICK_GALARRY_REQUEST);
     }
 
 }

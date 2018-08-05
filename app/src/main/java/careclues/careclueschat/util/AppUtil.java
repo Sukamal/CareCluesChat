@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +35,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
+
+import static android.content.ContentValues.TAG;
 
 public class AppUtil {
 
@@ -239,6 +242,45 @@ public class AppUtil {
         return filePath;
     }
 
+    public static String dumpImageMetaData(Context context, Uri uri) {
+
+        String displayName = null;
+        // The query, since it only applies to a single document, will only return
+        // one row. There's no need to filter, sort, or select fields, since we want
+        // all fields for one document.
+        Cursor cursor = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            cursor = context.getContentResolver()
+                    .query(uri, null, null, null, null, null);
+        }
+
+        try {
+            // moveToFirst() returns false if the cursor has 0 rows.  Very handy for
+            // "if there's anything to look at, look at it" conditionals.
+            if (cursor != null && cursor.moveToFirst()) {
+
+                // Note it's called "Display Name".  This is
+                // provider-specific, and might not necessarily be the file name.
+                displayName = cursor.getString(
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                Log.i(TAG, "Display Name: " + displayName);
+                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+
+                String size = null;
+                if (!cursor.isNull(sizeIndex)) {
+                    // Technically the column stores an int, but cursor.getString()
+                    // will do the conversion automatically.
+                    size = cursor.getString(sizeIndex);
+                } else {
+                    size = "Unknown";
+                }
+                Log.i(TAG, "Size: " + size);
+            }
+        } finally {
+            cursor.close();
+        }
+        return displayName;
+    }
     public static String getFormattedFee(String amount){
         return "₹ " +  amount;
     }

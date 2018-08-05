@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -30,7 +31,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -599,14 +605,30 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
 //        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AppConstant.RequestTag.PICK_GALARRY_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
-                Uri uri = data.getData();
-//                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
-                String mImagePath = AppUtil.getPathFromContentURI(getActivity(), uri);
-                Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
-                iv_test.setImageBitmap(bitmap);
-                File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
-                presenter.uploadFile(destFile,"Test Upload File");
-              //  presenter.copy(file, getActivity(), roomId, ".jpg");
+
+
+                try {
+
+                    Uri uri = data.getData();
+                    Bitmap image =  getBitmapFromUri(uri);
+                    String filename = AppUtil.dumpImageMetaData(getActivity(), uri);
+                    File file = presenter.saveToInternalStorage(filename,image);
+                    //                presenter.uploadFile(destFile,"Test Upload File");
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+//                Uri uri = data.getData();
+////                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
+//                String mImagePath = AppUtil.getPathFromContentURI(getActivity(), uri);
+//                Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
+//                iv_test.setImageBitmap(bitmap);
+//                File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
+//                presenter.uploadFile(destFile,"Test Upload File");
+//              //  presenter.copy(file, getActivity(), roomId, ".jpg");
 
                 // TODO ---------- Upload Image
             } catch (Exception e) {
@@ -614,48 +636,18 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             }
         } else if (requestCode == AppConstant.RequestTag.PICK_CAMERA_REQUEST && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            File destFile = presenter.saveToInternalStorage(getActivity(),roomId,photo);
-            presenter.saveToInternalStorage(getActivity(), roomId, photo);
+            String fname = "Pic_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+            File destFile = presenter.saveToInternalStorage(fname,photo);
             iv_test.setImageBitmap(photo);
-            presenter.uploadFile(destFile,"Test Upload File");
+//            presenter.uploadFile(destFile,"Test Upload File");
         } else if (requestCode == AppConstant.RequestTag.PICK_DOCUMENT_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
 
-                // Get the Uri of the selected file
-//                Uri uri = data.getData();
-//                String uriString = uri.toString();
-//                File myFile = new File(uriString);
-//                String path = myFile.getAbsolutePath();
-//                String displayName = null;
-//
-//                if (uriString.startsWith("content://")) {
-//                    Cursor cursor = null;
-//                    try {
-//                        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-//                        if (cursor != null && cursor.moveToFirst()) {
-//                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-//                        }
-//                    } finally {
-//                        cursor.close();
-//                    }
-//                } else if (uriString.startsWith("file://")) {
-//                    displayName = myFile.getName();
-//                }
-
-
                 Uri uri = data.getData();
-                String filePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
-                String filename = filePath.substring(filePath.lastIndexOf("/")+1);
-//                String filename = uri.getLastPathSegment();
-//                String filePath = AppUtil.getPathFromContentURI(getActivity(), uri);
-                File myFile = new File(filePath);
-                File destFile = presenter.copyFile(myFile,filename);
-
-
-
-
-
-
+                InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
+                String filename = AppUtil.dumpImageMetaData(getActivity(), uri);
+                File file = presenter.saveFileToInternalStorage(filename,inputStream);
+                //                presenter.uploadFile(destFile,"Test Upload File");
 
 
 //                Uri uri = data.getData();
@@ -691,6 +683,29 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 e.printStackTrace();
             }
         }
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getActivity().getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+//        parcelFileDescriptor.close();
+        return image;
+    }
+
+    private String readTextFromUri(Uri uri) throws IOException {
+        InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                inputStream));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+        }
+        inputStream.close();
+//        parcelFileDescriptor.close();
+        return stringBuilder.toString();
     }
 
     @Override
