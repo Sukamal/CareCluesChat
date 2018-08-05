@@ -154,7 +154,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
 
     private void initView() {
         presenter = new ChatPresenter1(this, roomId, getActivity().getApplication());
-        presenter.loadData(startCount,endCount);
+        presenter.loadData(startCount, endCount);
     }
 
     private void initRecycleView() {
@@ -336,7 +336,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messageAdapter = new ChatMessageAdapter(getActivity(), list, userId,rvChatHistory);
+                messageAdapter = new ChatMessageAdapter(getActivity(), list, userId, rvChatHistory);
                 rvChatHistory.setAdapter(messageAdapter);
                 messageAdapter.setInputTypeListner(ChatFragment.this);
             }
@@ -406,7 +406,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
             viewFamilymember.setVisibility(View.VISIBLE);
         } else if (type == TYPE_SELECT_ANSWERS) {
             view_answer.setVisibility(View.VISIBLE);
-        }else if (type == TYPE_PAY_FEES) {
+        } else if (type == TYPE_PAY_FEES) {
             view_PayFee.setVisibility(View.VISIBLE);
         }
         /*else if(type.equals("familymember")){
@@ -447,11 +447,11 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     }
 
     @OnClick(R.id.btnShow)
-    public void showFragment(){
+    public void showFragment() {
         Fragment fragment = new LoadWebPage();
         Bundle bundle = new Bundle();
-        bundle.putString("path","https://www.google.com");
-        addFragment(fragment,true,bundle);
+        bundle.putString("path", "https://www.google.com");
+        addFragment(fragment, true, bundle);
     }
 
 
@@ -524,7 +524,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void onSimpleTextSelected(String msg) {
         //TODO check if inoutType ageInput update patient object first
         //presenter.updatePatientAge(12);
-       // lastMessage.patientModel.age = 40;
+        // lastMessage.patientModel.age = 40;
         String replyMsgId = lastMessage.id;
         String content = msg;
         populetSendMessage(lastMessage.control, replyMsgId, content, lastMessage.patientModel, lastMessage.categoryModel, lastMessage.symptomModel);
@@ -540,7 +540,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     public void onPayButtonClick() {
         Toast.makeText(getActivity(), "Click On Pay Button ChatFragment", Toast.LENGTH_SHORT).show();
         Fragment fragment = new PaymentFragment();
-        addFragment(fragment,true,null);
+        addFragment(fragment, true, null);
 
     }
 
@@ -558,7 +558,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
     @Override
     public void onEndConsultation() {
 
-       // presenter.createTextConsultant
+        // presenter.createTextConsultant
     }
 
     @Override
@@ -577,7 +577,7 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         replyMessageModel.fileUploadSendMessageModel.type = "image";
         replyMessageModel.fileUploadSendMessageModel.id = "patientDocument";
         replyMessageModel.imageURL = url;
-        presenter.sendMessageViaApi(replyMessageModel,null);
+        presenter.sendMessageViaApi(replyMessageModel, null);
     }
 
 
@@ -606,38 +606,23 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         if (requestCode == AppConstant.RequestTag.PICK_GALARRY_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             try {
 
+                Uri uri = data.getData();
 
-                try {
+                ParcelFileDescriptor parcelFileDescriptor =
+                        getActivity().getContentResolver().openFileDescriptor(uri, "r");
+                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
 
-                    Uri uri = data.getData();
-                    Bitmap image =  getBitmapFromUri(uri);
-                    String filename = AppUtil.dumpImageMetaData(getActivity(), uri);
-                    File file = presenter.saveToInternalStorage(filename,image);
-                    //                presenter.uploadFile(destFile,"Test Upload File");
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-
-//                Uri uri = data.getData();
-////                String mImagePath = AppUtil.getAbsolutePathFromContentURI(getActivity(), uri);
-//                String mImagePath = AppUtil.getPathFromContentURI(getActivity(), uri);
-//                Bitmap bitmap = BitmapFactory.decodeFile(mImagePath);
-//                iv_test.setImageBitmap(bitmap);
-//                File destFile = presenter.saveToInternalStorage(getActivity(),roomId,bitmap);
-//                presenter.uploadFile(destFile,"Test Upload File");
-//              //  presenter.copy(file, getActivity(), roomId, ".jpg");
-
-                // TODO ---------- Upload Image
+                String filename = AppUtil.dumpImageMetaData(getActivity(), uri);
+                File destFile = presenter.saveToInternalStorage(filename, image);
+                //                presenter.uploadFile(destFile,"Test Upload File");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (requestCode == AppConstant.RequestTag.PICK_CAMERA_REQUEST && resultCode == RESULT_OK) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             String fname = "Pic_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
-            File destFile = presenter.saveToInternalStorage(fname,photo);
+            File destFile = presenter.saveToInternalStorage(fname, photo);
             iv_test.setImageBitmap(photo);
 //            presenter.uploadFile(destFile,"Test Upload File");
         } else if (requestCode == AppConstant.RequestTag.PICK_DOCUMENT_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
@@ -646,38 +631,8 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
                 Uri uri = data.getData();
                 InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
                 String filename = AppUtil.dumpImageMetaData(getActivity(), uri);
-                File file = presenter.saveFileToInternalStorage(filename,inputStream);
+                File destFile = presenter.saveFileToInternalStorage(filename, inputStream);
                 //                presenter.uploadFile(destFile,"Test Upload File");
-
-
-//                Uri uri = data.getData();
-//                String uriString = uri.toString();
-//                File myFile = new File(uriString);
-//                String path = myFile.getAbsolutePath();
-//                String displayName = null;
-//
-//                if (uriString.startsWith("content://")) {
-//                    Cursor cursor = null;
-//                    try {
-//                        cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-//                        if (cursor != null && cursor.moveToFirst()) {
-//                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-//                        }
-//                    } finally {
-//                        cursor.close();
-//                    }
-//                } else if (uriString.startsWith("file://")) {
-//                    displayName = myFile.getName();
-//                }
-//
-//
-//                File destFile = presenter.copyFile(myFile,displayName);
-
-
-
-
-
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -685,28 +640,6 @@ public class ChatFragment extends BaseFragment implements ChatContract.view, Roo
         }
     }
 
-    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
-        ParcelFileDescriptor parcelFileDescriptor =
-                getActivity().getContentResolver().openFileDescriptor(uri, "r");
-        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-//        parcelFileDescriptor.close();
-        return image;
-    }
-
-    private String readTextFromUri(Uri uri) throws IOException {
-        InputStream inputStream = getActivity().getContentResolver().openInputStream(uri);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                inputStream));
-        StringBuilder stringBuilder = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            stringBuilder.append(line);
-        }
-        inputStream.close();
-//        parcelFileDescriptor.close();
-        return stringBuilder.toString();
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
