@@ -2,8 +2,11 @@ package careclues.careclueschat.views;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -11,6 +14,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -48,6 +52,7 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
     private String msgId;
     private Activity activity;
     private Handler handler;
+    private String fileType;
 
     @BindView(R.id.ivDocImageage)
     ImageView ivDocImageage;
@@ -73,14 +78,16 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
         this.context = context;
         view = inflate(context, R.layout.view_chat_image,this);
         ButterKnife.bind(this, view);
+        ivDocImageage.setOnClickListener(this);
         handleMessage();
 
     }
 
-    public void setImage(Activity activity, String msgId, String imageUrl){
+    public void setImage(Activity activity, String msgId, String imageUrl,String fileType){
         this.activity = activity;
         this.msgId = msgId;
         this.imageUrl = imageUrl;
+        this.fileType = fileType;
         getLocalPath(msgId);
     }
 
@@ -97,6 +104,7 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.ivDocImageage:
+                openFile();
                 break;
         }
     }
@@ -145,7 +153,13 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
                     case CHECK_LOCALPATH:
                         if(localImagePath != null && localImagePath.length()>0){
                             pbProgress.setVisibility(GONE);
-                            ivDocImageage.setImageDrawable(Drawable.createFromPath(localImagePath));
+                            if(fileType.equals("pdf")){
+                                ivDocImageage.setImageResource(R.drawable.ic_pdf);
+
+                            }else{
+                                ivDocImageage.setImageDrawable(Drawable.createFromPath(localImagePath));
+
+                            }
                         }else{
                             downloadImage();
                         }
@@ -155,6 +169,24 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
         };
     }
 
+
+    private void  openFile(){
+        File file = new File(localImagePath);
+        MimeTypeMap map = MimeTypeMap.getSingleton();
+        String ext = MimeTypeMap.getFileExtensionFromUrl(file.getName());
+        String type = map.getMimeTypeFromExtension(ext);
+
+        if (type == null)
+            type = "*/*";
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri data = Uri.fromFile(file);
+
+        intent.setDataAndType(data, type);
+
+
+        activity.startActivity(intent);
+    }
 
 
     public class DownloadFileFromURL extends AsyncTask<String, String, String> {

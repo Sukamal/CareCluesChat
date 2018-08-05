@@ -122,7 +122,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
                     holder.llRightMessage.setVisibility(View.GONE);
                     holder.civRightChatImage.setVisibility(View.VISIBLE);
                     displayImage(holder.civRightChatImage, chatMessageModel);
-                }else{
+                } else if (chatMessageModel.messageModel != null && chatMessageModel.messageModel.type != null && chatMessageModel.messageModel.type.equals("pdf")) {
+                    holder.llRightMessage.setVisibility(View.GONE);
+                    holder.civRightChatImage.setVisibility(View.VISIBLE);
+                    displayImage(holder.civRightChatImage, chatMessageModel);
+                } else{
                     holder.llRightMessage.setVisibility(View.VISIBLE);
                     holder.civRightChatImage.setVisibility(View.GONE);
                     holder.tvRightMessageTime.setText(DateFormatter.format(chatMessageModel.createdAt, "h:mm a"));
@@ -138,6 +142,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
                     holder.cvRight.setVisibility(View.GONE);
                     holder.cardViewDrCard.setVisibility(View.GONE);
                     if (chatMessageModel.messageModel.type != null && chatMessageModel.messageModel.type.equals("image")) {
+                        holder.llLeftMessage.setVisibility(View.GONE);
+                        holder.civLeftChatImage.setVisibility(View.VISIBLE);
+                        displayImage(holder.civLeftChatImage, chatMessageModel);
+                    }else if (chatMessageModel.messageModel.type != null && chatMessageModel.messageModel.type.equals("pdf")) {
                         holder.llLeftMessage.setVisibility(View.GONE);
                         holder.civLeftChatImage.setVisibility(View.VISIBLE);
                         displayImage(holder.civLeftChatImage, chatMessageModel);
@@ -276,7 +284,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     }
 
     private void displayImage(View view, ChatMessageModel chatMessageModel){
-        ((ChatImageView)view).setImage(activity,chatMessageModel.id, chatMessageModel.image_url);
+        ((ChatImageView)view).setImage(activity,chatMessageModel.id, chatMessageModel.image_url,chatMessageModel.messageModel.type);
     }
 
     private void displayPhysicianCard(MyViewHolder holder, ChatMessageModel chatMessageModel) {
