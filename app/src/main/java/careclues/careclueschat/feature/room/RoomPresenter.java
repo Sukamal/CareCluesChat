@@ -182,7 +182,8 @@ public class RoomPresenter implements RoomContract.presenter,
     @Override
     public void onFetchRoom(List<RoomEntity> entities) {
         view.displayToastMessage("Fetching Rooms");
-        roomDataPresenter.getSubscription(null, entities);
+        String lastUpdate = appPreference.getStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name());
+        roomDataPresenter.getSubscription(lastUpdate, entities);
     }
 
 

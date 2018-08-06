@@ -152,13 +152,6 @@ public class RoomDataPresenter {
                         break;
                     case FETCH_SUBSCRIPTION_COMPLETED:
                         insertSubscriptionRecordIntoDb(subscriptionEntities);
-
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(new Date());
-                        calendar.add(Calendar.DATE, -1);
-
-
-                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(calendar.getTime(),"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                         if(subscriptionListner != null){
                             subscriptionListner.onFetchSubscription(subscriptionEntities);
                         }
@@ -176,6 +169,10 @@ public class RoomDataPresenter {
                         }
                         break;
                     case FETCH_MESSAGE_COMPLETED:
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(new Date());
+                        calendar.add(Calendar.DATE, -1);
+                        appPreference.saveStringPref(AppConstant.Preferences.LAST_ROOM_UPDATED_ON.name(), DateFormatter.format(calendar.getTime(),"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
                         if (fetchMessageListner != null) {
                             fetchMessageListner.onFetchMessage(roomId);
                         }
@@ -195,7 +192,7 @@ public class RoomDataPresenter {
 //                    lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getLastUpdatedRoom(0,count);
                     lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getActiveRoomList();
                     if (lastUpdatedRoomList.size() == 0) {
-                        lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0, 1);
+                        lastUpdatedRoomList = ((CareCluesChatApplication) application).getChatDatabase().roomDao().getNextRoomList(0, 10);
                     }
 
                     handler.sendEmptyMessage(FETCH_UPDATED_ROOM);
