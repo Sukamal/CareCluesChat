@@ -25,6 +25,9 @@
     <string name="age">Age</string>
     <string name="gender">Gender</string>
 
+
+    <string name="file_provider_authorities" translatable="false">careclues.careclueschat.fileproviderexample.fileprovider</string>
+
     <string-array name="blood_groups">
         <item>A+</item>
         <item>A-</item>

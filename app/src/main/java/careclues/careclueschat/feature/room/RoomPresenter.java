@@ -1,6 +1,10 @@
 package careclues.careclueschat.feature.room;
 
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -35,6 +39,7 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 import careclues.rocketchat.CcRocketChatClient;
 import careclues.rocketchat.CcSocket;
@@ -413,6 +418,7 @@ public class RoomPresenter implements RoomContract.presenter,
     public void getTextConsultant(String roomId) {
         roomDataPresenter.getTextConsultant(roomId);
     }
+
 
 //    @Override
 //    public void createNewRoom() {

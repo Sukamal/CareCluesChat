@@ -18,7 +18,6 @@ public interface RoomContract {
         public void displyRoomListScreen(List<RoomAdapterModel> list);
         public void displyMoreRoomList(List<RoomAdapterModel> list);
         public void displyNewRoomList(List<RoomAdapterModel> list);
-
         public void updateRoomMessage(String roomId, MessageEntity msg);
         public void displyChatScreen(String roomId);
         public void onUserTyping(String roomId, String user, Boolean istyping);
@@ -34,6 +33,8 @@ public interface RoomContract {
         public void getMessage(String roomId);
         public void createNewRoom();
         public void getTextConsultant(String roomId);
+
+
 
     }
 }

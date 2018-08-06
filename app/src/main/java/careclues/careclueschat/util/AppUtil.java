@@ -33,6 +33,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -124,6 +125,22 @@ public class AppUtil {
         return df.format(calendar.getTime());
     }
 
+    public static String convertToServerPostDate(Date date){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String dateTime = dateFormat.format(date);
+        return dateTime.replace("+0000","Z");
+    }
+
+    public static String convertToServerPostDate(long timestamp){
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        Calendar calendar = Calendar.getInstance(tz);
+        calendar.setTimeInMillis(timestamp);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd'T'HH:mm:ss.SSSZ");
+        dateFormat.setTimeZone(tz);
+        return dateFormat.format(calendar.getTime());
+    }
+
     public static String generateUniquId(){
         String uniqId = UUID.randomUUID().toString();
         return uniqId;
@@ -171,6 +188,20 @@ public class AppUtil {
             return false;
 
         }
+    }
+
+
+    public static boolean addPermission(Activity context, List<String> permissionsList, String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsList.add(permission);
+                // Check for Rationale Option
+                if (!context.shouldShowRequestPermissionRationale(permission))
+                    return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public static boolean isSDCardAvailable(){

@@ -36,6 +36,7 @@ import careclues.careclueschat.storage.database.entity.RoomMemberEntity;
 import careclues.careclueschat.storage.database.entity.SubscriptionEntity;
 import careclues.careclueschat.storage.preference.AppPreference;
 import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.AppUtil;
 import careclues.careclueschat.util.DateFormatter;
 import careclues.careclueschat.util.ModelEntityTypeConverter;
 import careclues.rocketchat.CcUtils;
@@ -379,31 +380,90 @@ public class RoomDataPresenter {
         roomMemberEntities = new ArrayList<>();
         messageEntities = new ArrayList<>();
         for (RoomEntity roomEntity : moreList) {
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
+            checkMember(roomEntity.roomId);
+            checkLatMessage(roomEntity.roomId);
+//            getMessageHistory(roomEntity.roomId);
+
+//            getRoomMembers(roomEntity.roomId);
+//            getMessageHistory(roomEntity.roomId,0,null);
+
+
         }
+
 
     }
 
-    private void getAllRoomMember(List<RoomEntity> moreList) {
-        roomMemberEntities = new ArrayList<>();
-        messageEntities = new ArrayList<>();
-        for (RoomEntity roomEntity : moreList) {
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
-        }
+    private void checkMember(final String roomId){
+
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                List<RoomMemberEntity> memberList;
+                try {
+                    memberList = ((CareCluesChatApplication) application).getChatDatabase().roomMemberDao().findByRoomId(roomId);
+                    if(memberList == null){
+                        getRoomMembers(roomId);
+                    }else{
+                        roomIdMember.remove(roomId);
+                    }
+
+
+                } catch (Throwable e) {
+                    Log.e("DBERROR", " getOpenRoomDb : " + e.toString());
+                }
+
+            }
+        });
+
 
     }
 
-    private void getAllRoomMessage(List<RoomEntity> moreList) {
-        roomMemberEntities = new ArrayList<>();
-        messageEntities = new ArrayList<>();
-        for (RoomEntity roomEntity : moreList) {
-            getRoomMembers(roomEntity.roomId);
-            getMessageHistory(roomEntity.roomId);
-        }
+    private void checkLatMessage(final String roomId){
 
+        ThreadsExecutor.getInstance().forBackgroundTasks().execute(new Runnable() {
+            @Override
+            public void run() {
+                MessageEntity lastMessage;
+                String lastTime;
+                try {
+                    lastMessage = ((CareCluesChatApplication) application).getChatDatabase().messageDao().getLastMessage(roomId);
+                   if(lastMessage == null){
+                       getMessageHistory(roomId,0,null);
+                   }else{
+                       lastTime = AppUtil.convertToServerPostDate(lastMessage.timeStamp);
+                       Log.e("TTTTTTTTTTT",lastTime);
+                       roomIdMessage.remove(roomId);
+
+                   }
+
+
+                } catch (Throwable e) {
+                    Log.e("DBERROR", " getOpenRoomDb : " + e.toString());
+                }
+
+            }
+        });
     }
+
+//    private void getAllRoomMember(List<RoomEntity> moreList) {
+//        roomMemberEntities = new ArrayList<>();
+//        messageEntities = new ArrayList<>();
+//        for (RoomEntity roomEntity : moreList) {
+//            getRoomMembers(roomEntity.roomId);
+//            getMessageHistory(roomEntity.roomId);
+//        }
+//
+//    }
+//
+//    private void getAllRoomMessage(List<RoomEntity> moreList) {
+//        roomMemberEntities = new ArrayList<>();
+//        messageEntities = new ArrayList<>();
+//        for (RoomEntity roomEntity : moreList) {
+//            getRoomMembers(roomEntity.roomId);
+//            getMessageHistory(roomEntity.roomId);
+//        }
+//
+//    }
 
     private void getRoomMembers(final String roomId) {
         apiExecuter.getRoomMembers(roomId, new ServiceCallBack<RoomMemberResponse>(RoomMemberResponse.class) {
@@ -421,7 +481,7 @@ public class RoomDataPresenter {
         });
     }
 
-    private void getMessageHistory(final String roomId) {
+    private void getMessageHistory(final String roomId, int count, String lastTime) {
         apiExecuter.getChatMessage(roomId, 0, null, new ServiceCallBack<MessageResponseModel>(MessageResponseModel.class) {
             @Override
             public void onSuccess(MessageResponseModel response) {

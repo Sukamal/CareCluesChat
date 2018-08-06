@@ -114,7 +114,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.tvUserName.setText(roomObjects.get(position).name);
-        //holder.tvRoomId.setText(roomObjects.get(position).description);
+        holder.tvRoomId.setText(roomObjects.get(position).roomName);
         holder.tvStatus.setText(roomObjects.get(position).status);
         holder.tvCategory.setText(roomObjects.get(position).description);
                 //holder.tvStatus.setText(roomObjects.get(position).status + "\n" + roomObjects.get(position).Id + "\n" + roomObjects.get(position).roomName);
@@ -186,13 +186,15 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.MyViewHolder> 
 
             roomItem = (ConstraintLayout) itemView.findViewById(R.id.rr_item);
             tvUserName = (TextView) itemView.findViewById(R.id.tvUserName);
-            // tvRoomId = (TextView) itemView.findViewById(R.id.tvRoomId);
             tvStatus = (TextView) itemView.findViewById(R.id.tvStatus);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
             tvTime = (TextView) itemView.findViewById(R.id.tvTime);
             imageView = (ImageView) itemView.findViewById(R.id.imProfilePhoto);
             tvChange = (TextView) itemView.findViewById(R.id.tvChange);
             tvCategory = (TextView) itemView.findViewById(R.id.tvCategory);
+
+            tvRoomId = (TextView) itemView.findViewById(R.id.tvStatus23);
+
 
         }
     }

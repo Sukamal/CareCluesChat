@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.FileProvider;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -180,11 +181,13 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
             type = "*/*";
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri data = Uri.fromFile(file);
+//        Uri data = Uri.fromFile(file);
+        Uri data = FileProvider.getUriForFile(context, "careclues.careclueschat.fileproviderexample.fileprovider", file);
+
+
 
         intent.setDataAndType(data, type);
-
-
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         activity.startActivity(intent);
     }
 
@@ -200,6 +203,7 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
         @Override
         protected String doInBackground(String... f_url) {
 
+            String localpath;
             Log.d("downlod", "downloading.....");
             File directory = new File(Environment.getExternalStorageDirectory(), "ccchat/download");
             if (!directory.exists()) {
@@ -209,6 +213,7 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
             String fname = f_url[0].substring(f_url[0].lastIndexOf("/") + 1);
 //            String fname = "Pic_" + String.valueOf(System.currentTimeMillis()) + ".jpg";
             File newFile = new File(directory, fname);
+            localpath = newFile.getAbsolutePath();
 
 
             int count;
@@ -250,9 +255,10 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
 
             } catch (Exception e) {
                 Log.e("Error: ", e.getMessage());
+                localpath = null;
             }
 
-            return newFile.getAbsolutePath();
+            return localpath;
         }
 
         protected void onProgressUpdate(String... progress) {
@@ -262,7 +268,9 @@ public class ChatImageView extends RelativeLayout implements View.OnClickListene
         @Override
         protected void onPostExecute(String file_url) {
             dismissDialog();
-            saveLocalPath(file_url);
+            if(file_url != null){
+                saveLocalPath(file_url);
+            }
         }
 
     }

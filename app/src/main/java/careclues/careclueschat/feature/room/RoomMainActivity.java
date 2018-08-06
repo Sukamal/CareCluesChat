@@ -1,10 +1,12 @@
 package careclues.careclueschat.feature.room;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -16,7 +18,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import careclues.careclueschat.R;
@@ -26,6 +31,7 @@ import careclues.careclueschat.feature.common.BaseActivity;
 import careclues.careclueschat.model.RoomAdapterModel;
 import careclues.careclueschat.storage.database.entity.MessageEntity;
 import careclues.careclueschat.util.AppConstant;
+import careclues.careclueschat.util.AppDialog;
 import careclues.careclueschat.util.AppUtil;
 
 public class RoomMainActivity extends BaseActivity implements RoomContract.view{
@@ -38,6 +44,9 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
     public String dispalyFragment;
     private performRoomFragmentAction roomFragmentAction;
     private performChatFragmentAction chatFragmentAction;
+    private AppDialog appDialog;
+    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
+
 
 
     public void setRoomFragmentAction(performRoomFragmentAction activityAction){
@@ -55,7 +64,11 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     public void initComponents() {
-        presenter = new RoomPresenter(this,getApplication());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            executeUserPermissionTree();
+        }else {
+            presenter = new RoomPresenter(this,getApplication());
+        }
     }
 
     @Override
@@ -65,6 +78,7 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
 
     @Override
     protected void onDestroy() {
+        if(presenter != null)
         presenter.disconnectToServer();
         super.onDestroy();
     }
@@ -162,6 +176,88 @@ public class RoomMainActivity extends BaseActivity implements RoomContract.view{
                 }
             }
         });
+    }
+
+
+    public void executeUserPermissionTree() {
+
+        appDialog = new AppDialog();
+        List<String> permissionsNeeded = new ArrayList<String>();
+        final List<String> permissionsList = new ArrayList<String>();
+        if (!AppUtil.addPermission(this,permissionsList, android.Manifest.permission.READ_PHONE_STATE))
+            permissionsNeeded.add("Read Phone State");
+        if (!AppUtil.addPermission(this,permissionsList, android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            permissionsNeeded.add("Write File");
+        if (!AppUtil.addPermission(this,permissionsList, android.Manifest.permission.READ_EXTERNAL_STORAGE))
+            permissionsNeeded.add("Read File");
+        if (!AppUtil.addPermission(this,permissionsList, Manifest.permission.CAMERA))
+            permissionsNeeded.add("Camera Access");
+
+        if (permissionsList.size() > 0) {
+            if (permissionsNeeded.size() > 0) {
+                // Need Rationale
+                String message = "You need to grant access to " + permissionsNeeded.get(0);
+                for (int i = 1; i < permissionsNeeded.size(); i++)
+                    message = message + ", " + permissionsNeeded.get(i);
+                appDialog.showErrorDialog(this, "Permission", message, new AppDialog.DialogListener() {
+                    @Override
+                    public void OnPositivePress(Object val) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+                        }
+                    }
+
+                    @Override
+                    public void OnNegativePress() {
+                        finish();
+                    }
+                });
+
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            }
+            return;
+        }else{
+            presenter = new RoomPresenter(this,getApplication());
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
+            {
+                Map<String, Integer> perms = new HashMap<String, Integer>();
+                // Initial
+                perms.put(android.Manifest.permission.READ_PHONE_STATE, PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.READ_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.CAMERA,PackageManager.PERMISSION_GRANTED);
+                // Fill with results
+                for (int i = 0; i < permissions.length; i++)
+                    perms.put(permissions[i], grantResults[i]);
+                // Check for ACCESS_FINE_LOCATION
+                if (perms.get(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
+                        && perms.get(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && perms.get(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        && perms.get(android.Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED) {
+                    // All Permissions Granted
+
+                    presenter = new RoomPresenter(this,getApplication());
+
+                } else {
+                    // Permission Denied
+                    Toast.makeText(this, "Some Permission is Denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package careclues.careclueschat.util;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -126,6 +127,7 @@ public class AppDialog {
         }
 
     }
+
 
     public interface PickImageListener {
 
